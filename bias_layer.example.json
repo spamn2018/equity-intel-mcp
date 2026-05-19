@@ -1,0 +1,22 @@
+{
+  "author": "John",
+  "updated_at": "2026-05-11",
+  "description": "Personal political and geopolitical market-bias overlay. This is my own opinion, not a system inference or investment advice.",
+  "views": [
+    {
+      "title": "US-China tariff trajectory",
+      "body": "Escalating tariff rhetoric likely to weigh on semiconductor supply chains and consumer electronics margins through H2 2026. Watch for CHIPS Act beneficiaries vs. Taiwan-exposed names.",
+      "tickers": ["NVDA", "INTC", "QCOM", "AMAT"]
+    },
+    {
+      "title": "Fed rate path sensitivity",
+      "body": "Sticky services inflation keeps the Fed on hold longer than consensus expects. Rate-sensitive sectors (regional banks, REITs, long-duration growth) remain vulnerable to upside CPI surprises.",
+      "tickers": []
+    },
+    {
+      "title": "AI capex supercycle vs. demand realisation",
+      "body": "Hyperscaler capex guidance is supportive near-term for infrastructure names, but monetisation of enterprise AI remains uncertain. Risk of multiple compression if AI revenue ramp disappoints.",
+      "tickers": ["NVDA", "MSFT", "GOOGL", "META", "AMZN"]
+    }
+  ]
+}

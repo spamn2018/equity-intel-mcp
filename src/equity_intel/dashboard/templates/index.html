@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equity Intelligence — Research Dashboard</title>
+  <style>
+    /* ---- Reset & Base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0f1117;
+      --surface:     #181c27;
+      --surface2:    #1e2335;
+      --border:      #2a2f45;
+      --accent:      #4f8ef7;
+      --accent-dim:  #2a4a8a;
+      --green:       #22c55e;
+      --red:         #ef4444;
+      --yellow:      #f59e0b;
+      --muted:       #6b7280;
+      --text:        #e2e8f0;
+      --text-dim:    #94a3b8;
+      --radius:      8px;
+      --radius-lg:   12px;
+    }
+    html { font-size: 14px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ---- Layout ---- */
+    .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+    .not-advice {
+      font-size: 0.75rem;
+      color: var(--yellow);
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    #refreshBtn {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 6px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    #refreshBtn:hover { background: var(--accent); }
+    #refreshBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #lastUpdated { font-size: 0.75rem; color: var(--muted); }
+
+    .main { display: flex; flex: 1; }
+
+    /* ---- Sidebar / Filters ---- */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .filter-section { display: flex; flex-direction: column; gap: 8px; }
+    .filter-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .filter-section input[type=text],
+    .filter-section input[type=number],
+    .filter-section select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .filter-section input:focus,
+    .filter-section select:focus { border-color: var(--accent); }
+
+    .range-row { display: flex; align-items: center; gap: 8px; }
+    .range-row input[type=range] { flex: 1; accent-color: var(--accent); }
+    .range-val {
+      font-size: 0.8rem;
+      color: var(--accent);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      cursor: pointer;
+    }
+    .checkbox-row input { accent-color: var(--accent); }
+
+    .apply-btn {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 9px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 100%;
+      transition: opacity 0.15s;
+    }
+    .apply-btn:hover { opacity: 0.85; }
+
+    /* multi-select event types */
+    .event-type-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .et-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .et-chip input { accent-color: var(--accent); }
+    .et-chip.checked { color: var(--text); }
+
+    /* ---- Content ---- */
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ---- Summary bar ---- */
+    .summary-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .summary-bar .brief-summary {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+    .stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .stat-val { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+    .stat-key { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.06em; }
+
+    .caution-bar {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: var(--yellow);
+    }
+
+    /* ---- Catalyst cards ---- */
+    .catalysts-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .catalysts-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .count-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .catalyst-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .catalyst-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.15s;
+    }
+    .catalyst-card:hover { border-color: var(--accent-dim); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-left { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+
+    .ticker-badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .company-name { font-size: 0.78rem; color: var(--muted); }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .event-type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    .card-scores {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .score-ring {
+      width: 46px;
+      height: 46px;
+      position: relative;
+    }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring .track { fill: none; stroke: var(--surface2); stroke-width: 4; }
+    .score-ring .fill  { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s; }
+    .score-ring .label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .score-key { font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; }
+
+    /* score colour tiers */
+    .score-high .fill  { stroke: var(--green); }
+    .score-high .label { color: var(--green); }
+    .score-med  .fill  { stroke: var(--yellow); }
+    .score-med  .label { color: var(--yellow); }
+    .score-low  .fill  { stroke: var(--red); }
+    .score-low  .label { color: var(--red); }
+
+    .why-it-matters {
+      font-size: 0.83rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* ---- Price move row ---- */
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+    }
+    .pct-up   { color: var(--green); font-weight: 700; }
+    .pct-down { color: var(--red);   font-weight: 700; }
+    .pct-flat { color: var(--muted); }
+    .vol-ctx  { color: var(--text-dim); }
+
+    /* ---- Source quality ---- */
+    .sq-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .sq-badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .sq-high   { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .sq-medium { background: rgba(245,158,11,0.15); color: var(--yellow); }
+    .sq-low    { background: rgba(239,68,68,0.15);  color: var(--red); }
+
+    /* ---- Evidence sections ---- */
+    .evidence-section { display: flex; flex-direction: column; gap: 6px; }
+    .evidence-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .evidence-list { display: flex; flex-direction: column; gap: 4px; }
+    .evidence-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .evidence-item::before {
+      content: "›";
+      color: var(--accent);
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .evidence-item a { color: var(--accent); word-break: break-all; }
+
+    /* ---- Card caution footer ---- */
+    .card-caution {
+      font-size: 0.75rem;
+      color: var(--yellow);
+      background: rgba(245,158,11,0.06);
+      border-left: 2px solid var(--yellow);
+      padding: 6px 10px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* ---- Bias layer ---- */
+    .bias-section {
+      background: var(--surface2);
+      border: 1px dashed #4a3a1a;
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .bias-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bias-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: #d97706;
+    }
+    .bias-separator {
+      flex: 1;
+      height: 1px;
+      background: #4a3a1a;
+    }
+    .bias-disclaimer {
+      font-size: 0.75rem;
+      color: #92400e;
+      background: rgba(146,64,14,0.1);
+      border: 1px solid rgba(146,64,14,0.3);
+      border-radius: 4px;
+      padding: 8px 12px;
+      line-height: 1.5;
+    }
+    .bias-items { display: flex; flex-direction: column; gap: 14px; }
+    .bias-item { display: flex; flex-direction: column; gap: 4px; }
+    .bias-item-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fbbf24;
+    }
+    .bias-item-body {
+      font-size: 0.82rem;
+      color: #a78050;
+      line-height: 1.55;
+    }
+    .bias-item-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .bias-tag {
+      font-size: 0.7rem;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.25);
+      color: #d97706;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .bias-empty {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ---- Empty / loading states ---- */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 60px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty-icon { font-size: 2.5rem; }
+    .empty-msg  { font-size: 0.9rem; }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Error banner ---- */
+    .error-banner {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 0.85rem;
+    }
+
+    /* ---- Source quality summary ---- */
+    .sq-summary-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ---- Collapse toggle ---- */
+    .collapse-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .collapse-btn:hover { color: var(--text); border-color: var(--accent); }
+    .collapsible { overflow: hidden; transition: max-height 0.25s ease; }
+    .collapsible.collapsed { max-height: 0 !important; }
+
+    /* ---- Date / when row ---- */
+    .when-row { font-size: 0.78rem; color: var(--muted); }
+
+    /* responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-left">
+      <span class="logo">Equity<span>Intel</span></span>
+      <span class="not-advice">Research only — not investment advice</span>
+    </div>
+    <div class="header-right">
+      <span id="lastUpdated"></span>
+      <button id="refreshBtn" onclick="loadBrief()">⟳ Refresh</button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+      <div class="filter-section">
+        <div class="filter-label">Tickers</div>
+        <input type="text" id="fTickers" placeholder="AAPL,MSFT,NVDA …" />
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">Days lookback</div>
+        <div class="range-row">
+          <input type="range" id="fDays" min="1" max="90" value="7"
+                 oninput="document.getElementById('fDaysVal').textContent=this.value" />
+          <span class="range-val" id="fDaysVal">7</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">Min materiality</div>
+        <div class="range-row">
+          <input type="range" id="fMinMat" min="0" max="1" step="0.05" value="0.3"
+                 oninput="document.getElementById('fMinMatVal').textContent=parseFloat(this.value).toFixed(2)" />
+          <span class="range-val" id="fMinMatVal">0.30</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">Max results</div>
+        <input type="number" id="fMaxItems" value="30" min="1" max="100" />
+      </div>
+
+      <div class="filter-section">
+        <label class="checkbox-row">
+          <input type="checkbox" id="fLowConf" />
+          Include low-confidence catalysts
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">Event types <span style="color:var(--accent);font-size:0.7rem;">(all = unchecked)</span></div>
+        <div class="event-type-list" id="etList">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <button class="apply-btn" onclick="loadBrief()">Apply filters</button>
+
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="content" id="content">
+      <div class="empty-state" id="loadingState">
+        <div class="spinner"></div>
+        <div class="empty-msg">Loading catalyst brief…</div>
+      </div>
+    </main>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ================================================================ //
+//  State                                                            //
+// ================================================================ //
+let briefData = null;
+let biasData  = null;
+
+// ================================================================ //
+//  Utilities                                                        //
+// ================================================================ //
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function scoreClass(v) {
+  if (v == null) return '';
+  if (v >= 0.7) return 'score-high';
+  if (v >= 0.4) return 'score-med';
+  return 'score-low';
+}
+
+function scoreRing(val, label) {
+  const v = val != null ? Math.max(0, Math.min(1, val)) : 0;
+  const r = 18, cx = 23, cy = 23;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - v);
+  const cls = scoreClass(val);
+  return `
+    <div class="score-item">
+      <div class="score-ring ${cls}">
+        <svg width="46" height="46" viewBox="0 0 46 46">
+          <circle class="track" cx="${cx}" cy="${cy}" r="${r}" />
+          <circle class="fill" cx="${cx}" cy="${cy}" r="${r}"
+            stroke-dasharray="${circ}" stroke-dashoffset="${offset}" />
+        </svg>
+        <div class="label">${val != null ? val.toFixed(2) : '—'}</div>
+      </div>
+      <div class="score-key">${esc(label)}</div>
+    </div>`;
+}
+
+function sqBadge(sq) {
+  if (!sq) return '';
+  const t = typeof sq === 'string' ? sq :
+    (sq.tier || sq.label || sq.source_quality_tier || '');
+  const cls = t.toLowerCase().includes('high')   ? 'sq-high'
+             : t.toLowerCase().includes('medium') ? 'sq-medium'
+             : t.toLowerCase().includes('low')    ? 'sq-low' : '';
+  return `<span class="sq-badge ${cls}">${esc(t)}</span>`;
+}
+
+function formatDate(s) {
+  if (!s) return '';
+  return String(s).slice(0, 10);
+}
+
+function pctHtml(price) {
+  if (!price || price.pct_change == null) return '';
+  const pct = price.pct_change;
+  const cls = pct > 0.5 ? 'pct-up' : pct < -0.5 ? 'pct-down' : 'pct-flat';
+  const arrow = pct >= 0 ? '▲' : '▼';
+  return `<span class="${cls}">${arrow} ${Math.abs(pct).toFixed(2)}%</span>
+          <span style="color:var(--muted);font-size:0.75rem;">
+            ${esc(price.date_before||'')} → ${esc(price.date_after||'')}
+          </span>`;
+}
+
+// ================================================================ //
+//  Event type population                                            //
+// ================================================================ //
+
+async function loadEventTypes() {
+  try {
+    const r = await fetch('/api/event_types');
+    const d = await r.json();
+    const list = document.getElementById('etList');
+    list.innerHTML = (d.event_types || []).map(et => `
+      <label class="et-chip" id="et_lbl_${esc(et)}">
+        <input type="checkbox" class="et-cb" value="${esc(et)}"
+               onchange="updateEtLabel(this)" />
+        ${esc(et.replace(/_/g,' '))}
+      </label>`).join('');
+  } catch(e) { console.warn('event_types load failed', e); }
+}
+
+function updateEtLabel(cb) {
+  const lbl = document.getElementById(`et_lbl_${cb.value}`);
+  if (lbl) lbl.classList.toggle('checked', cb.checked);
+}
+
+// ================================================================ //
+//  Build filter params                                              //
+// ================================================================ //
+
+function buildParams() {
+  const p = new URLSearchParams();
+  const t = document.getElementById('fTickers').value.trim();
+  if (t) p.set('tickers', t);
+  p.set('days',      document.getElementById('fDays').value);
+  p.set('min_mat',   document.getElementById('fMinMat').value);
+  p.set('max_items', document.getElementById('fMaxItems').value);
+  if (document.getElementById('fLowConf').checked) p.set('low_conf','1');
+  const checked = [...document.querySelectorAll('.et-cb:checked')].map(c=>c.value);
+  if (checked.length) p.set('event_types', checked.join(','));
+  return p;
+}
+
+// ================================================================ //
+//  Catalyst card renderer                                           //
+// ================================================================ //
+
+function renderCard(cat, idx) {
+  const ticker  = cat.ticker || '?';
+  const company = cat.company_name || ticker;
+  const title   = cat.title || 'Untitled event';
+  const evtType = (cat.event_type||'').replace(/_/g,' ');
+  const evtSub  = cat.event_subtype ? ` <span style="color:var(--muted)">/ ${esc(cat.event_subtype.replace(/_/g,' '))}</span>` : '';
+  const why     = cat.why_it_matters || cat.summary || '';
+
+  // Scores
+  const matScore  = cat.materiality_score;
+  const confScore = cat.confidence_score;
+
+  // Source quality
+  const sq = cat.source_quality_summary || cat.source_quality || null;
+  let sqHtml = '';
+  if (sq) {
+    if (typeof sq === 'string') {
+      sqHtml = `<div class="sq-row">Source quality: ${sqBadge(sq)}</div>`;
+    } else if (typeof sq === 'object') {
+      const tags = Object.entries(sq).map(([k,v]) =>
+        `<span class="sq-badge ${v && String(v).toLowerCase().includes('high') ? 'sq-high' : String(v).toLowerCase().includes('medium') ? 'sq-medium' : 'sq-low'}">${esc(k)}: ${esc(String(v))}</span>`
+      ).join('');
+      if (tags) sqHtml = `<div class="sq-summary-row">${tags}</div>`;
+    }
+  }
+
+  // Price / volume
+  const price = cat.price_move || null;
+  const volCtx = cat.volume_context || '';
+  let priceHtml = '';
+  if (price || volCtx) {
+    priceHtml = `<div class="price-row">`;
+    if (price) priceHtml += `<span>Price: ${pctHtml(price)}</span>`;
+    if (volCtx) priceHtml += `<span class="vol-ctx">Volume: ${esc(volCtx)}</span>`;
+    priceHtml += `</div>`;
+  }
+
+  // Dates
+  const firstSeen = cat.first_seen_at || cat.occurred_at || '';
+  const lastSeen  = cat.last_seen_at  || '';
+  let whenHtml = '';
+  if (firstSeen) {
+    whenHtml = `<div class="when-row">`;
+    whenHtml += `First seen: ${esc(formatDate(firstSeen))}`;
+    if (lastSeen && lastSeen !== firstSeen) whenHtml += ` · Last seen: ${esc(formatDate(lastSeen))}`;
+    whenHtml += `</div>`;
+  }
+
+  // Event type tags
+  const typeTags = `<span class="event-type-tag">${esc(evtType)}${evtSub}</span>`;
+
+  // Source links
+  const links = cat.source_links || [];
+  let linksHtml = '';
+  if (links.length) {
+    linksHtml = `<div class="evidence-section">
+      <div class="evidence-label">Source links</div>
+      <div class="evidence-list">
+        ${links.slice(0,5).map(u=>`
+          <div class="evidence-item"><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Related filings
+  const filings = cat.related_filings || [];
+  let filingsHtml = '';
+  if (filings.length) {
+    filingsHtml = `<div class="evidence-section">
+      <div class="evidence-label">Related SEC filings</div>
+      <div class="evidence-list">
+        ${filings.slice(0,4).map(f=>{
+          const acc  = f.accession_number||'?';
+          const form = f.form_type||'?';
+          const date = formatDate(f.filing_date||'');
+          const items = f.items ? ` [${esc(f.items)}]` : '';
+          const url  = f.url||'';
+          const label = `${esc(form)} · ${esc(acc)} · ${esc(date)}${items}`;
+          return `<div class="evidence-item">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Related news
+  const news = cat.related_news || [];
+  let newsHtml = '';
+  if (news.length) {
+    newsHtml = `<div class="evidence-section">
+      <div class="evidence-label">Related news</div>
+      <div class="evidence-list">
+        ${news.slice(0,4).map(n=>{
+          const ntitle = n.title||'Untitled';
+          const pub    = n.publisher||'';
+          const date   = formatDate(n.published_at||'');
+          const url    = n.url||'';
+          const meta   = [pub, date].filter(Boolean).join(' · ');
+          const label  = `${esc(ntitle)}${meta ? ` — ${esc(meta)}` : ''}`;
+          return `<div class="evidence-item">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Card caution
+  const caution = cat.caution || '';
+  const cautionHtml = caution
+    ? `<div class="card-caution">⚠️ ${esc(caution)}</div>`
+    : '';
+
+  // Collapsible body id
+  const bodyId = `body_${idx}`;
+
+  return `
+  <div class="catalyst-card" id="card_${idx}">
+    <div class="card-top">
+      <div class="card-left">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="ticker-badge">${esc(ticker)}</span>
+          <span class="company-name">${esc(company)}</span>
+          ${typeTags}
+          <button class="collapse-btn" onclick="toggleCard(${idx})" id="colBtn_${idx}">hide</button>
+        </div>
+        <div class="card-title">${esc(title)}</div>
+        ${whenHtml}
+      </div>
+      <div class="card-scores">
+        ${scoreRing(matScore,  'Materiality')}
+        ${scoreRing(confScore, 'Confidence')}
+      </div>
+    </div>
+
+    <div class="collapsible" id="${bodyId}" style="max-height:2000px;">
+      ${sqHtml}
+      ${why ? `<div class="why-it-matters">${esc(why)}</div>` : ''}
+      ${priceHtml}
+      ${linksHtml}
+      ${filingsHtml}
+      ${newsHtml}
+      ${cautionHtml}
+    </div>
+  </div>`;
+}
+
+function toggleCard(idx) {
+  const body = document.getElementById(`body_${idx}`);
+  const btn  = document.getElementById(`colBtn_${idx}`);
+  const isCollapsed = body.classList.contains('collapsed');
+  if (isCollapsed) {
+    body.classList.remove('collapsed');
+    btn.textContent = 'hide';
+  } else {
+    body.classList.add('collapsed');
+    btn.textContent = 'show';
+  }
+}
+
+// ================================================================ //
+//  Bias layer renderer                                              //
+// ================================================================ //
+
+function renderBias(bias) {
+  if (!bias || !biasData) return '';
+  const disclaimer = biasData.disclaimer || '';
+  const layer = biasData.bias_layer || {};
+  const items = layer.views || layer.theses || layer.notes || [];
+  const updated = layer.updated_at || layer.date || '';
+  const author  = layer.author || layer.source || '';
+
+  let itemsHtml = '';
+  if (Array.isArray(items) && items.length) {
+    itemsHtml = `<div class="bias-items">` +
+      items.map(item => {
+        const itTitle = item.title || item.theme || item.topic || '';
+        const itBody  = item.body  || item.view  || item.note  || '';
+        const itTags  = item.tickers || item.tags || [];
+        return `
+          <div class="bias-item">
+            ${itTitle ? `<div class="bias-item-title">${esc(itTitle)}</div>` : ''}
+            ${itBody  ? `<div class="bias-item-body">${esc(itBody)}</div>`   : ''}
+            ${itTags.length ? `<div class="bias-item-tags">${itTags.map(t=>`<span class="bias-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+          </div>`;
+      }).join('') +
+    `</div>`;
+  } else if (typeof items === 'string' && items.trim()) {
+    itemsHtml = `<div class="bias-item-body">${esc(items)}</div>`;
+  } else {
+    itemsHtml = `<div class="bias-empty">No bias notes configured. Create a <code>bias_layer.json</code> file in the project root to add your personal market-bias overlay.</div>`;
+  }
+
+  const meta = [author, updated ? `Updated ${esc(updated)}` : ''].filter(Boolean).join(' · ');
+
+  return `
+  <div class="bias-section" id="biasSection">
+    <div class="bias-header">
+      <div class="bias-label">🧭 Personal Market-Bias Layer</div>
+      <div class="bias-separator"></div>
+      ${meta ? `<div style="font-size:0.72rem;color:#92400e;">${meta}</div>` : ''}
+      <button class="collapse-btn" onclick="toggleBias()" id="biasBtnToggle">hide</button>
+    </div>
+    <div class="bias-disclaimer">${esc(disclaimer)}</div>
+    <div class="collapsible" id="biasBody" style="max-height:4000px;">
+      ${itemsHtml}
+    </div>
+  </div>`;
+}
+
+function toggleBias() {
+  const body = document.getElementById('biasBody');
+  const btn  = document.getElementById('biasBtnToggle');
+  const isCollapsed = body.classList.contains('collapsed');
+  if (isCollapsed) { body.classList.remove('collapsed'); btn.textContent = 'hide'; }
+  else             { body.classList.add('collapsed');    btn.textContent = 'show'; }
+}
+
+// ================================================================ //
+//  Main render                                                      //
+// ================================================================ //
+
+function renderContent() {
+  const content = document.getElementById('content');
+  const brief   = briefData;
+  if (!brief) return;
+
+  const cats = brief.catalysts || [];
+  const highMat  = cats.filter(c => (c.materiality_score||0) >= 0.7).length;
+  const modMat   = cats.filter(c => (c.materiality_score||0) >= 0.4 && (c.materiality_score||0) < 0.7).length;
+
+  const statsHtml = `
+    <div class="stat"><div class="stat-val">${cats.length}</div><div class="stat-key">Catalysts</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--red)">${highMat}</div><div class="stat-key">High materiality</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--yellow)">${modMat}</div><div class="stat-key">Moderate</div></div>
+    <div class="stat"><div class="stat-val">${brief.time_window_days||7}d</div><div class="stat-key">Window</div></div>
+    <div class="stat"><div class="stat-val">${(brief.watchlist||[]).join(', ')||'—'}</div><div class="stat-key">Watchlist</div></div>`;
+
+  const summaryHtml = `
+    <div class="summary-bar">
+      <div class="stat-row">${statsHtml}</div>
+      ${brief.brief_summary ? `<div class="brief-summary">${esc(brief.brief_summary)}</div>` : ''}
+    </div>
+    ${brief.caution ? `<div class="caution-bar">⚠️ ${esc(brief.caution)}</div>` : ''}`;
+
+  let catHtml = '';
+  if (cats.length === 0) {
+    catHtml = `<div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-msg">No catalysts matched the current filters.</div>
+      <div style="font-size:0.8rem;color:var(--muted)">Try lowering min materiality or increasing the lookback window.</div>
+    </div>`;
+  } else {
+    catHtml = `
+      <div class="catalysts-header">
+        <div class="catalysts-title">Ranked Catalysts</div>
+        <span class="count-badge">${cats.length}</span>
+      </div>
+      <div class="catalyst-list">
+        ${cats.map((c, i) => renderCard(c, i)).join('')}
+      </div>`;
+  }
+
+  const biasHtml = renderBias(true);
+
+  content.innerHTML = summaryHtml + catHtml + biasHtml;
+}
+
+// ================================================================ //
+//  Data loading                                                     //
+// ================================================================ //
+
+async function loadBiasLayer() {
+  try {
+    const r = await fetch('/api/bias');
+    biasData = await r.json();
+  } catch(e) {
+    biasData = null;
+  }
+}
+
+async function loadBrief() {
+  const btn = document.getElementById('refreshBtn');
+  const content = document.getElementById('content');
+  btn.disabled = true;
+
+  content.innerHTML = `<div class="empty-state">
+    <div><span class="spinner"></span> Generating brief…</div>
+  </div>`;
+
+  const params = buildParams();
+
+  try {
+    const r = await fetch('/api/brief?' + params.toString());
+    if (!r.ok) {
+      const err = await r.json().catch(()=>({error:'Unknown error'}));
+      content.innerHTML = `<div class="error-banner">⚠️ Error: ${esc(err.error||r.statusText)}</div>`;
+      return;
+    }
+    briefData = await r.json();
+    document.getElementById('lastUpdated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+    renderContent();
+  } catch(e) {
+    content.innerHTML = `<div class="error-banner">⚠️ Failed to load brief: ${esc(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ================================================================ //
+//  Bootstrap                                                        //
+// ================================================================ //
+
+(async function init() {
+  // Populate event type checklist
+  await loadEventTypes();
+
+  // Pre-fill tickers from server default
+  try {
+    const r = await fetch('/api/tickers');
+    const d = await r.json();
+    const el = document.getElementById('fTickers');
+    if (d.tickers && d.tickers.length && !el.value) {
+      el.value = d.tickers.join(',');
+    }
+  } catch(e) {}
+
+  // Load bias layer (async, don't block brief)
+  loadBiasLayer();
+
+  // Load initial brief
+  await loadBrief();
+})();
+</script>
+</body>
+</html>

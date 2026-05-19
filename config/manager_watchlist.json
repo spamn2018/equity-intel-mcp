@@ -1,0 +1,77 @@
+{
+  "_comment": "Institutional managers making directional AI infrastructure bets — compute, power, semiconductors, data centers. Trimmed to signal-only: no passive index giants.",
+  "_theme": "AGI / AI infrastructure investing — compute, power, semiconductors, data centers, and picks-and-shovels plays.",
+  "_how_to_use": "Run: python -m equity_intel.workers.sync_13f --from-config --days 120",
+
+  "agi_thesis": {
+    "_note": "Funds built explicitly around the AGI/AI infrastructure thesis. Highest signal.",
+    "managers": [
+      {
+        "name": "Situational Awareness LP",
+        "cik": "0002045724",
+        "aum_approx": "$13B+",
+        "notes": "Leopold Aschenbrenner and Carl Shulman. Fund named after Aschenbrenner's AGI essay. Thesis is explicitly about AGI timelines driving compute, power, and semiconductor demand. As of Q1 2026: $8.5B notional put exposure against AI chip stocks, large long in Bloom Energy. Watching the energy-for-AI angle directly."
+      }
+    ]
+  },
+
+  "ai_infrastructure_concentrated": {
+    "_note": "Hedge funds with explicit, concentrated bets on AI infrastructure — chips, cloud, data centers. Their position changes are high-conviction signals.",
+    "managers": [
+      {
+        "name": "Altimeter Capital Management LLC",
+        "cik": "0001541617",
+        "aum_approx": "$15B+",
+        "notes": "Brad Gerstner. One of the loudest AI infrastructure bulls on Wall Street. Has publicly argued AI capex is underspent. Heavy in hyperscalers, data center plays, and compute. Highly concentrated — position changes matter."
+      },
+      {
+        "name": "Coatue Management LLC",
+        "cik": "0001135730",
+        "aum_approx": "$25B+",
+        "notes": "Philippe Laffont. Deep semiconductor and hyperscaler bets. Known for early and large NVIDIA position. AI infrastructure is core to the portfolio thesis, not incidental."
+      },
+      {
+        "name": "Whale Rock Capital Management LLC",
+        "cik": "0001387322",
+        "aum_approx": "$10B+",
+        "notes": "Concentrated long/short tech fund. Known for one of the largest NVIDIA positions among hedge funds. Cloud and AI infrastructure are primary exposures."
+      },
+      {
+        "name": "ARK Investment Management LLC",
+        "cik": "0001697748",
+        "aum_approx": "$10B+",
+        "notes": "Cathie Wood. Explicit AI, robotics, and energy storage thesis. Highly transparent — ARK publishes daily trades. Useful for tracking retail-facing AI infrastructure sentiment and early-stage bets."
+      }
+    ]
+  },
+
+  "tech_growth_heavy_ai": {
+    "_note": "Growth-focused hedge funds without an explicit AGI thesis but with heavy, active AI infrastructure exposure. Their moves reflect sophisticated tech research, not index mechanics.",
+    "managers": [
+      {
+        "name": "Tiger Global Management LLC",
+        "cik": "0001167483",
+        "aum_approx": "$25B+",
+        "notes": "Chase Coleman. One of the most influential tech funds globally. Active position management across hyperscalers, semiconductors, and AI software. Not a pure AI thesis but AI is the dominant theme in the portfolio."
+      },
+      {
+        "name": "D1 Capital Partners LP",
+        "cik": "0001747057",
+        "aum_approx": "$20B+",
+        "notes": "Dan Sundheim (Viking alum). Concentrated growth equity. Heavy AI/cloud exposure. High conviction, low turnover — position changes are meaningful signals."
+      },
+      {
+        "name": "Dragoneer Investment Group LLC",
+        "cik": "0001602189",
+        "aum_approx": "$10B+",
+        "notes": "Growth fund concentrated in cloud, AI infrastructure software, and data platforms. Watches the software layer of AI infrastructure closely."
+      },
+      {
+        "name": "Baillie Gifford & Co",
+        "cik": "0001088875",
+        "aum_approx": "$200B+",
+        "notes": "Scottish long-duration growth manager. Famous for early NVIDIA, Tesla, and AI bets. Very low turnover — when they buy or sell, it reflects a multi-year thesis change, not short-term trading."
+      }
+    ]
+  }
+}

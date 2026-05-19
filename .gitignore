@@ -1,0 +1,65 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Alembic
+# (keep versions/ but ignore generated __pycache__)
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Reports (generated artifacts, not source)
+*_VALIDATION_REPORT.md
+E2E_VALIDATION_REPORT.md
+LIVE_VALIDATION_REPORT.md
+PERSISTENCE_VALIDATION_REPORT.md
+
+# Windows shortcuts / batch helpers
+*.vbs
+*.bat
+create_shortcut.vbs
+run_dashboard.bat
+sync_all.bat

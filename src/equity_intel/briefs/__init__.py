@@ -1,0 +1,1 @@
+"""Watchlist catalyst brief generation."""

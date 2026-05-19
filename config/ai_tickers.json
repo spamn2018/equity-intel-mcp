@@ -1,0 +1,117 @@
+{
+  "_comment": "AI infrastructure ticker universe for the equity intelligence system. Covers all major 'picks and shovels' plays around the AGI/AI build-out: chips, cloud, data centers, power, networking, memory, and adjacent infrastructure.",
+  "_theme": "AGI / AI infrastructure — compute, power, semiconductors, data centers, networking, and picks-and-shovels plays.",
+
+  "semiconductors_compute": {
+    "_note": "The companies actually building the chips that run AI. NVIDIA is the dominant player — every major AI training workload runs on their GPUs. AMD is the main challenger. AVGO and MRVL make custom AI chips (ASICs) for Google, Microsoft, and Meta. ARM designs the underlying chip architecture used everywhere.",
+    "tickers": [
+      { "ticker": "NVDA", "name": "NVIDIA Corporation", "why": "Dominant GPU maker for AI training and inference. H100/H200/Blackwell chips are the backbone of every major AI lab." },
+      { "ticker": "AMD", "name": "Advanced Micro Devices", "why": "Main GPU competitor to NVIDIA. MI300X/MI325X series targeting AI data centers. Also dominant in data center CPUs." },
+      { "ticker": "AVGO", "name": "Broadcom Inc", "why": "Builds custom AI chips (ASICs) for Google (TPUs) and Meta. Also dominates network switching silicon for AI clusters." },
+      { "ticker": "INTC", "name": "Intel Corporation", "why": "Gaudi AI accelerators and massive data center CPU business. Rebuilding fab capacity in the US." },
+      { "ticker": "QCOM", "name": "Qualcomm Inc", "why": "AI inference chips for edge devices (phones, PCs). On-device AI is a major growth vector." },
+      { "ticker": "MRVL", "name": "Marvell Technology Inc", "why": "Custom AI silicon (ASICs) for Amazon (Trainium/Inferentia designs) and other hyperscalers. Also optical interconnects." },
+      { "ticker": "ARM",  "name": "Arm Holdings plc", "why": "Designs the CPU architecture inside nearly every AI-adjacent chip, mobile device, and server. Royalty stream grows with AI chip volume." },
+      { "ticker": "SMCI", "name": "Super Micro Computer Inc", "why": "Builds the servers that go into AI data centers. Direct exposure to NVIDIA GPU rack buildouts." },
+      { "ticker": "MU",   "name": "Micron Technology Inc", "why": "HBM (High Bandwidth Memory) is required for every AI GPU. NVIDIA's H100/H200 uses Micron/SK Hynix HBM. Memory is a direct AI picks-and-shovels play." }
+    ]
+  },
+
+  "semiconductor_equipment": {
+    "_note": "The companies that make the machines used to manufacture chips. Without their equipment, nobody can build advanced semiconductors. AI is forcing a massive global fab buildout, and these companies sell the tools to build every new factory.",
+    "tickers": [
+      { "ticker": "ASML", "name": "ASML Holding NV", "why": "Only company in the world that makes EUV lithography machines — essential for cutting-edge chips. Complete monopoly on the most critical step in advanced chip manufacturing." },
+      { "ticker": "AMAT", "name": "Applied Materials Inc", "why": "Largest semiconductor equipment company. Makes deposition and etching tools used across all chip fabrication." },
+      { "ticker": "LRCX", "name": "Lam Research Corporation", "why": "Critical etch and deposition equipment for memory chips (HBM, NAND). Direct AI memory exposure." },
+      { "ticker": "KLAC", "name": "KLA Corporation", "why": "Process control and inspection tools. Every wafer made for AI chips gets inspected with KLA equipment." },
+      { "ticker": "ON",   "name": "ON Semiconductor", "why": "Power management and sensing chips. AI data centers consume enormous amounts of power — power conversion is critical." }
+    ]
+  },
+
+  "cloud_hyperscalers": {
+    "_note": "The companies building and operating the AI cloud. They are simultaneously the biggest customers of AI chips AND the biggest builders of AI products. Their capex spending announcements move the entire AI supply chain.",
+    "tickers": [
+      { "ticker": "MSFT",  "name": "Microsoft Corporation", "why": "OpenAI partner. Azure is the dominant AI cloud. Copilot integrated across Office. Spending $80B+ on AI capex in FY2025." },
+      { "ticker": "GOOGL", "name": "Alphabet Inc (Google)", "why": "Gemini AI, Google Cloud AI, TPU custom chips, DeepMind/Google Brain. Both an AI cloud provider and an AI frontier lab." },
+      { "ticker": "AMZN",  "name": "Amazon.com Inc", "why": "AWS is the largest cloud platform. Building Trainium/Inferentia AI chips. Heavy AI infrastructure investment across logistics and AWS." },
+      { "ticker": "META",  "name": "Meta Platforms Inc", "why": "Llama open-source AI models. Building massive GPU clusters. AI powers all ad targeting. One of the top 3 AI compute spenders globally." },
+      { "ticker": "ORCL",  "name": "Oracle Corporation", "why": "Oracle Cloud Infrastructure (OCI) is the fastest-growing AI cloud. Signed massive GPU cluster deals with OpenAI and others. Cofounder Larry Ellison has made AI the company's entire identity." }
+    ]
+  },
+
+  "ai_software_platforms": {
+    "_note": "Software companies that are the 'rails' for AI — data pipelines, observability, developer tools, and AI applications. These companies win as AI adoption scales across enterprises.",
+    "tickers": [
+      { "ticker": "PLTR", "name": "Palantir Technologies Inc", "why": "AI Platform (AIP) deployed across US government and defense. Real AI revenue growth. AIP is considered the leading enterprise AI deployment platform." },
+      { "ticker": "SNOW", "name": "Snowflake Inc", "why": "Data cloud and AI data platform. AI workloads need centralized, governed data — Snowflake is where enterprises store and process that data." },
+      { "ticker": "DDOG", "name": "Datadog Inc", "why": "Observability and monitoring for cloud and AI infrastructure. As AI workloads scale, monitoring spend scales with them." },
+      { "ticker": "NET",  "name": "Cloudflare Inc", "why": "Global network and edge computing platform. AI inference at the edge is a major growth thesis. Also provides AI security tools." },
+      { "ticker": "MDB",  "name": "MongoDB Inc", "why": "Developer data platform. Used heavily in AI application backends. Vector search capabilities for AI retrieval systems." },
+      { "ticker": "PATH", "name": "UiPath Inc", "why": "Robotic process automation. AI agents automating enterprise workflows. Agentic AI is the next wave of enterprise software." }
+    ]
+  },
+
+  "data_centers_reits": {
+    "_note": "The landlords of the AI internet. These companies own and operate the actual buildings where all the GPU servers live. AI demand has created a data center construction boom unlike anything the industry has seen.",
+    "tickers": [
+      { "ticker": "EQIX", "name": "Equinix Inc", "why": "Largest global data center REIT. Operates in 70 metros across 33 countries. AI workloads require colocation near network hubs — Equinix is where that happens." },
+      { "ticker": "DLR",  "name": "Digital Realty Trust Inc", "why": "Second largest data center REIT. Hyperscale campuses purpose-built for cloud and AI. Expanding rapidly to meet AI demand." },
+      { "ticker": "IRON", "name": "Iron Mountain Inc", "why": "Moving from document storage to data center/AI infrastructure. Fastest-growing data center developer in the REIT sector." }
+    ]
+  },
+
+  "power_and_energy": {
+    "_note": "AI's dirtiest secret is how much electricity it consumes. A single H100 GPU cluster uses as much power as a small town. Data centers are now the fastest-growing source of electricity demand in the US. The companies that generate and manage that power are direct AI plays.",
+    "tickers": [
+      { "ticker": "CEG",  "name": "Constellation Energy Corporation", "why": "Largest nuclear energy producer in the US. AI data centers are signing long-term power purchase agreements (PPAs) with nuclear plants for 24/7 clean power. Microsoft/Google/Amazon deals are driving massive valuation re-rating." },
+      { "ticker": "VST",  "name": "Vistra Energy Corp", "why": "Nuclear and natural gas power generation. Signed AI data center PPAs. Seen as a direct AI power play alongside Constellation." },
+      { "ticker": "NEE",  "name": "NextEra Energy Inc", "why": "Largest renewable energy company in the world. Wind/solar buildout for data center customers. Long-term power contracting with hyperscalers." },
+      { "ticker": "NRG",  "name": "NRG Energy Inc", "why": "Power generation and retail energy. Growing data center power supply business." },
+      { "ticker": "ETN",  "name": "Eaton Corporation plc", "why": "Power management and electrical equipment. Makes the UPS systems, switchgear, and PDUs that every data center requires. Direct infrastructure picks-and-shovels." },
+      { "ticker": "VRT",  "name": "Vertiv Holdings Co", "why": "Data center power and cooling infrastructure — UPS, busway, thermal management. Revenue is directly tied to GPU rack density growth. Considered one of the purest AI infrastructure plays." },
+      { "ticker": "POWL", "name": "Powell Industries Inc", "why": "Electrical switchgear and distribution equipment for industrial and data center use. Benefits directly from data center buildout." },
+      { "ticker": "FSLR", "name": "First Solar Inc", "why": "Largest US solar panel manufacturer. Hyperscalers are signing massive solar PPAs to power AI data centers." }
+    ]
+  },
+
+  "networking_and_interconnect": {
+    "_note": "Inside an AI data center, thousands of GPUs need to talk to each other at extremely high speed. The networking between those chips is as important as the chips themselves. These companies build the cables, switches, and optical links that connect everything.",
+    "tickers": [
+      { "ticker": "ANET", "name": "Arista Networks Inc", "why": "Dominant provider of high-speed network switches inside AI data center clusters. Direct NVIDIA GPU cluster partner. Revenue is closely correlated to AI capex spending." },
+      { "ticker": "CSCO", "name": "Cisco Systems Inc", "why": "Networking giant. AI data center upgrades are a major refresh cycle for Cisco. Also building AI-specific switching infrastructure." },
+      { "ticker": "CIEN", "name": "Ciena Corporation", "why": "Optical networking equipment for long-haul and data center interconnects. AI demand is driving massive fiber and optical capacity upgrades." },
+      { "ticker": "INFN", "name": "Infinera Corporation", "why": "Optical transport networking. AI workloads require massive bandwidth between data centers — Infinera builds that backbone." }
+    ]
+  },
+
+  "memory_and_storage": {
+    "_note": "AI models are massive — training requires enormous memory bandwidth and storage. HBM (High Bandwidth Memory) is especially critical because it sits directly on the GPU package and is required for high-performance AI inference and training.",
+    "tickers": [
+      { "ticker": "MU",  "name": "Micron Technology Inc", "why": "Also in compute section — repeated here for emphasis. HBM3E is the key AI memory product. Direct beneficiary of NVIDIA GPU demand." },
+      { "ticker": "WDC", "name": "Western Digital Corporation", "why": "Hard drives and flash storage for AI training data storage. Petabytes of training data need to be stored somewhere." },
+      { "ticker": "STX", "name": "Seagate Technology Holdings", "why": "Hard disk drives for massive AI training datasets. Near-line storage in hyperscale data centers." }
+    ]
+  },
+
+  "bitcoin_miners_data_center_angle": {
+    "_note": "Some Bitcoin miners are pivoting their power contracts and physical infrastructure toward AI and HPC (high-performance computing) hosting. They have cheap power deals and large physical footprints that are valuable for GPU colocation. This is the 'power arbitrage' AI thesis.",
+    "tickers": [
+      { "ticker": "CORZ", "name": "Core Scientific Inc", "why": "Largest Bitcoin miner by hash rate. Has signed massive contracts to convert mining facilities to AI/HPC hosting (CoreWeave deal). Explicit AI infrastructure pivot." },
+      { "ticker": "CLSK", "name": "CleanSpark Inc", "why": "Bitcoin miner with low-cost, clean energy contracts. Power infrastructure is reusable for AI hosting." },
+      { "ticker": "RIOT", "name": "Riot Platforms Inc", "why": "Large-scale Bitcoin mining with Texas power infrastructure. Evaluating AI/HPC hosting conversion." },
+      { "ticker": "MARA", "name": "MARA Holdings Inc (Marathon Digital)", "why": "One of the largest Bitcoin miners. Power and facility scale makes AI hosting conversion possible." },
+      { "ticker": "HUT",  "name": "Hut 8 Corp", "why": "Canadian Bitcoin miner that has explicitly pivoted to AI and high-performance computing services." }
+    ]
+  },
+
+  "critical_minerals_rare_earth": {
+    "_note": "US rare earth independence play. China controls ~90% of processed rare earths critical for AI chips, defense, EVs, and magnets. Trump's Project Vault ($12B critical mineral reserve), CHIPS Act funding, and 2026 trade negotiations are accelerating a domestic mine-to-magnet supply chain. These are early-stage, policy-driven plays with high volatility.",
+    "tickers": [
+      { "ticker": "MP", "name": "MP Materials Corp", "why": "Owns Mountain Pass, the only large-scale rare earth mine in North America. Transitioning from concentrate to finished magnets at Independence facility (magnet sales H2 2026). Closest to a blue-chip in this space." },
+      { "ticker": "USAR", "name": "USA Rare Earth Inc", "why": "Received $1.6B government investment (CHIPS Act + equity stake). Building mine-to-magnet platform. Phase 1a magnet plant commissioned, targeting 600 MTPA by Q4 2026. Heavy SEC filing activity — high signal for the intel system." },
+      { "ticker": "UUUU", "name": "Energy Fuels Inc", "why": "Dual uranium + rare earth play. Extracts rare earths from monazite sands using existing uranium processing infrastructure. In offtake talks with magnet makers outside Chinese supply chains." },
+      { "ticker": "AREC", "name": "American Resources Corporation", "why": "ReElement Technologies subsidiary building scalable rare earth refining and separation platform in the US. Earlier stage but addresses the processing gap." },
+      { "ticker": "UAMY", "name": "United States Antimony Corporation", "why": "Antimony and critical minerals producer. US antimony is a strategic mineral with defense applications. Benefits from same supply chain independence thesis." }
+    ]
+  }
+}
