@@ -17,6 +17,7 @@ from equity_intel.config import settings
 from equity_intel.db.models import Company, NewsArticle, now_utc
 from equity_intel.db.session import get_session
 from equity_intel.logging_config import configure_logging, get_logger
+from equity_intel.news.source_filter import filter_articles
 
 logger = get_logger(__name__)
 
@@ -116,6 +117,9 @@ async def run(
                 days=days,
                 limit_per_ticker=100,
             )
+
+        # Apply source filter — drop blocked publishers before touching the DB
+        articles = filter_articles(articles)
 
         inserted = 0
         for article in articles:

@@ -63,3 +63,9 @@ PERSISTENCE_VALIDATION_REPORT.md
 create_shortcut.vbs
 run_dashboard.bat
 sync_all.bat
+
+# Personal / local artifacts
+bias_layer.json
+pip_out.txt
+pipeline_last_run.txt
+.pipeline_last_run

@@ -64,8 +64,8 @@ class PolygonNewsProvider(NewsProvider):
 
     @retry(
         retry=retry_if_exception(_is_retryable),
-        wait=wait_exponential(multiplier=1, min=2, max=30),
-        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=2, min=15, max=120),
+        stop=stop_after_attempt(6),
         reraise=True,
     )
     async def _get(self, url: str, params: Dict[str, Any]) -> Dict[str, Any]:
@@ -74,9 +74,7 @@ class PolygonNewsProvider(NewsProvider):
         resp = await client.get(url, params=params)
         if resp.status_code == 429:
             logger.warning("polygon_rate_limited")
-            import asyncio
-            await asyncio.sleep(10)
-            resp.raise_for_status()
+            resp.raise_for_status()  # Let tenacity handle the wait
         resp.raise_for_status()
         return resp.json()
 
@@ -176,9 +174,10 @@ class PolygonNewsProvider(NewsProvider):
                 all_articles.extend(articles)
             except Exception as exc:
                 logger.error("polygon_news_ticker_failed", ticker=ticker, error=str(exc))
-            # Small delay between tickers to avoid hitting rate limits
+            # Polygon free tier = 5 req/min. 60s / 5 = 12s minimum.
+            # 13s gives a small buffer so we never hit 429 in the first place.
             if i < len(tickers) - 1:
-                await asyncio.sleep(1.0)
+                await asyncio.sleep(13.0)
 
         # Deduplicate by article id
         seen: set = set()
