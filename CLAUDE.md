@@ -5,6 +5,11 @@
 
 Always use the Node REPL tool for local inspection and command work in this workspace. The standard shell runner is unreliable here and may fail before commands execute.
 
+## Python Runtime
+
+Follows the global rule — see `C:\Users\noleg\.claude\CLAUDE.md`.
+Use `C:\Users\noleg\Desktop\.venv\Scripts\python.exe` in all bat files. No per-project venvs.
+
 ## Mission
 
 Build an equities-only financial intelligence system that ingests SEC filings, company disclosures, financial news, press releases, and price/volume context, then exposes the data through an MCP server so an AI assistant can answer stock research questions with fresh, source-linked evidence.
