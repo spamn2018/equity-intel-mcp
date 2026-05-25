@@ -81,6 +81,15 @@ RISK_EVENT_TYPES = {
     "unusual_price_volume",
 }
 
+# Dashboard API base — started at step 0, always running by step 12
+DASHBOARD_API = os.getenv("DASHBOARD_API", "http://127.0.0.1:5173")
+
+DEFAULT_TICKERS = [
+    t.strip().upper()
+    for t in os.getenv("DEFAULT_TICKERS", "NVDA,AMD,AVGO,MSFT,GOOGL,AMZN,TSLA,ISRG,SYM,META,PLTR,AI,BOTZ,ROBO").split(",")
+    if t.strip()
+]
+
 
 # ===========================================================================
 # LM STUDIO CLIENT
@@ -429,6 +438,42 @@ def _load_gemini_news() -> str:
         return ""
 
 
+def _fetch_api_brief(tickers=None, days=7):
+    """
+    Pull live catalyst data from the running EquityIntel dashboard API.
+
+    Used as a fallback when briefs/ contains no brief_*.json files — the
+    dashboard is always started at step 0, so it is online by the time
+    synthesize.py runs at step 12.
+
+    Returns a list containing one brief dict (same structure as brief_*.json),
+    or an empty list if the API is unreachable.
+    """
+    import urllib.parse
+    tickers_str = ",".join(tickers or DEFAULT_TICKERS)
+    params = urllib.parse.urlencode({
+        "tickers":  tickers_str,
+        "days":     days,
+        "min_mat":  "0.2",
+        "max_items": "150",
+    })
+    url = f"{DASHBOARD_API}/api/brief?{params}"
+    try:
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        # Inject generated_at so date logic works downstream
+        if "generated_at" not in data:
+            data["generated_at"] = datetime.now(timezone.utc).isoformat()
+        data.setdefault("source", "api")
+        print(f"  [api] Fetched {data.get('total_catalysts', 0)} catalysts "
+              f"from {DASHBOARD_API} (days={days})")
+        return [data]
+    except Exception as exc:
+        print(f"  [warn] Dashboard API unreachable ({url}): {exc}")
+        return []
+
+
 def _find_briefs(folder):
     files = list(folder.rglob("brief_*.json"))
     files.sort(key=lambda p: p.name, reverse=True)
@@ -442,14 +487,15 @@ def _read_brief(path):
         return None
 
 
-def _brief_date(data, path):
+def _brief_date(data, path=None):
     ga = data.get("generated_at", "")
     if ga and len(ga) >= 10:
         return ga[:10]
-    stem = path.stem  # brief_20260524
-    if stem.startswith("brief_") and len(stem) >= 14:
-        raw = stem[6:]
-        return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
+    if path is not None:
+        stem = path.stem  # brief_20260524
+        if stem.startswith("brief_") and len(stem) >= 14:
+            raw = stem[6:]
+            return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
     return ""
 
 
@@ -466,8 +512,14 @@ def aggregate(brief_files, days=None):
     briefs_read = []
     dates = []
 
-    for path in brief_files:
-        data = _read_brief(path)
+    for item in brief_files:
+        # Accept either a Path (file on disk) or a pre-loaded dict (from API)
+        if isinstance(item, dict):
+            data = item
+            path = None
+        else:
+            data = _read_brief(item)
+            path = item
         if not data:
             continue
 
@@ -483,7 +535,7 @@ def aggregate(brief_files, days=None):
             "brief_date":      bdate,
             "watchlist":       data.get("watchlist", []),
             "total_catalysts": data.get("total_catalysts", 0),
-            "source_file":     str(path),
+            "source_file":     str(path) if path else data.get("source", "api"),
         })
         if bdate:
             dates.append(bdate)
@@ -842,4 +894,156 @@ def save_report(intelligence, agg, model_used):
     payload = {
         "source_project": PROJECT_NAME,
         "generated_at":   datetime.now().isoformat(),
-        "model_used":     model
+        "model_used":     model_used,
+        "brief_count":    agg.get("brief_count", 0),
+        "date_range":     agg.get("date_range", {}),
+        "briefs":         agg.get("briefs_read", []),
+        **intelligence,
+    }
+    json_path = OUTPUT_DIR / f"{run_id}.json"
+    md_path   = OUTPUT_DIR / f"{run_id}.md"
+    json_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False, default=str),
+        encoding="utf-8",
+    )
+    md_path.write_text(_render_markdown(payload), encoding="utf-8")
+    return md_path, json_path
+
+
+# ===========================================================================
+# MAIN
+# ===========================================================================
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="synthesize.py -- Equity intelligence second-pass synthesizer",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "\nExamples:\n"
+            "  python synthesize.py\n"
+            "  python synthesize.py --days 14\n"
+            "  python synthesize.py --scan-only\n"
+            "  python synthesize.py --aggregate-only\n"
+            "  python synthesize.py --list-models\n"
+        ),
+    )
+    parser.add_argument("--folder",         "-f",
+                        help=f"Briefs folder (default: {BRIEFS_DIR})")
+    parser.add_argument("--days",           type=int,
+                        help="Only include last N days of briefs")
+    parser.add_argument("--model",          "-m", default=DEFAULT_MODEL,
+                        help=f"LM Studio model (default: {DEFAULT_MODEL})")
+    parser.add_argument("--scan-only",      action="store_true",
+                        help="List brief files only, no aggregation or LLM")
+    parser.add_argument("--aggregate-only", action="store_true",
+                        help="Aggregate and print formatted data, skip LLM")
+    parser.add_argument("--list-models",    action="store_true",
+                        help="Show loaded LM Studio models and exit")
+    args = parser.parse_args()
+
+    print(f"\n{'='*60}")
+    print(f"  synthesize.py  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*60}")
+
+    if args.list_models:
+        try:
+            models = list_models()
+            print("Loaded models:" if models else "No models loaded.")
+            for m in models:
+                print(f"  {m}")
+        except Exception as e:
+            print(f"[error] {e}")
+        return
+
+    folder = Path(args.folder).expanduser().resolve() if args.folder else BRIEFS_DIR
+    print(f"  Folder : {folder}")
+    if args.days:
+        print(f"  Window : last {args.days} days")
+    print(f"  Model  : {args.model}")
+    print()
+
+    if not folder.exists():
+        print(f"[warn] Briefs folder does not exist: {folder} — will try API fallback.")
+        files = []
+    else:
+        files = _find_briefs(folder)
+    if files:
+        print(f"Found {len(files)} brief file(s):")
+        for f in files[:5]:
+            print(f"  {f.name}")
+        if len(files) > 5:
+            print(f"  ... and {len(files) - 5} more")
+        print()
+        agg_input = files
+    else:
+        print("[warn] No brief_*.json files found — falling back to live API data.")
+        brief_dicts = _fetch_api_brief(days=args.days or 7)
+        if not brief_dicts:
+            print("[error] Dashboard API also unavailable. Cannot synthesize.")
+            print("  Start the dashboard first: run.bat (step 0), then re-run synthesize.py.")
+            return
+        agg_input = brief_dicts
+
+    if args.scan_only:
+        return
+
+    print("Aggregating catalyst data...")
+    agg = aggregate(agg_input, days=args.days)
+    dr  = agg["date_range"]
+    print(f"  {agg['brief_count']} brief(s) | {dr.get('earliest','')} to {dr.get('latest','')}")
+    print(f"  {len(agg['tickers'])} tickers | {len(agg['key_events'])} key events |"
+          f" {len(agg['risks'])} risk events | {len(agg['event_types'])} event types")
+    print()
+
+    if agg["brief_count"] == 0:
+        print("[warn] No briefs passed the date filter.")
+        return
+
+    aggregated_text = format_for_llm(agg)
+
+    if args.aggregate_only:
+        print("-- AGGREGATED DATA (--aggregate-only) ----------------------")
+        print(aggregated_text)
+        return
+
+    print("Running LLM synthesis...")
+    try:
+        intelligence, model_used = synthesize(aggregated_text, args.model)
+    except LLMHangError as e:
+        print(f"\n[error] LLM hang: {e}")
+        sys.exit(1)
+    except (ValueError, RuntimeError) as e:
+        print(f"\n[error] Synthesis failed: {e}")
+        sys.exit(1)
+
+    md_path, json_path = save_report(intelligence, agg, model_used)
+
+    print(f"\n{'='*60}")
+    print("  INTELLIGENCE BRIEF")
+    print(f"{'='*60}")
+    if intelligence.get("one_sentence_takeaway"):
+        print(f"\n  {intelligence['one_sentence_takeaway']}\n")
+
+    for s in intelligence.get("top_signals", [])[:5]:
+        print(f"  {s.get('asset','')} -- {s.get('signal','').upper()} ({s.get('conviction','')})")
+
+    actions = intelligence.get("actionable_intelligence", [])
+    if actions:
+        print(f"\n  Actionable ({len(actions)}):")
+        for a in actions[:4]:
+            print(f"    [{a.get('urgency','?').upper()}] {a.get('action','')[:90]}")
+
+    high_risks = [r for r in intelligence.get("key_risks", []) if r.get("severity") == "high"]
+    if high_risks:
+        print(f"\n  High Risks ({len(high_risks)}):")
+        for r in high_risks[:3]:
+            print(f"    ! {r.get('risk','')[:90]}")
+
+    print(f"\n  Saved:")
+    print(f"    {md_path}")
+    print(f"    {json_path}")
+    print()
+
+
+if __name__ == "__main__":
+    main()
