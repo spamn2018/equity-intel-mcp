@@ -9,6 +9,7 @@ SEC EDGAR HTTP client.
 from __future__ import annotations
 
 import asyncio
+import re
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -178,7 +179,15 @@ class SECClient:
         return await self.get_json(url, cache=True)
 
     async def get_filing_document(self, url: str) -> str:
-        """Download a filing document (HTML or text) from SEC EDGAR."""
+        """Download a filing document (HTML or text) from SEC EDGAR.
+
+        Normalises the CIK segment of Archives URLs before fetching.
+        The SEC Archives web server returns 301 Moved Permanently for
+        zero-padded CIKs (e.g. /edgar/data/0001045810/) and redirects to
+        the un-padded form (/edgar/data/1045810/).  Stripping leading zeros
+        here avoids the extra round-trip for both newly-built and DB-stored URLs.
+        """
+        url = _normalize_archives_url(url)
         return await self.get_text(url, cache=True)
 
     def invalidate(self, url: str) -> None:
@@ -199,7 +208,28 @@ def _cik_for_archives(cik: str) -> str:
     return str(int(cik))
 
 
+# Matches the zero-padded CIK segment in an Archives URL:
+#   /Archives/edgar/data/0001045810/  →  /Archives/edgar/data/1045810/
+_ARCHIVES_CIK_RE = re.compile(r"(/Archives/edgar/data/)0+(\d+)/")
+
+
+def _normalize_archives_url(url: str) -> str:
+    """Strip leading zeros from the CIK segment of an SEC Archives URL.
+
+    Safe to call on any URL — returns unchanged if it doesn't match the pattern.
+    Covers both DB-stored URLs (built before the zero-pad fix) and any future
+    code path that may supply a padded CIK.
+    """
+    return _ARCHIVES_CIK_RE.sub(r"\g<1>\2/", url)
+
+
 def build_filing_index_url(cik: str, accession_number: str) -> str:
     """Build the SEC EDGAR index URL for a filing."""
     accession_clean = accession_number.replace("-", "")
-    return f"{SEC_ARCHIVES}/{_cik_for_a
+    return f"{SEC_ARCHIVES}/{_cik_for_archives(cik)}/{accession_clean}/{accession_number}-index.htm"
+
+
+def build_filing_document_url(cik: str, accession_number: str, filename: str) -> str:
+    """Build the full URL for a specific filing document."""
+    accession_clean = accession_number.replace("-", "")
+    return f"{SEC_ARCHIVES}/{_cik_for_archives(cik)}/{accession_clean}/{filename}"

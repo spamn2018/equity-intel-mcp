@@ -152,7 +152,7 @@ class PolygonNewsProvider(NewsProvider):
                     "provider": "polygon",
                     "provider_id": article.get("id", ""),
                     "ticker": ticker_upper,
-                    "title": title,
+                    "title": article.get("title", ""),
                     "summary": article.get("description", ""),
                     "url": article.get("article_url", ""),
                     "publisher": article.get("publisher", {}).get("name", ""),
