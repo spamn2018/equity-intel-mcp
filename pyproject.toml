@@ -50,6 +50,7 @@ equity-build-events = "equity_intel.workers.build_events:main"
 equity-cluster-events = "equity_intel.workers.cluster_events:main"
 equity-generate-watchlist-brief = "equity_intel.workers.generate_watchlist_brief:main"
 equity-run-daily-brief = "equity_intel.workers.run_daily_brief:main"
+equity-cleanup-news = "equity_intel.workers.cleanup_news:main"
 equity-mcp = "equity_intel.mcp_server.server:main"
 equity-dashboard = "equity_intel.dashboard.cli:main"
 
