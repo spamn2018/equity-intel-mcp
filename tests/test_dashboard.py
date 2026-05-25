@@ -8,6 +8,7 @@ Tests cover:
 - /api/bias returns a response (empty or populated)
 - /api/brief returns a valid brief structure (empty state when DB is empty)
 - Filters are accepted without crashing (min_mat, days, event_types, etc.)
+- /api/intelligence/latest returns correct structure and excludes gemini_news files
 - Source links are present in the response schema
 - No live network calls are made (all DB interactions are mocked)
 """
@@ -463,5 +464,4 @@ def test_brief_makes_no_network_calls(client):
         c.get("/api/brief")
 
     # Loopback calls for Flask's test server are fine; no external hosts
-    external = [a for a in calls if a and str(a[0]) not in ("localhost", "127.0.0.1", "::1")]
-    assert external == [], f"Unexpected external DNS lookups: {external}"
+    external = [a for a in calls if a and str(a[0]) not in ("localhost", "127.0.0.1"

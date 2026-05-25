@@ -2,11 +2,12 @@
 Flask application factory and API routes for the local research dashboard.
 
 API endpoints (all return JSON):
-    GET /api/brief          - generate/return a catalyst brief for the watchlist
-    GET /api/tickers        - return the configured default tickers
-    GET /api/event_types    - return the known event type list
-    GET /api/bias           - return the personal market-bias layer (if configured)
-    GET /                   - serve the single-page dashboard HTML
+    GET /api/brief                  - generate/return a catalyst brief for the watchlist
+    GET /api/tickers                - return the configured default tickers
+    GET /api/event_types            - return the known event type list
+    GET /api/bias                   - return the personal market-bias layer (if configured)
+    GET /api/intelligence/latest    - return the newest LM Studio synthesis report
+    GET /                           - serve the single-page dashboard HTML
 
 Query parameters for /api/brief:
     tickers      comma-separated (default: settings.tickers_list)
@@ -20,6 +21,8 @@ from __future__ import annotations
 
 import json
 import os
+import threading
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -237,15 +240,136 @@ def _call_openai_suggest(api_key: str, context: str, ticker_list: List[str]) -> 
 
 
 # ------------------------------------------------------------------ #
+# Intelligence report loader                                           #
+# ------------------------------------------------------------------ #
+
+
+def _intelligence_dir() -> Path:
+    """
+    Resolve the intelligence/ folder that lives next to the project root
+    (the same directory that holds synthesize.py and run.bat).
+    Walks up from this file until it finds an intelligence/ folder or
+    a pyproject.toml sentinel, then returns the sibling intelligence/ path.
+    """
+    here = Path(__file__).resolve().parent
+    for parent in [here, here.parent, here.parent.parent, here.parent.parent.parent]:
+        candidate = parent / "intelligence"
+        if candidate.exists():
+            return candidate
+        if (parent / "pyproject.toml").exists():
+            return parent / "intelligence"
+    return here.parent.parent.parent / "intelligence"
+
+
+def _load_latest_intelligence() -> Dict[str, Any]:
+    """
+    Find the newest ``stocks_*.json`` synthesis file in intelligence/.
+
+    Explicitly excludes ``gemini_news_*.json`` and any other non-synthesis
+    files.  Returns a structured response dict suitable for jsonify().
+    """
+    intel_dir = _intelligence_dir()
+
+    if not intel_dir.exists():
+        return {
+            "available": False,
+            "message": (
+                "No synthesized intelligence report found. "
+                "Run run.bat or synthesize.py first."
+            ),
+        }
+
+    # Only final synthesis files — pattern stocks_*.json excludes gemini_news_* etc.
+    candidates = sorted(
+        intel_dir.glob("stocks_*.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+
+    if not candidates:
+        return {
+            "available": False,
+            "message": (
+                "No synthesized intelligence report found. "
+                "Run run.bat or synthesize.py first."
+            ),
+        }
+
+    json_path = candidates[0]
+    md_path = json_path.with_suffix(".md")
+
+    try:
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        logger.error("intelligence_parse_error", path=str(json_path), error=str(exc))
+        return {
+            "available": False,
+            "message": f"Report exists but could not be parsed: {exc}",
+        }
+
+    markdown = ""
+    if md_path.exists():
+        try:
+            markdown = md_path.read_text(encoding="utf-8")
+        except Exception:
+            pass
+
+    return {
+        "available": True,
+        "generated_at": data.get("generated_at", ""),
+        "json_file": str(json_path),
+        "md_file": str(md_path) if md_path.exists() else None,
+        "markdown": markdown,
+        "report": {
+            "one_sentence_takeaway": data.get("one_sentence_takeaway", ""),
+            "summary":               data.get("summary", ""),
+            "top_signals":           data.get("top_signals", []),
+            "key_risks":             data.get("key_risks", []),
+            "actionable_intelligence": data.get("actionable_intelligence", []),
+            "dominant_themes":       data.get("dominant_themes", []),
+            "brief_count":           data.get("brief_count", 0),
+            "date_range":            data.get("date_range", {}),
+            "model_used":            data.get("model_used", ""),
+        },
+    }
+
+
+# ------------------------------------------------------------------ #
 # Application factory                                                  #
 # ------------------------------------------------------------------ #
 
 
-def create_app() -> Flask:
-    """Create and configure the Flask dashboard application."""
+def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
+    """Create and configure the Flask dashboard application.
+
+    Args:
+        shutdown_on_idle: If True, shut the process down automatically after
+            ``idle_timeout`` seconds with no browser ping.  Intended for
+            windowless (pythonw) launches where there is no Ctrl-C.
+        idle_timeout: Seconds without a ``/api/ping`` before the process exits.
+    """
     template_dir = Path(__file__).resolve().parent / "templates"
     app = Flask(__name__, template_folder=str(template_dir))
     app.config["JSON_SORT_KEYS"] = False
+
+    # ---------------------------------------------------------------- #
+    # Idle-shutdown watchdog                                             #
+    # ---------------------------------------------------------------- #
+
+    if shutdown_on_idle:
+        _last_ping: list[float] = [time.monotonic()]  # mutable cell
+
+        def _watchdog() -> None:
+            while True:
+                time.sleep(5)
+                if time.monotonic() - _last_ping[0] > idle_timeout:
+                    logger.info("dashboard_idle_shutdown", timeout=idle_timeout)
+                    os._exit(0)
+
+        _wt = threading.Thread(target=_watchdog, daemon=True, name="idle-watchdog")
+        _wt.start()
+    else:
+        _last_ping = None  # type: ignore[assignment]
 
     # ---------------------------------------------------------------- #
     # Routes                                                             #
@@ -255,6 +379,13 @@ def create_app() -> Flask:
     def index():  # type: ignore[return]
         """Serve the single-page dashboard."""
         return render_template("index.html")
+
+    @app.route("/api/ping", methods=["POST", "GET"])
+    def api_ping():  # type: ignore[return]
+        """Heartbeat from the browser — resets the idle-shutdown timer."""
+        if _last_ping is not None:
+            _last_ping[0] = time.monotonic()
+        return jsonify({"ok": True})
 
     @app.route("/api/tickers")
     def api_tickers():  # type: ignore[return]
@@ -286,6 +417,25 @@ def create_app() -> Flask:
                 ),
             }
         )
+
+    @app.route("/api/intelligence/latest")
+    def api_intelligence_latest():  # type: ignore[return]
+        """
+        Return the newest LM Studio synthesis report from intelligence/.
+
+        Only selects ``stocks_*.json`` files — never ``gemini_news_*.json``
+        or any other intermediate files.
+
+        This endpoint returns AI-generated analysis for research purposes.
+        It is NOT an execution instruction and must not be connected to
+        any trading or order-management system without explicit human review.
+        """
+        try:
+            result = _load_latest_intelligence()
+            return jsonify(result)
+        except Exception as exc:
+            logger.error("intelligence_api_error", error=str(exc))
+            return jsonify({"available": False, "message": str(exc)}), 500
 
     @app.route("/api/prices")
     def api_prices():  # type: ignore[return]
@@ -454,14 +604,129 @@ def create_app() -> Flask:
         return jsonify(brief)
 
     # ---------------------------------------------------------------- #
-    # CORS — allow ai_portfolio.html (file:// or any local origin)    #
+    # News feed API                                                     #
     # ---------------------------------------------------------------- #
 
-    @app.after_request
-    def add_cors_headers(response):  # type: ignore[return]
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-        response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-        return response
+    @app.route("/api/news")
+    def api_news():  # type: ignore[return]
+        """
+        Return recent news articles from the local DB.
 
-    return app
+        Query params:
+            tickers   comma-separated list (default: all configured tickers)
+            days      look-back window in days (default: 7)
+            keywords  comma-separated keyword filter on title/summary
+            limit     max articles (default: 60)
+        """
+        import datetime as _dt
+        from equity_intel.db.models import NewsArticle
+        from sqlalchemy import or_, func
+
+        raw_tickers = request.args.get("tickers", "").strip()
+        ticker_list = (
+            [t.strip().upper() for t in raw_tickers.split(",") if t.strip()]
+            if raw_tickers
+            else settings.tickers_list
+        )
+        try:
+            days = int(request.args.get("days", 7))
+        except (ValueError, TypeError):
+            days = 7
+        try:
+            limit = min(int(request.args.get("limit", 60)), 200)
+        except (ValueError, TypeError):
+            limit = 60
+
+        raw_kw = request.args.get("keywords", "").strip()
+        keywords = [k.strip().lower() for k in raw_kw.split(",") if k.strip()] if raw_kw else []
+
+        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=days)
+
+        session = SessionLocal()
+        try:
+            q = (
+                session.query(NewsArticle)
+                .filter(
+                    NewsArticle.ticker.in_(ticker_list),
+                    NewsArticle.published_at >= cutoff,
+                )
+            )
+            if keywords:
+                kw_filters = []
+                for kw in keywords:
+                    pattern = f"%{kw}%"
+                    kw_filters.append(
+                        or_(
+                            func.lower(NewsArticle.title).like(pattern),
+                            func.lower(NewsArticle.summary).like(pattern),
+                        )
+                    )
+                q = q.filter(or_(*kw_filters))
+
+            articles = (
+                q.order_by(NewsArticle.published_at.desc())
+                .limit(limit)
+                .all()
+            )
+
+            result = []
+            for a in articles:
+                all_tickers = []
+                if a.tickers_json and isinstance(a.tickers_json, dict):
+                    all_tickers = a.tickers_json.get("tickers", [])
+                elif a.ticker:
+                    all_tickers = [a.ticker]
+
+                matched_kw = []
+                if keywords:
+                    text = f"{a.title or ''} {a.summary or ''}".lower()
+                    matched_kw = [kw for kw in keywords if kw in text]
+
+                result.append({
+                    "id": a.id,
+                    "ticker": a.ticker,
+                    "tickers": all_tickers,
+                    "title": a.title,
+                    "summary": a.summary,
+                    "url": a.url,
+                    "publisher": a.publisher,
+                    "published_at": a.published_at.isoformat() if a.published_at else None,
+                    "sentiment": (
+                        a.sentiment_json.get("polygon_sentiment")
+                        if a.sentiment_json and isinstance(a.sentiment_json, dict)
+                        else None
+                    ),
+                    "matched_keywords": matched_kw,
+                })
+            return jsonify({
+                "articles": result,
+                "count": len(result),
+                "tickers": ticker_list,
+                "days": days,
+                "keywords": keywords,
+            })
+        except Exception as exc:
+            logger.error("news_api_error", error=str(exc))
+            return jsonify({"error": str(exc)}), 500
+        finally:
+            session.close()
+
+    @app.route("/api/news_brief")
+    def api_news_brief():  # type: ignore[return]
+        """
+        Return per-ticker AI news signal using GPT-4o-mini.
+
+        Groups recent news by ticker, sends headlines to OpenAI,
+        returns a one-line market signal per ticker.
+
+        Query params:
+            tickers   comma-separated (default: all configured)
+            days      look-back window in days (default: 3)
+        """
+        import datetime as _dt
+        import json as _json
+        from equity_intel.db.models import NewsArticle
+
+        openai_key = os.environ.get("OPENAI_API_KEY") or getattr(settings, "openai_api_key", None)
+        if not openai_key:
+            return jsonify({"error": "OPENAI_API_KEY not configured. Add it to your .env file."}), 5

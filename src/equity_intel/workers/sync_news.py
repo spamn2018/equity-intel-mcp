@@ -123,14 +123,12 @@ async def run(
 
         inserted = 0
         for article in articles:
+            # The provider already guarantees the ticker appears in the title.
+            # Use only the article's own ticker field — no fallback iteration
+            # over the full tickers list, which was the source of cross-
+            # contamination (e.g. 13F articles filing under every holding).
             ticker = article.get("ticker", "").upper()
             company = ticker_to_company.get(ticker)
-            # Also try matching from tickers list
-            if not company:
-                for t in article.get("tickers", []):
-                    company = ticker_to_company.get(t.upper())
-                    if company:
-                        break
             was_inserted = upsert_news_article(session, article, company)
             if was_inserted:
                 inserted += 1

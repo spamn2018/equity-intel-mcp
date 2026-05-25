@@ -192,13 +192,14 @@ def normalize_cik(cik: Any) -> str:
     return str(int(cik)).zfill(10)
 
 
+def _cik_for_archives(cik: str) -> str:
+    """SEC Archives URLs use the CIK without leading zeros (e.g. 1035267, not 0001035267).
+    The submissions/facts APIs use the zero-padded form; the Archives web server
+    returns 301 Moved Permanently when the padded form is used there."""
+    return str(int(cik))
+
+
 def build_filing_index_url(cik: str, accession_number: str) -> str:
     """Build the SEC EDGAR index URL for a filing."""
     accession_clean = accession_number.replace("-", "")
-    return f"{SEC_ARCHIVES}/{cik}/{accession_clean}/{accession_number}-index.htm"
-
-
-def build_filing_document_url(cik: str, accession_number: str, filename: str) -> str:
-    """Build the full URL for a specific filing document."""
-    accession_clean = accession_number.replace("-", "")
-    return f"{SEC_ARCHIVES}/{cik}/{accession_clean}/{filename}"
+    return f"{SEC_ARCHIVES}/{_cik_for_a

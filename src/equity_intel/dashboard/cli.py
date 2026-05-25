@@ -40,7 +40,16 @@ logger = get_logger(__name__)
     show_default=True,
     help="Logging level (debug, info, warning, error).",
 )
-def main(host: str, port: int, no_open: bool, log_level: str) -> None:
+@click.option(
+    "--shutdown-on-idle",
+    is_flag=True,
+    default=False,
+    help=(
+        "Exit automatically when the browser tab is closed (no ping received "
+        "for 25 s).  Use this when running windowless via pythonw.exe."
+    ),
+)
+def main(host: str, port: int, no_open: bool, log_level: str, shutdown_on_idle: bool) -> None:
     """
     Start the local equity research dashboard.
 
@@ -50,7 +59,7 @@ def main(host: str, port: int, no_open: bool, log_level: str) -> None:
     """
     configure_logging(log_level)
 
-    app = create_app()
+    app = create_app(shutdown_on_idle=shutdown_on_idle)
     url = f"http://{host}:{port}"
 
     click.echo(f"  Equity Intelligence Dashboard")

@@ -46,6 +46,10 @@ HERE          = Path(__file__).parent.resolve()
 BRIEFS_DIR    = HERE / "briefs"
 OUTPUT_DIR    = HERE / "intelligence"
 PROJECT_NAME  = "Stocks"
+
+SOLO_INTEL_DIR = Path(
+    r"C:\Users\noleg\Desktop\Claude\Projects\SOLO BUILDS\solo-intel\intelligence"
+)
 DOMAIN_CTX    = (
     "Equity catalyst intelligence across a tracked watchlist. "
     "Focus on: which tickers keep appearing with high materiality, what event "
@@ -319,6 +323,112 @@ class _Ticker:
         }
 
 
+def _load_podcast_intel() -> str:
+    """
+    Load the most recent solo-intel intelligence JSON produced against
+    Podcasts Pull, filter to equity tickers, return a formatted text block.
+    Returns empty string if nothing is available.
+    """
+    try:
+        if not SOLO_INTEL_DIR.exists():
+            return ""
+        files = sorted(
+            SOLO_INTEL_DIR.glob("*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        if not files:
+            return ""
+        data = json.loads(files[0].read_text(encoding="utf-8"))
+        lines = []
+        generated = data.get("generated_at", "")[:19].replace("T", " ")
+        lines.append(f"Source file : {files[0].name}  (generated {generated})")
+        if data.get("one_sentence_takeaway"):
+            lines.append(f"Takeaway    : {data['one_sentence_takeaway']}")
+        lines.append("")
+        signals = data.get("top_signals", [])
+        if signals:
+            lines.append("Top signals from podcasts:")
+            for s in signals[:10]:
+                asset     = s.get("asset", "")
+                signal    = s.get("signal", "").upper()
+                conviction = s.get("conviction", "")
+                why       = s.get("why", "")
+                pattern   = s.get("mention_pattern", "")
+                lines.append(
+                    f"  {asset:<6} [{signal:<8}] conviction={conviction}"
+                    f" | {pattern}"
+                )
+                if why:
+                    lines.append(f"    {why[:140]}")
+            lines.append("")
+        risks = [r for r in data.get("key_risks", []) if r.get("severity") == "high"]
+        if risks:
+            lines.append("High risks flagged in podcasts:")
+            for r in risks[:5]:
+                lines.append(f"  [HIGH] {r.get('risk','')[:140]}")
+            lines.append("")
+        actions = data.get("actionable_intelligence", [])
+        if actions:
+            lines.append("Podcast actionable intelligence:")
+            for a in actions[:4]:
+                urg    = a.get("urgency", "?").upper()
+                action = a.get("action", "")
+                rat    = a.get("rationale", "")
+                lines.append(f"  [{urg}] {action[:120]}")
+                if rat:
+                    lines.append(f"    {rat[:120]}")
+            lines.append("")
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
+def _load_gemini_news() -> str:
+    """
+    Load the most recent gemini_news_*.json from the intelligence/ folder.
+    Returns a formatted text block, or empty string if unavailable.
+    """
+    try:
+        if not OUTPUT_DIR.exists():
+            return ""
+        files = sorted(
+            OUTPUT_DIR.glob("gemini_news_*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        if not files:
+            return ""
+        data    = json.loads(files[0].read_text(encoding="utf-8"))
+        news    = data.get("news", {})
+        gen_at  = data.get("generated_at", "")[:19].replace("T", " ")
+        sources = data.get("grounding_sources", [])
+        if not news or "_raw" in news:
+            return ""
+        lines = []
+        lines.append(f"Source file : {files[0].name}  (generated {gen_at})")
+        lines.append(f"Grounding   : {len(sources)} web source(s)")
+        lines.append("")
+        for sym, info in news.items():
+            if not isinstance(info, dict):
+                continue
+            sent     = info.get("sentiment", "?")
+            catalyst = (info.get("key_catalyst") or "").strip()
+            summary  = (info.get("summary") or "").strip()
+            lines.append(f"  {sym:<6} [{sent}]")
+            if catalyst:
+                lines.append(f"    Key catalyst : {catalyst[:160]}")
+            if summary:
+                lines.append(f"    Summary      : {summary[:200]}")
+            headlines = info.get("headlines", [])
+            for h in headlines[:3]:
+                lines.append(f"    · {str(h)[:140]}")
+            lines.append("")
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
 def _find_briefs(folder):
     files = list(folder.rglob("brief_*.json"))
     files.sort(key=lambda p: p.name, reverse=True)
@@ -533,6 +643,26 @@ def format_for_llm(agg):
             lines.append(f"  [{t['date']}] {t['takeaway']}")
         lines.append("")
 
+    # ── Podcast intelligence (solo-intel second-pass on Podcasts Pull) ──
+    podcast_ctx = _load_podcast_intel()
+    if podcast_ctx:
+        lines.append("-- PODCAST INTELLIGENCE (solo-intel / Podcasts Pull) --")
+        lines.append(podcast_ctx)
+        lines.append("")
+    else:
+        lines.append("-- PODCAST INTELLIGENCE -- [not available]")
+        lines.append("")
+
+    # ── Real-time news (Gemini Flash + Google Search grounding) ─────────
+    gemini_ctx = _load_gemini_news()
+    if gemini_ctx:
+        lines.append("-- REAL-TIME NEWS (Gemini Flash / Google Search) --")
+        lines.append(gemini_ctx)
+        lines.append("")
+    else:
+        lines.append("-- REAL-TIME NEWS -- [not available]")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -712,151 +842,4 @@ def save_report(intelligence, agg, model_used):
     payload = {
         "source_project": PROJECT_NAME,
         "generated_at":   datetime.now().isoformat(),
-        "model_used":     model_used,
-        "brief_count":    agg.get("brief_count", 0),
-        "date_range":     agg.get("date_range", {}),
-        "briefs":         agg.get("briefs_read", []),
-        **intelligence,
-    }
-    json_path = OUTPUT_DIR / f"{run_id}.json"
-    md_path   = OUTPUT_DIR / f"{run_id}.md"
-    json_path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False, default=str),
-        encoding="utf-8",
-    )
-    md_path.write_text(_render_markdown(payload), encoding="utf-8")
-    return md_path, json_path
-
-
-# ===========================================================================
-# MAIN
-# ===========================================================================
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="synthesize.py -- Equity intelligence second-pass synthesizer",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=(
-            "\nExamples:\n"
-            "  python synthesize.py\n"
-            "  python synthesize.py --days 14\n"
-            "  python synthesize.py --scan-only\n"
-            "  python synthesize.py --aggregate-only\n"
-            "  python synthesize.py --list-models\n"
-        ),
-    )
-    parser.add_argument("--folder",         "-f",
-                        help=f"Briefs folder (default: {BRIEFS_DIR})")
-    parser.add_argument("--days",           type=int,
-                        help="Only include last N days of briefs")
-    parser.add_argument("--model",          "-m", default=DEFAULT_MODEL,
-                        help=f"LM Studio model (default: {DEFAULT_MODEL})")
-    parser.add_argument("--scan-only",      action="store_true",
-                        help="List brief files only, no aggregation or LLM")
-    parser.add_argument("--aggregate-only", action="store_true",
-                        help="Aggregate and print formatted data, skip LLM")
-    parser.add_argument("--list-models",    action="store_true",
-                        help="Show loaded LM Studio models and exit")
-    args = parser.parse_args()
-
-    print(f"\n{'='*60}")
-    print(f"  synthesize.py  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"{'='*60}")
-
-    if args.list_models:
-        try:
-            models = list_models()
-            print("Loaded models:" if models else "No models loaded.")
-            for m in models:
-                print(f"  {m}")
-        except Exception as e:
-            print(f"[error] {e}")
-        return
-
-    folder = Path(args.folder).expanduser().resolve() if args.folder else BRIEFS_DIR
-    print(f"  Folder : {folder}")
-    if args.days:
-        print(f"  Window : last {args.days} days")
-    print(f"  Model  : {args.model}")
-    print()
-
-    if not folder.exists():
-        print(f"[error] Briefs folder does not exist: {folder}")
-        print("  Run sync_all.bat first to generate brief files.")
-        sys.exit(1)
-
-    files = _find_briefs(folder)
-    if not files:
-        print("[warn] No brief_*.json files found. Run sync_all.bat first.")
-        return
-
-    print(f"Found {len(files)} brief file(s):")
-    for f in files[:5]:
-        print(f"  {f.name}")
-    if len(files) > 5:
-        print(f"  ... and {len(files) - 5} more")
-    print()
-
-    if args.scan_only:
-        return
-
-    print("Aggregating catalyst data...")
-    agg = aggregate(files, days=args.days)
-    dr  = agg["date_range"]
-    print(f"  {agg['brief_count']} brief(s) | {dr.get('earliest','')} to {dr.get('latest','')}")
-    print(f"  {len(agg['tickers'])} tickers | {len(agg['key_events'])} key events |"
-          f" {len(agg['risks'])} risk events | {len(agg['event_types'])} event types")
-    print()
-
-    if agg["brief_count"] == 0:
-        print("[warn] No briefs passed the date filter.")
-        return
-
-    aggregated_text = format_for_llm(agg)
-
-    if args.aggregate_only:
-        print("-- AGGREGATED DATA (--aggregate-only) ----------------------")
-        print(aggregated_text)
-        return
-
-    print("Running LLM synthesis...")
-    try:
-        intelligence, model_used = synthesize(aggregated_text, args.model)
-    except LLMHangError as e:
-        print(f"\n[error] LLM hang: {e}")
-        sys.exit(1)
-    except (ValueError, RuntimeError) as e:
-        print(f"\n[error] Synthesis failed: {e}")
-        sys.exit(1)
-
-    md_path, json_path = save_report(intelligence, agg, model_used)
-
-    print(f"\n{'='*60}")
-    print("  INTELLIGENCE BRIEF")
-    print(f"{'='*60}")
-    if intelligence.get("one_sentence_takeaway"):
-        print(f"\n  {intelligence['one_sentence_takeaway']}\n")
-
-    for s in intelligence.get("top_signals", [])[:5]:
-        print(f"  {s.get('asset','')} -- {s.get('signal','').upper()} ({s.get('conviction','')})")
-
-    actions = intelligence.get("actionable_intelligence", [])
-    if actions:
-        print(f"\n  Actionable ({len(actions)}):")
-        for a in actions[:4]:
-            print(f"    [{a.get('urgency','?').upper()}] {a.get('action','')[:90]}")
-
-    high_risks = [r for r in intelligence.get("key_risks", []) if r.get("severity") == "high"]
-    if high_risks:
-        print(f"\n  High Risks ({len(high_risks)}):")
-        for r in high_risks[:3]:
-            print(f"    ! {r.get('risk','')[:90]}")
-
-    print(f"\n  Saved:")
-    print(f"    {md_path}")
-    print(f"    {json_path}")
-    print()
-
-
-if __name__ == "__main__":
-    main()
+        "model_used":     model

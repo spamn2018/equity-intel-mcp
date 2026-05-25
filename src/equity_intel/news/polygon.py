@@ -54,6 +54,7 @@ class PolygonNewsProvider(NewsProvider):
             follow_redirects=True,
         )
 
+
     async def __aenter__(self) -> "PolygonNewsProvider":
         self._client = self._make_client()
         return self
@@ -78,6 +79,7 @@ class PolygonNewsProvider(NewsProvider):
         resp.raise_for_status()
         return resp.json()
 
+
     async def fetch_news(
         self,
         ticker: str,
@@ -86,6 +88,12 @@ class PolygonNewsProvider(NewsProvider):
     ) -> List[Dict[str, Any]]:
         """
         Fetch recent news articles for a ticker from Polygon.
+
+        Only articles whose title contains the requested ticker symbol are
+        returned. This prevents 13F / hedge-fund portfolio articles from being
+        filed under every watchlist ticker that happens to appear in a holdings
+        table (e.g. an article about Dorsal trimming PLNT that lists AMZN as
+        another holding would otherwise be ingested as an AMZN article).
 
         Returns normalized list matching NewsProvider contract.
         """
@@ -102,7 +110,6 @@ class PolygonNewsProvider(NewsProvider):
         }
 
         all_results: List[Dict[str, Any]] = []
-        next_url: Optional[str] = None
 
         try:
             data = await self._get(POLYGON_NEWS_URL, params)
@@ -110,8 +117,7 @@ class PolygonNewsProvider(NewsProvider):
             logger.error("polygon_news_fetch_failed", ticker=ticker, error=str(exc))
             return []
 
-        results = data.get("results", [])
-        all_results.extend(results)
+        all_results.extend(data.get("results", []))
 
         # Follow pagination if needed
         next_url = data.get("next_url")
@@ -126,20 +132,26 @@ class PolygonNewsProvider(NewsProvider):
             except Exception:
                 break
 
-        normalized = []
-        for article in all_results[:limit]:
-            # Polygon article tickers list
-            tickers = article.get("tickers", [])
-            primary_ticker = ticker.upper()
-            if tickers and primary_ticker not in tickers:
-                primary_ticker = tickers[0] if tickers else ticker.upper()
 
+        normalized = []
+        ticker_upper = ticker.upper()
+        skipped = 0
+        for article in all_results[:limit]:
+            # Title-only filter: skip articles that don't mention this ticker
+            # symbol in the headline. This is the primary guard against cross-
+            # contamination from portfolio / 13F articles.
+            title = article.get("title", "")
+            if ticker_upper not in title.upper():
+                skipped += 1
+                continue
+
+            tickers = article.get("tickers", [])
             normalized.append(
                 {
                     "provider": "polygon",
                     "provider_id": article.get("id", ""),
-                    "ticker": primary_ticker,
-                    "title": article.get("title", ""),
+                    "ticker": ticker_upper,
+                    "title": title,
                     "summary": article.get("description", ""),
                     "url": article.get("article_url", ""),
                     "publisher": article.get("publisher", {}).get("name", ""),
@@ -155,8 +167,10 @@ class PolygonNewsProvider(NewsProvider):
             "polygon_news_fetched",
             ticker=ticker,
             count=len(normalized),
+            skipped_off_topic=skipped,
         )
         return normalized
+
 
     async def fetch_news_multi(
         self,
@@ -179,7 +193,8 @@ class PolygonNewsProvider(NewsProvider):
             if i < len(tickers) - 1:
                 await asyncio.sleep(13.0)
 
-        # Deduplicate by article id
+        # Deduplicate by article id — keep the first occurrence (which will
+        # already be filed under the correct ticker thanks to the title filter).
         seen: set = set()
         deduped = []
         for article in all_articles:

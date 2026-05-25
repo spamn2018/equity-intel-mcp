@@ -23,7 +23,7 @@
       --radius:      8px;
       --radius-lg:   12px;
     }
-    html { font-size: 14px; }
+    html { font-size: 16px; }
     body {
       background: var(--bg);
       color: var(--text);
@@ -252,40 +252,41 @@
 
     .card-top {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
     }
-    .card-left { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+    .card-left { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
 
     .ticker-badge {
       display: inline-block;
       background: var(--accent-dim);
       color: var(--accent);
-      font-size: 0.75rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 4px 12px;
       border-radius: 4px;
       letter-spacing: 0.05em;
     }
-    .company-name { font-size: 0.78rem; color: var(--muted); }
+    .company-name { font-size: 1rem; color: var(--muted); }
 
     .card-title {
-      font-size: 0.95rem;
+      font-size: 1.3rem;
       font-weight: 600;
       color: var(--text);
       word-break: break-word;
+      line-height: 1.4;
     }
 
     .event-type-tag {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 0.72rem;
+      font-size: 0.9rem;
       color: var(--text-dim);
       background: var(--surface2);
       border: 1px solid var(--border);
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 4px;
       margin-right: 4px;
     }
@@ -293,7 +294,7 @@
     .card-scores {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       flex-shrink: 0;
     }
     .score-item {
@@ -303,23 +304,23 @@
       gap: 2px;
     }
     .score-ring {
-      width: 46px;
-      height: 46px;
+      width: 68px;
+      height: 68px;
       position: relative;
     }
     .score-ring svg { transform: rotate(-90deg); }
-    .score-ring .track { fill: none; stroke: var(--surface2); stroke-width: 4; }
-    .score-ring .fill  { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s; }
+    .score-ring .track { fill: none; stroke: var(--surface2); stroke-width: 5; }
+    .score-ring .fill  { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.4s; }
     .score-ring .label {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.72rem;
+      font-size: 1rem;
       font-weight: 700;
     }
-    .score-key { font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; }
+    .score-key { font-size: 0.8rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; }
 
     /* score colour tiers */
     .score-high .fill  { stroke: var(--green); }
@@ -330,9 +331,9 @@
     .score-low  .label { color: var(--red); }
 
     .why-it-matters {
-      font-size: 0.83rem;
+      font-size: 1rem;
       color: var(--text-dim);
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
     /* ---- Price move row ---- */
@@ -340,7 +341,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      font-size: 0.82rem;
+      font-size: 1rem;
       flex-wrap: wrap;
     }
     .pct-up   { color: var(--green); font-weight: 700; }
@@ -530,6 +531,155 @@
       .sidebar { display: none; }
       .content { padding: 16px; }
     }
+
+    /* ---- Intelligence synthesis section ---- */
+    .intel-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .intel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .intel-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .ai-badge {
+      font-size: 0.7rem;
+      background: rgba(79,142,247,0.12);
+      border: 1px solid rgba(79,142,247,0.3);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .not-execution {
+      font-size: 0.7rem;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: var(--yellow);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .intel-takeaway {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      font-style: italic;
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      line-height: 1.5;
+    }
+    .intel-summary {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+    .intel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) { .intel-grid { grid-template-columns: 1fr; } }
+    .intel-col { display: flex; flex-direction: column; gap: 6px; }
+    .intel-col-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .signal-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--muted);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .signal-bullish { border-left-color: var(--green); }
+    .signal-bearish { border-left-color: var(--red); }
+    .signal-mixed   { border-left-color: var(--yellow); }
+    .signal-top-row { display: flex; align-items: center; gap: 8px; }
+    .signal-asset   { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .signal-dir     { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .signal-bullish .signal-dir { color: var(--green); }
+    .signal-bearish .signal-dir { color: var(--red); }
+    .signal-mixed   .signal-dir { color: var(--yellow); }
+    .signal-neutral .signal-dir { color: var(--muted); }
+    .signal-why     { font-size: 0.75rem; color: var(--text-dim); line-height: 1.4; }
+    .risk-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--muted);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .risk-high   { border-left-color: var(--red); }
+    .risk-medium { border-left-color: var(--yellow); }
+    .risk-sev    { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+    .risk-high   .risk-sev { color: var(--red); }
+    .risk-medium .risk-sev { color: var(--yellow); }
+    .risk-low    .risk-sev { color: var(--muted); }
+    .action-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .action-high   { border-left-color: var(--accent); }
+    .action-medium { border-left-color: var(--accent-dim); }
+    .action-urg    { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+    .action-high   .action-urg { color: var(--accent); }
+    .action-medium .action-urg { color: var(--text-dim); }
+    .action-low    .action-urg { color: var(--muted); }
+    .intel-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .intel-full-report { margin-top: 8px; overflow: hidden; }
+    .intel-full-report pre {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      white-space: pre-wrap;
+      line-height: 1.6;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .intel-empty { font-size: 0.82rem; color: var(--muted); font-style: italic; padding: 4px 0; }
   </style>
 </head>
 <body>
@@ -543,7 +693,7 @@
     </div>
     <div class="header-right">
       <span id="lastUpdated"></span>
-      <button id="refreshBtn" onclick="loadBrief()">⟳ Refresh</button>
+      <button id="refreshBtn" onclick="refreshDashboard()">⟳ Refresh</button>
     </div>
   </header>
 
@@ -613,8 +763,9 @@
 // ================================================================ //
 //  State                                                            //
 // ================================================================ //
-let briefData = null;
-let biasData  = null;
+let briefData        = null;
+let biasData         = null;
+let intelligenceData = null;
 
 // ================================================================ //
 //  Utilities                                                        //
@@ -636,14 +787,14 @@ function scoreClass(v) {
 
 function scoreRing(val, label) {
   const v = val != null ? Math.max(0, Math.min(1, val)) : 0;
-  const r = 18, cx = 23, cy = 23;
+  const r = 26, cx = 34, cy = 34;
   const circ = 2 * Math.PI * r;
   const offset = circ * (1 - v);
   const cls = scoreClass(val);
   return `
     <div class="score-item">
       <div class="score-ring ${cls}">
-        <svg width="46" height="46" viewBox="0 0 46 46">
+        <svg width="68" height="68" viewBox="0 0 68 68">
           <circle class="track" cx="${cx}" cy="${cy}" r="${r}" />
           <circle class="fill" cx="${cx}" cy="${cy}" r="${r}"
             stroke-dasharray="${circ}" stroke-dashoffset="${offset}" />
@@ -934,128 +1085,4 @@ function renderBias(bias) {
 
 function toggleBias() {
   const body = document.getElementById('biasBody');
-  const btn  = document.getElementById('biasBtnToggle');
-  const isCollapsed = body.classList.contains('collapsed');
-  if (isCollapsed) { body.classList.remove('collapsed'); btn.textContent = 'hide'; }
-  else             { body.classList.add('collapsed');    btn.textContent = 'show'; }
-}
-
-// ================================================================ //
-//  Main render                                                      //
-// ================================================================ //
-
-function renderContent() {
-  const content = document.getElementById('content');
-  const brief   = briefData;
-  if (!brief) return;
-
-  const cats = brief.catalysts || [];
-  const highMat  = cats.filter(c => (c.materiality_score||0) >= 0.7).length;
-  const modMat   = cats.filter(c => (c.materiality_score||0) >= 0.4 && (c.materiality_score||0) < 0.7).length;
-
-  const statsHtml = `
-    <div class="stat"><div class="stat-val">${cats.length}</div><div class="stat-key">Catalysts</div></div>
-    <div class="stat"><div class="stat-val" style="color:var(--red)">${highMat}</div><div class="stat-key">High materiality</div></div>
-    <div class="stat"><div class="stat-val" style="color:var(--yellow)">${modMat}</div><div class="stat-key">Moderate</div></div>
-    <div class="stat"><div class="stat-val">${brief.time_window_days||7}d</div><div class="stat-key">Window</div></div>
-    <div class="stat"><div class="stat-val">${(brief.watchlist||[]).join(', ')||'—'}</div><div class="stat-key">Watchlist</div></div>`;
-
-  const summaryHtml = `
-    <div class="summary-bar">
-      <div class="stat-row">${statsHtml}</div>
-      ${brief.brief_summary ? `<div class="brief-summary">${esc(brief.brief_summary)}</div>` : ''}
-    </div>
-    ${brief.caution ? `<div class="caution-bar">⚠️ ${esc(brief.caution)}</div>` : ''}`;
-
-  let catHtml = '';
-  if (cats.length === 0) {
-    catHtml = `<div class="empty-state">
-      <div class="empty-icon">🔍</div>
-      <div class="empty-msg">No catalysts matched the current filters.</div>
-      <div style="font-size:0.8rem;color:var(--muted)">Try lowering min materiality or increasing the lookback window.</div>
-    </div>`;
-  } else {
-    catHtml = `
-      <div class="catalysts-header">
-        <div class="catalysts-title">Ranked Catalysts</div>
-        <span class="count-badge">${cats.length}</span>
-      </div>
-      <div class="catalyst-list">
-        ${cats.map((c, i) => renderCard(c, i)).join('')}
-      </div>`;
-  }
-
-  const biasHtml = renderBias(true);
-
-  content.innerHTML = summaryHtml + catHtml + biasHtml;
-}
-
-// ================================================================ //
-//  Data loading                                                     //
-// ================================================================ //
-
-async function loadBiasLayer() {
-  try {
-    const r = await fetch('/api/bias');
-    biasData = await r.json();
-  } catch(e) {
-    biasData = null;
-  }
-}
-
-async function loadBrief() {
-  const btn = document.getElementById('refreshBtn');
-  const content = document.getElementById('content');
-  btn.disabled = true;
-
-  content.innerHTML = `<div class="empty-state">
-    <div><span class="spinner"></span> Generating brief…</div>
-  </div>`;
-
-  const params = buildParams();
-
-  try {
-    const r = await fetch('/api/brief?' + params.toString());
-    if (!r.ok) {
-      const err = await r.json().catch(()=>({error:'Unknown error'}));
-      content.innerHTML = `<div class="error-banner">⚠️ Error: ${esc(err.error||r.statusText)}</div>`;
-      return;
-    }
-    briefData = await r.json();
-    document.getElementById('lastUpdated').textContent =
-      'Updated ' + new Date().toLocaleTimeString();
-    renderContent();
-  } catch(e) {
-    content.innerHTML = `<div class="error-banner">⚠️ Failed to load brief: ${esc(e.message)}</div>`;
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-// ================================================================ //
-//  Bootstrap                                                        //
-// ================================================================ //
-
-(async function init() {
-  // Populate event type checklist
-  await loadEventTypes();
-
-  // Pre-fill tickers from server default
-  try {
-    const r = await fetch('/api/tickers');
-    const d = await r.json();
-    const el = document.getElementById('fTickers');
-    if (d.tickers && d.tickers.length && !el.value) {
-      el.value = d.tickers.join(',');
-    }
-  } catch(e) {}
-
-  // Load bias layer (async, don't block brief)
-  loadBiasLayer();
-
-  // Load initial brief
-  await loadBrief();
-})();
-</script>
-</body>
-</html>
+  const btn  = document
