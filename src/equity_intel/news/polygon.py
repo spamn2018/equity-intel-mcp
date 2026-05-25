@@ -89,11 +89,10 @@ class PolygonNewsProvider(NewsProvider):
         """
         Fetch recent news articles for a ticker from Polygon.
 
-        Only articles whose title contains the requested ticker symbol are
-        returned. This prevents 13F / hedge-fund portfolio articles from being
-        filed under every watchlist ticker that happens to appear in a holdings
-        table (e.g. an article about Dorsal trimming PLNT that lists AMZN as
-        another holding would otherwise be ingested as an AMZN article).
+        Articles with more than 15 tickers in their tickers array are skipped —
+        these are almost always 13F / hedge-fund portfolio roundups that list
+        every holding and add no signal for a specific ticker. Genuine articles
+        (e.g. "Nvidia launches new GPU") typically have 1-5 tickers.
 
         Returns normalized list matching NewsProvider contract.
         """
@@ -137,11 +136,13 @@ class PolygonNewsProvider(NewsProvider):
         ticker_upper = ticker.upper()
         skipped = 0
         for article in all_results[:limit]:
-            # Title-only filter: skip articles that don't mention this ticker
-            # symbol in the headline. This is the primary guard against cross-
-            # contamination from portfolio / 13F articles.
-            title = article.get("title", "")
-            if ticker_upper not in title.upper():
+            # Guard against 13F / hedge-fund portfolio articles that list 30+
+            # tickers as holdings. A genuine article about this company will have
+            # a small tickers list (typically 1-5). Articles with more than 15
+            # tickers are almost certainly broad portfolio/holdings roundups and
+            # add no signal for a specific ticker.
+            article_tickers = article.get("tickers", [])
+            if len(article_tickers) > 15:
                 skipped += 1
                 continue
 
