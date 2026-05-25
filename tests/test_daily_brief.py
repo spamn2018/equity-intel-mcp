@@ -569,11 +569,28 @@ def test_config_daily_brief_tickers_normalizes_uppercase():
 def test_config_daily_brief_defaults():
     from equity_intel.config import Settings
     s = Settings(_env_file=None, database_url="sqlite:///:memory:")
-    assert s.daily_brief_days == 1
+    # Default look-back must be 7 days so synthesis has enough catalyst volume.
+    # A default of 1 day produces empty briefs on most runs.
+    assert s.daily_brief_days == 7
     assert s.daily_brief_min_materiality == 0.3
     assert s.daily_brief_format == "json"
     assert s.daily_brief_max_items == 30
     assert s.daily_brief_output_dir == "briefs"
+
+
+def test_config_daily_brief_days_default_is_seven():
+    """Regression: config default must be 7 not 1.
+
+    DAILY_BRIEF_DAYS=1 silently produces empty briefs on most runs because
+    there is rarely a full calendar day of new events at run time. The
+    correct default is 7 days so the synthesizer always has material to work with.
+    """
+    from equity_intel.config import Settings
+    s = Settings(_env_file=None, database_url="sqlite:///:memory:")
+    assert s.daily_brief_days == 7, (
+        "daily_brief_days default must be 7. "
+        "A default of 1 causes empty briefs and 'No synthesis data yet' in the UI."
+    )
 
 
 # ------------------------------------------------------------------ #
@@ -608,3 +625,71 @@ def test_run_daily_brief_makes_no_network_calls(tmp_output_dir):
                         run_date=datetime.date(2024, 1, 15),
                     )
     # If we get here without AssertionError, no network calls were made.
+
+
+# ------------------------------------------------------------------ #
+# 14. CLI diagnostics — resolved config and catalyst count             #
+# ------------------------------------------------------------------ #
+
+
+def test_cli_prints_resolved_days(tmp_output_dir):
+    """CLI output must include the resolved DAILY_BRIEF_DAYS window."""
+    from click.testing import CliRunner
+    from equity_intel.workers.run_daily_brief import main
+
+    canned = _make_brief(total_catalysts=3)
+
+    with patch("equity_intel.workers.run_daily_brief.get_watchlist_brief", return_value=canned):
+        with patch("equity_intel.workers.run_daily_brief.SessionLocal", return_value=MagicMock()):
+            runner = CliRunner()
+            result = runner.invoke(
+                main,
+                ["--tickers", "AAPL", "--days", "7", "--output-dir", str(tmp_output_dir)],
+            )
+
+    assert "7" in result.output, "Resolved DAILY_BRIEF_DAYS not in CLI output"
+    assert "Catalysts found" in result.output or "catalysts" in result.output.lower()
+
+
+def test_cli_prints_catalyst_count(tmp_output_dir):
+    """CLI output must include the exact catalyst count."""
+    from click.testing import CliRunner
+    from equity_intel.workers.run_daily_brief import main
+
+    canned = _make_brief(total_catalysts=5)
+
+    with patch("equity_intel.workers.run_daily_brief.get_watchlist_brief", return_value=canned):
+        with patch("equity_intel.workers.run_daily_brief.SessionLocal", return_value=MagicMock()):
+            runner = CliRunner()
+            result = runner.invoke(
+                main,
+                ["--tickers", "AAPL,MSFT", "--days", "7", "--output-dir", str(tmp_output_dir)],
+            )
+
+    combined = result.output + (result.stderr or "")
+    assert "5" in combined, "Catalyst count (5) not in CLI output"
+
+
+def test_cli_warns_on_zero_catalysts(tmp_output_dir):
+    """CLI must emit a visible WARNING to stderr when catalyst count is 0."""
+    from click.testing import CliRunner
+    from equity_intel.workers.run_daily_brief import main
+
+    zero_brief = _make_brief(total_catalysts=0)
+    zero_brief["catalysts"] = []
+
+    with patch("equity_intel.workers.run_daily_brief.get_watchlist_brief", return_value=zero_brief):
+        with patch("equity_intel.workers.run_daily_brief.SessionLocal", return_value=MagicMock()):
+            runner = CliRunner(mix_stderr=False)
+            result = runner.invoke(
+                main,
+                ["--tickers", "AAPL", "--days", "7", "--output-dir", str(tmp_output_dir)],
+            )
+
+    # Warning must appear in stderr (click.echo(..., err=True))
+    stderr_text = result.stderr if hasattr(result, "stderr") and result.stderr else ""
+    combined = result.output + stderr_text
+    assert "WARNING" in combined or "0 catalysts" in combined, (
+        "Expected a visible WARNING when brief has 0 catalysts. Got:\n"
+        f"stdout: {result.output!r}\nstderr: {stderr_text!r}"
+    )

@@ -87,7 +87,7 @@ def upsert_news_article(session, article: Dict[str, Any], company: Optional[Comp
 
 async def run(
     tickers: Optional[List[str]] = None,
-    days: int = 7,
+    days: int = 1,
 ) -> None:
     configure_logging(settings.log_level)
 
@@ -115,7 +115,7 @@ async def run(
             articles = await provider.fetch_news_multi(
                 tickers=ticker_list,
                 days=days,
-                limit_per_ticker=100,
+                limit_per_ticker=10,  # max 10 actionable stories per ticker (24h window)
             )
 
         # Apply source filter — drop blocked publishers before touching the DB
@@ -138,7 +138,7 @@ async def run(
 
 @click.command()
 @click.option("--tickers", default=None, help="Comma-separated tickers")
-@click.option("--days", default=7, show_default=True, help="Look-back window in days")
+@click.option("--days", default=1, show_default=True, help="Look-back window in days (default 1 = last 24 hours)")
 def main(tickers: Optional[str], days: int) -> None:
     """Sync news articles from the configured provider."""
     ticker_list = [t.strip().upper() for t in tickers.split(",")] if tickers else None

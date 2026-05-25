@@ -298,6 +298,26 @@ def main(
     total = brief["total_catalysts"]
     watchlist = brief["watchlist"]
 
+    # Always-print diagnostic block — visible regardless of dry-run mode
+    click.echo(
+        f"\n  Daily brief config:\n"
+        f"    DAILY_BRIEF_DAYS          : {resolved_days}\n"
+        f"    Window                    : last {resolved_days} day(s)\n"
+        f"    Min materiality           : {resolved_min_mat}\n"
+        f"    Max items                 : {resolved_max_items}\n"
+        f"    Catalysts found           : {total}"
+    )
+    if total == 0:
+        click.echo(
+            "\n  WARNING: Daily brief contains 0 catalysts.\n"
+            "  This can be normal for a quiet window, but verify:\n"
+            "    - DAILY_BRIEF_DAYS is set correctly in .env\n"
+            "    - DAILY_BRIEF_MIN_MATERIALITY is not too high\n"
+            "    - Events have been built (run equity-build-events and equity-cluster-events)\n"
+            "  synthesize.py will fail if no catalysts are found.",
+            err=True,
+        )
+
     if dry_run:
         # Print to stdout and exit — nothing written to disk
         if resolved_fmt == "markdown":

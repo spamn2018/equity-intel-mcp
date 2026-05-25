@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     # Daily brief scheduler
     daily_brief_watchlist: str = ""
     daily_brief_output_dir: str = "briefs"
-    daily_brief_days: int = 1
+    daily_brief_days: int = 7
     daily_brief_min_materiality: float = 0.3
     daily_brief_format: str = "json"
     daily_brief_max_items: int = 30

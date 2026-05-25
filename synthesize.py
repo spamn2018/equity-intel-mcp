@@ -842,6 +842,7 @@ def format_for_llm(agg):
     gemini_ctx = _load_gemini_news()
     if gemini_ctx:
         lines.append("-- REAL-TIME NEWS (Gemini Flash / Google Search) --")
+        lines.append("-- REAL-TIME NEWS (Gemini Flash / Google Search) --")
         lines.append(gemini_ctx)
         lines.append("")
     else:
@@ -1365,7 +1366,8 @@ def main():
             for m in models:
                 print(f"  {m}")
         except Exception as e:
-            print(f"[error] {e}")
+            print(f"[error] Could not list models from {BASE_URL}: {e}")
+            sys.exit(1)
         return
 
     folder = Path(args.folder).expanduser().resolve() if args.folder else BRIEFS_DIR
@@ -1394,7 +1396,7 @@ def main():
         if not brief_dicts:
             print("[error] Dashboard API also unavailable. Cannot synthesize.")
             print("  Start the dashboard first: run.bat (step 0), then re-run synthesize.py.")
-            return
+            sys.exit(1)
         agg_input = brief_dicts
 
     if args.scan_only:
@@ -1409,8 +1411,18 @@ def main():
     print()
 
     if agg["brief_count"] == 0:
-        print("[warn] No briefs passed the date filter.")
-        return
+        print("[error] No briefs passed the date filter. Cannot synthesize.")
+        print("  Check DAILY_BRIEF_DAYS, DAILY_BRIEF_MIN_MATERIALITY, and whether events/clusters were built.")
+        sys.exit(1)
+
+    # Require at least some usable catalyst signal before hitting the LLM
+    has_catalyst_signal = bool(agg.get("tickers") or agg.get("key_events") or
+                               agg.get("risks") or agg.get("event_types"))
+    if not has_catalyst_signal:
+        print("[error] Aggregated briefs contain 0 catalyst signals.")
+        print("  Check DAILY_BRIEF_DAYS, DAILY_BRIEF_MIN_MATERIALITY, and whether events/clusters were built.")
+        print("  Run: equity-build-events && equity-cluster-events, then equity-run-daily-brief --days 7")
+        sys.exit(1)
 
     aggregated_text = format_for_llm(agg)
 
@@ -1438,7 +1450,13 @@ def main():
         print(f"\n[error] LLM hang: {e}")
         sys.exit(1)
     except (ValueError, RuntimeError) as e:
-        print(f"\n[error] Synthesis failed: {e}")
+        msg = str(e)
+        if "Cannot connect to LM Studio" in msg or "LM Studio" in msg:
+            print(f"\n[error] Could not connect to LM Studio API at {BASE_URL}.")
+            print("  Check that LM Studio is running, the local server is enabled,")
+            print("  and the expected model is loaded.")
+        else:
+            print(f"\n[error] Synthesis failed: {e}")
         sys.exit(1)
 
     # Validate coverage and run repair pass if needed

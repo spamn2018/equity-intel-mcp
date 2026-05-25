@@ -83,11 +83,16 @@ class PolygonNewsProvider(NewsProvider):
     async def fetch_news(
         self,
         ticker: str,
-        days: int = 7,
-        limit: int = 50,
+        days: int = 1,
+        limit: int = 10,
     ) -> List[Dict[str, Any]]:
         """
         Fetch recent news articles for a ticker from Polygon.
+
+        Default window is 24 hours (days=1). Default cap is 10 actionable
+        stories per ticker. To survive the bias filter (articles with >15
+        tickers are dropped as off-topic portfolio roundups), we over-fetch
+        up to 5× limit raw results and then cap after filtering.
 
         Articles with more than 15 tickers in their tickers array are skipped —
         these are almost always 13F / hedge-fund portfolio roundups that list
@@ -100,11 +105,15 @@ class PolygonNewsProvider(NewsProvider):
             datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        # Over-fetch raw results so bias filter doesn't starve us of actionable stories.
+        # We need `limit` articles after filtering; fetching 5× gives a wide safety margin.
+        raw_fetch_limit = max(limit * 5, 50)
+
         params: Dict[str, Any] = {
             "ticker": ticker.upper(),
             "published_utc.gte": published_utc_gte,
             "order": "desc",
-            "limit": min(limit, 1000),
+            "limit": min(raw_fetch_limit, 1000),
             "sort": "published_utc",
         }
 
@@ -118,9 +127,9 @@ class PolygonNewsProvider(NewsProvider):
 
         all_results.extend(data.get("results", []))
 
-        # Follow pagination if needed
+        # Follow pagination only if we still need more raw material
         next_url = data.get("next_url")
-        while next_url and len(all_results) < limit:
+        while next_url and len(all_results) < raw_fetch_limit:
             try:
                 client = self._client or self._make_client()
                 resp = await client.get(next_url, params={"apiKey": self.api_key})
@@ -131,11 +140,14 @@ class PolygonNewsProvider(NewsProvider):
             except Exception:
                 break
 
-
         normalized = []
         ticker_upper = ticker.upper()
         skipped = 0
-        for article in all_results[:limit]:
+        for article in all_results:
+            # Hard cap: once we have `limit` actionable stories, stop.
+            if len(normalized) >= limit:
+                break
+
             # Guard against 13F / hedge-fund portfolio articles that list 30+
             # tickers as holdings. A genuine article about this company will have
             # a small tickers list (typically 1-5). Articles with more than 15
@@ -176,8 +188,8 @@ class PolygonNewsProvider(NewsProvider):
     async def fetch_news_multi(
         self,
         tickers: List[str],
-        days: int = 7,
-        limit_per_ticker: int = 50,
+        days: int = 1,
+        limit_per_ticker: int = 10,
     ) -> List[Dict[str, Any]]:
         """Fetch news for multiple tickers sequentially to respect rate limits."""
         import asyncio
