@@ -30,9 +30,10 @@ echo.
 :: ─── 0. Dashboard (background, no browser yet) ────────────────────────────
 echo  [0/12] Starting dashboard in background...
 taskkill /f /im pythonw.exe >nul 2>&1
-start "" /B "%PYTHONW%" -m equity_intel.dashboard.cli --no-open --port 5173
+:: Start dashboard, capture PID so we can monitor it and close this window when it stops
+for /f %%P in ('powershell -NoProfile -Command "Start-Process -FilePath ''%PYTHONW%'' -ArgumentList ''-m equity_intel.dashboard.cli --no-open --port 5173'' -PassThru | Select-Object -ExpandProperty Id"') do set DASH_PID=%%P
 timeout /t 3 /nobreak >nul
-echo         http://localhost:5173  (browser will open after sync)
+echo         http://localhost:5173  (PID: !DASH_PID!  -- this window closes when dashboard stops)
 echo.
 
 :: ─── 1. Companies ─────────────────────────────────────────────────────────
@@ -143,7 +144,7 @@ echo  ============================================================
 echo.
 start "" http://localhost:5173
 
-:: ─── MCP Server config block ──────────────────────────────────────────────
+:: ─── MCP Server config block (shown once, then window waits on dashboard) ────
 echo.
 echo  ── MCP Server (one-time Claude Desktop setup) ──────────────────────────
 echo.
@@ -157,5 +158,19 @@ echo    }
 echo.
 echo  ────────────────────────────────────────────────────────────
 echo.
-pause
+echo  Pipeline window will close automatically when the dashboard stops.
+echo  To stop: close LM Studio, then kill the dashboard (taskkill /f /im pythonw.exe).
+echo.
+
+:: ─── Monitor dashboard — exit this window when it stops ─────────────────────
+:monitor_dashboard
+if not defined DASH_PID goto done
+tasklist /fi "pid eq !DASH_PID!" /fo csv /nh 2>nul | find /i "!DASH_PID!" >nul 2>&1
+if errorlevel 1 goto done
+timeout /t 5 /nobreak >nul
+goto monitor_dashboard
+
+:done
+echo.
+echo  Dashboard stopped. Closing pipeline window.
 endlocal
