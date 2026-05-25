@@ -91,6 +91,136 @@ DEFAULT_TICKERS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Domain classification (maps equity event types → synthesis domains)
+# ---------------------------------------------------------------------------
+
+EQUITY_DOMAINS = [
+    "earnings_guidance",   # earnings, guidance, analyst_rating
+    "corporate_action",    # M&A, buyback, dividend, dilution, insider, activist
+    "risk_legal",          # litigation, regulatory, bankruptcy, restatement, mgmt change
+    "product_macro",       # product_announcement, macro_sensitive_news
+    "market_technical",    # unusual_price_volume, other
+]
+
+EVENT_TYPE_TO_DOMAIN: dict[str, str] = {
+    "earnings":                    "earnings_guidance",
+    "guidance":                    "earnings_guidance",
+    "analyst_rating":              "earnings_guidance",
+    "merger_acquisition":          "corporate_action",
+    "buyback":                     "corporate_action",
+    "dividend":                    "corporate_action",
+    "offering_or_dilution":        "corporate_action",
+    "activist_stake":              "corporate_action",
+    "insider_transaction":         "corporate_action",
+    "litigation":                  "risk_legal",
+    "regulatory":                  "risk_legal",
+    "bankruptcy_or_going_concern": "risk_legal",
+    "restatement":                 "risk_legal",
+    "management_change":           "risk_legal",
+    "product_announcement":        "product_macro",
+    "macro_sensitive_news":        "product_macro",
+    "unusual_price_volume":        "market_technical",
+    "other":                       "market_technical",
+}
+
+
+def _score_catalyst(c: dict) -> float:
+    """Score a key_event dict for signal selection priority."""
+    mat  = float(c.get("materiality", 0))
+    conf = float(c.get("confidence", 0))
+    score = mat * 0.6 + conf * 0.3
+    # Bonus for confirmed price moves
+    if c.get("price_move"):
+        score += 0.08
+    # Bonus for risk events (actionable)
+    if c.get("event_type") in RISK_EVENT_TYPES:
+        score += 0.05
+    # Penalty for very short why text (likely low-signal)
+    why = c.get("why") or c.get("title") or ""
+    if len(why) < 20:
+        score -= 0.10
+    return min(score, 1.0)
+
+
+def _select_balanced_signals(agg: dict, max_per_domain: int = 3) -> list[dict]:
+    """
+    Curate a domain-balanced set of top signals from the aggregated brief data.
+
+    Mirrors weekly_synthesis.py's _select_balanced_signals() pattern:
+    pick the highest-scoring signals up to max_per_domain per domain,
+    prioritising breadth (unique tickers) over depth.
+    """
+    candidates = []
+    seen_ticker_domain: dict[str, int] = {}
+
+    for event in agg.get("key_events", []):
+        evt_type = event.get("event_type", "other")
+        domain = EVENT_TYPE_TO_DOMAIN.get(evt_type, "market_technical")
+        score = _score_catalyst(event)
+        candidates.append({**event, "domain": domain, "score": score})
+
+    # Also promote tickers with high avg_materiality that don't appear in key_events
+    ticker_syms_in_events = {c["ticker"] for c in candidates}
+    for t in agg.get("tickers", [])[:15]:
+        if t["symbol"] in ticker_syms_in_events:
+            continue
+        if t["avg_materiality"] < 0.5:
+            continue
+        evt_type = t.get("dominant_event_type", "other")
+        domain = EVENT_TYPE_TO_DOMAIN.get(evt_type, "market_technical")
+        ctx_list = t.get("contexts", [{}])
+        latest_ctx = ctx_list[0] if ctx_list else {}
+        candidates.append({
+            "ticker":     t["symbol"],
+            "event_type": evt_type,
+            "title":      latest_ctx.get("title", ""),
+            "why":        latest_ctx.get("why", ""),
+            "materiality": t["avg_materiality"],
+            "confidence":  t["avg_confidence"],
+            "date":        latest_ctx.get("date", ""),
+            "source_links": t.get("source_links", [])[:2],
+            "domain":     domain,
+            "score":      t["avg_materiality"] * 0.5,
+        })
+
+    # Group by domain, sort by score, pick top N per domain (prefer unique tickers)
+    by_domain: dict[str, list] = {d: [] for d in EQUITY_DOMAINS}
+    for c in candidates:
+        if c["domain"] in by_domain:
+            by_domain[c["domain"]].append(c)
+
+    selected = []
+    for domain, sigs in by_domain.items():
+        if not sigs:
+            continue
+        sigs.sort(key=lambda x: -x["score"])
+        chosen: list[dict] = []
+        tickers_used: set[str] = set()
+        # First pass: one per ticker
+        for s in sigs:
+            if len(chosen) >= max_per_domain:
+                break
+            if s["ticker"] not in tickers_used:
+                tickers_used.add(s["ticker"])
+                chosen.append(s)
+        # Second pass: fill remaining slots
+        for s in sigs:
+            if len(chosen) >= max_per_domain:
+                break
+            if s not in chosen:
+                chosen.append(s)
+        for s in chosen:
+            s["support_level"] = (
+                "multi_source" if len({x["ticker"] for x in chosen}) >= 2
+                else "single_source_strong"
+            )
+        selected.extend(chosen)
+
+    selected.sort(key=lambda x: -x["score"])
+    return selected
+
+
 # ===========================================================================
 # LM STUDIO CLIENT
 # ===========================================================================
@@ -181,7 +311,7 @@ def _extract_json(text):
     raise ValueError(f"Could not extract JSON. Output starts:\n{text[:400]}")
 
 
-def _complete(messages, model, temperature=0.1, max_tokens=2500):
+def _complete(messages, model, temperature=0.1, max_tokens=2500, json_mode=False):
     model = _ensure_model(model)
     idle_s = int(os.getenv("LLM_TOKEN_IDLE_TIMEOUT_SECONDS", "300"))
     payload = {
@@ -191,6 +321,9 @@ def _complete(messages, model, temperature=0.1, max_tokens=2500):
     if LLM_PROVIDER != "openai":
         payload["context_length"] = LMS_CONTEXT
         payload["ttl"] = int(os.getenv("LMSTUDIO_TTL_SECONDS", "60"))
+    # Grammar-constrained JSON generation — supported by LM Studio 0.3+ and OpenAI
+    if json_mode:
+        payload["response_format"] = {"type": "json_object"}
 
     headers = {"Authorization": f"Bearer {API_KEY}"}
     url = f"{BASE_URL}/chat/completions"
@@ -265,14 +398,14 @@ def _complete_json(messages, model, temperature=0.1, max_tokens=2500):
         return msgs
 
     attempts = [
-        (model,         messages,                temperature),
-        (model,         _append(messages, strict), 0.05),
-        (FALLBACK_MODEL, _append(messages, strict), 0.05),
+        (model,          messages,                  temperature),
+        (model,          _append(messages, strict),  0.05),
+        (FALLBACK_MODEL, _append(messages, strict),  0.05),
     ]
     last_err = ValueError("no attempts")
     for m, msgs, t in attempts:
         try:
-            raw = _complete(msgs, m, t, max_tokens)
+            raw = _complete(msgs, m, t, max_tokens, json_mode=True)
             return _extract_json(raw), m
         except (ValueError, RuntimeError) as e:
             last_err = e
@@ -761,6 +894,112 @@ SYNTHESIS_SCHEMA = {
 }
 SYNTHESIS_SCHEMA_JSON = json.dumps(SYNTHESIS_SCHEMA, indent=2)
 
+# Strict JSON Schema passed for OpenAI Structured Outputs.
+# For LM Studio we fall back to the json_object response_format + retry path.
+SYNTHESIS_JSON_SCHEMA: dict = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": [
+        "one_sentence_takeaway", "summary", "dominant_themes",
+        "top_signals", "converging_theses", "diverging_views",
+        "key_risks", "actionable_intelligence", "notable_quotes", "tags",
+    ],
+    "properties": {
+        "one_sentence_takeaway": {"type": "string"},
+        "summary":               {"type": "string"},
+        "dominant_themes": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["theme", "strength", "evidence"],
+                "properties": {
+                    "theme":    {"type": "string"},
+                    "strength": {"type": "string", "enum": ["high", "medium", "low"]},
+                    "evidence": {"type": "string"},
+                },
+            },
+        },
+        "top_signals": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["asset", "signal", "conviction", "mention_pattern", "why"],
+                "properties": {
+                    "asset":           {"type": "string"},
+                    "signal":          {"type": "string", "enum": ["bullish", "bearish", "neutral", "mixed"]},
+                    "conviction":      {"type": "string", "enum": ["high", "medium", "low"]},
+                    "mention_pattern": {"type": "string"},
+                    "why":             {"type": "string"},
+                },
+            },
+        },
+        "converging_theses": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["thesis", "sources", "bull_case", "bear_case"],
+                "properties": {
+                    "thesis":    {"type": "string"},
+                    "sources":   {"type": "string"},
+                    "bull_case": {"type": "string"},
+                    "bear_case": {"type": "string"},
+                },
+            },
+        },
+        "diverging_views": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["topic", "view_a", "view_b", "sources"],
+                "properties": {
+                    "topic":   {"type": "string"},
+                    "view_a":  {"type": "string"},
+                    "view_b":  {"type": "string"},
+                    "sources": {"type": "string"},
+                },
+            },
+        },
+        "key_risks": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["risk", "severity", "frequency"],
+                "properties": {
+                    "risk":      {"type": "string"},
+                    "severity":  {"type": "string", "enum": ["high", "medium", "low"]},
+                    "frequency": {"type": "string"},
+                },
+            },
+        },
+        "actionable_intelligence": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["action", "urgency", "rationale"],
+                "properties": {
+                    "action":    {"type": "string"},
+                    "urgency":   {"type": "string", "enum": ["high", "medium", "low"]},
+                    "rationale": {"type": "string"},
+                },
+            },
+        },
+        "notable_quotes": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["quote", "speaker", "source", "why_it_matters"],
+                "properties": {
+                    "quote":          {"type": "string"},
+                    "speaker":        {"type": "string"},
+                    "source":         {"type": "string"},
+                    "why_it_matters": {"type": "string"},
+                },
+            },
+        },
+        "tags": {"type": "array", "items": {"type": "string"}},
+    },
+}
+
 SYSTEM_PROMPT = (
     "You are a senior equity research analyst. You receive pre-aggregated, "
     "structured data from multiple daily watchlist catalyst briefs produced by "
@@ -774,23 +1013,59 @@ SYSTEM_PROMPT = (
 )
 
 
-def synthesize(aggregated_text, model):
+def _format_selected_signals(selected_signals: list[dict]) -> str:
+    """Format curated signals into a compact block for the LLM prompt."""
+    if not selected_signals:
+        return "(none)"
+    lines = []
+    for s in selected_signals:
+        domain = s.get("domain", "")
+        support = s.get("support_level", "single_source_strong")
+        ticker = s.get("ticker", "")
+        evt = s.get("event_type", "")
+        date = s.get("date", "")
+        mat = s.get("materiality", 0)
+        conf = s.get("confidence", 0)
+        lines.append(f"[{domain} | {support}] {ticker} / {evt} / {date} mat={mat:.2f} conf={conf:.2f}")
+        title = s.get("title", "")
+        if title:
+            lines.append(f"  title: {title}")
+        why = s.get("why", "")
+        if why:
+            lines.append(f"  why:   {why[:140]}")
+    return "\n".join(lines)
+
+
+def synthesize(aggregated_text: str, model: str, selected_signals: list[dict] | None = None):
+    signals_block = _format_selected_signals(selected_signals or [])
+    domain_counts: dict[str, int] = {}
+    for s in (selected_signals or []):
+        d = s.get("domain", "")
+        domain_counts[d] = domain_counts.get(d, 0) + 1
+    dc_str = ", ".join(f"{d}:{n}" for d, n in sorted(domain_counts.items()))
+    if dc_str:
+        print(f"    Signal domains: {dc_str}")
+
     user_content = (
         f"You are synthesizing equity intelligence from {PROJECT_NAME}.\n\n"
         "The data below was aggregated from multiple daily catalyst briefs. "
         "Find patterns across briefs, rank signals by materiality and frequency, "
         "and surface actionable intelligence.\n\n"
-        f"{aggregated_text}\n\n"
+        f"DOMAIN-BALANCED SELECTED SIGNALS ({len(selected_signals or [])} total):\n"
+        f"{signals_block}\n\n"
+        f"FULL AGGREGATED DATA:\n{aggregated_text}\n\n"
         f"Return a JSON object matching this exact schema:\n{SYNTHESIS_SCHEMA_JSON}\n\n"
         "Rules:\n"
-        "- DOMINANT THEMES: event types, sectors, or macro themes repeating across briefs.\n"
-        "- TOP SIGNALS: tickers with strongest cross-brief signal (mentions x materiality). "
-        "Flag price moves.\n"
+        "- DOMINANT THEMES: event types, sectors, or macro themes repeating across briefs. "
+        "Cover all domains that had selected signals above.\n"
+        "- TOP SIGNALS: tickers with strongest cross-brief signal (mentions × materiality). "
+        "Flag price moves. Aim for 4-6 signals.\n"
         "- CONVERGING THESES: directional arguments appearing across multiple tickers or briefs.\n"
         "- DIVERGING VIEWS: contradictory signals on the same ticker or theme.\n"
-        "- RISKS: restatement, bankruptcy, dilution, litigation -- by frequency and severity.\n"
-        "- ACTIONABLE INTELLIGENCE: specific tickers and events to investigate next.\n"
-        "- Return ONLY the JSON object. No markdown, no explanations.\n"
+        "- RISKS: restatement, bankruptcy, dilution, litigation — by frequency and severity.\n"
+        "- ACTIONABLE INTELLIGENCE: specific tickers and events to investigate next. "
+        "Aim for 2-4 items.\n"
+        "- Be specific: use names, numbers, exact claims. Return ONLY the JSON object.\n"
     )
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -798,6 +1073,144 @@ def synthesize(aggregated_text, model):
     ]
     print(f"    Running synthesis ({len(aggregated_text):,} chars)...")
     return _complete_json(messages, model, max_tokens=LLM_MAX_TOKENS)
+
+
+# ===========================================================================
+# SYNTHESIS QUALITY VALIDATION & REPAIR
+# ===========================================================================
+
+_DROPPED_DOMAIN_RE = re.compile(r"Domain '([^']+)' had signals but is absent")
+
+
+def _validate_synthesis(synthesis: dict, selected_signals: list[dict]) -> list[str]:
+    """
+    Check that all domains with curated signals are represented in the output.
+    Returns a list of warning strings (empty = clean).
+    """
+    warnings: list[str] = []
+
+    # Which domains had selected signals?
+    signal_domains = {s.get("domain", "") for s in selected_signals if s.get("domain")}
+
+    # Which domains are covered by top_signals and key_risks?
+    covered_tickers = {s.get("asset", "").upper() for s in synthesis.get("top_signals", [])}
+    covered_tickers |= {r.get("risk", "")[:10].upper() for r in synthesis.get("key_risks", [])}
+
+    # Map covered tickers back to domains via selected_signals
+    covered_domains: set[str] = set()
+    for s in selected_signals:
+        if s.get("ticker", "").upper() in covered_tickers:
+            covered_domains.add(s.get("domain", ""))
+
+    # Also treat any dominant_themes as covering their implicit domain
+    for t in synthesis.get("dominant_themes", []):
+        theme_text = (t.get("theme", "") + " " + t.get("evidence", "")).lower()
+        for domain, keywords in {
+            "earnings_guidance": ["earnings", "guidance", "analyst", "revenue", "eps"],
+            "corporate_action":  ["merger", "acquisition", "buyback", "dividend", "dilution", "insider"],
+            "risk_legal":        ["litigation", "regulatory", "bankruptcy", "restatement", "management"],
+            "product_macro":     ["product", "launch", "macro", "tariff", "rate", "fed"],
+            "market_technical":  ["volume", "price move", "unusual", "momentum"],
+        }.items():
+            if any(kw in theme_text for kw in keywords):
+                covered_domains.add(domain)
+
+    for domain in signal_domains:
+        if domain and domain not in covered_domains:
+            warnings.append(
+                f"Domain '{domain}' had signals but is absent from top_signals, "
+                "key_risks, and dominant_themes."
+            )
+
+    # Sanity: top_signals should have 4+ entries when data is available
+    n_signals = len(synthesis.get("top_signals", []))
+    if selected_signals and n_signals < 2:
+        warnings.append(f"top_signals has only {n_signals} entries despite {len(selected_signals)} curated signals.")
+
+    # actionable_intelligence should be non-empty
+    if not synthesis.get("actionable_intelligence"):
+        warnings.append("actionable_intelligence is empty.")
+
+    return warnings
+
+
+REPAIR_SCHEMA_JSON = json.dumps({
+    "actionable_intelligence": [
+        {"action": "str", "urgency": "high|medium|low", "rationale": "str"}
+    ],
+    "additional_top_signals": [
+        {"asset": "ticker", "signal": "bullish|bearish|neutral|mixed",
+         "conviction": "high|medium|low", "mention_pattern": "str", "why": "str"}
+    ],
+}, indent=2)
+
+
+def _repair_synthesis(
+    synthesis: dict,
+    selected_signals: list[dict],
+    warnings: list[str],
+    model: str,
+) -> dict:
+    """
+    Targeted second LLM call to patch gaps identified by _validate_synthesis().
+    Mirrors weekly_synthesis.py's _repair_omitted_domains() pattern.
+    """
+    missing_domains = set()
+    for w in warnings:
+        m = _DROPPED_DOMAIN_RE.search(w)
+        if m:
+            missing_domains.add(m.group(1))
+
+    needs_actions = any("actionable_intelligence is empty" in w for w in warnings)
+    needs_signals = any("top_signals has only" in w for w in warnings)
+
+    if not missing_domains and not needs_actions and not needs_signals:
+        return synthesis  # nothing to repair
+
+    md_str = ", ".join(sorted(missing_domains)) if missing_domains else "(none)"
+    print(f"  [repair] running targeted repair — missing domains: {md_str}")
+
+    relevant = [s for s in selected_signals if not missing_domains or s.get("domain") in missing_domains]
+    sig_lines = []
+    for s in relevant[:12]:
+        sig_lines.append(
+            f"[{s.get('domain')}] {s.get('ticker')} / {s.get('event_type')} / "
+            f"{s.get('date')}: {s.get('title') or s.get('why', '')[:100]}"
+        )
+    signals_block = "\n".join(sig_lines) or "(none)"
+
+    patch_prompt = (
+        f"The equity synthesis is missing coverage for: {md_str}.\n\n"
+        "Using ONLY the signals below, add:\n"
+        "1. Any missing top_signals for uncovered domains (as additional_top_signals)\n"
+        "2. 2-3 actionable_intelligence items if currently empty\n\n"
+        f"SIGNALS TO COVER:\n{signals_block}\n\n"
+        f"Return ONLY JSON matching:\n{REPAIR_SCHEMA_JSON}\n\n"
+        "Do not invent facts. Use cautious language. Return ONLY the JSON object."
+    )
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user",   "content": patch_prompt},
+    ]
+    try:
+        patch, _ = _complete_json(messages, model, max_tokens=1200)
+    except (ValueError, RuntimeError) as e:
+        print(f"  [repair] WARNING: repair call failed: {e} — skipping.")
+        return synthesis
+
+    # Merge patch into synthesis
+    extra_signals = patch.get("additional_top_signals", [])
+    if extra_signals:
+        synthesis.setdefault("top_signals", []).extend(extra_signals)
+        print(f"  [repair] appended {len(extra_signals)} signal(s)")
+
+    if needs_actions or not synthesis.get("actionable_intelligence"):
+        new_actions = patch.get("actionable_intelligence", [])
+        if new_actions:
+            synthesis["actionable_intelligence"] = new_actions
+            print(f"  [repair] set {len(new_actions)} actionable_intelligence item(s)")
+
+    return synthesis
 
 
 # ===========================================================================
@@ -1001,20 +1414,44 @@ def main():
 
     aggregated_text = format_for_llm(agg)
 
+    # Domain-balanced signal selection (mirrors Podcasts Pull weekly_synthesis pattern)
+    selected_signals = _select_balanced_signals(agg)
+    if selected_signals:
+        dc: dict[str, int] = {}
+        for s in selected_signals:
+            dc[s.get("domain", "")] = dc.get(s.get("domain", ""), 0) + 1
+        dc_str = ", ".join(f"{d}:{n}" for d, n in sorted(dc.items()))
+        print(f"  Selected {len(selected_signals)} signals for LLM ({dc_str})")
+    print()
+
     if args.aggregate_only:
         print("-- AGGREGATED DATA (--aggregate-only) ----------------------")
         print(aggregated_text)
+        print("\n-- SELECTED SIGNALS --")
+        print(_format_selected_signals(selected_signals))
         return
 
     print("Running LLM synthesis...")
     try:
-        intelligence, model_used = synthesize(aggregated_text, args.model)
+        intelligence, model_used = synthesize(aggregated_text, args.model, selected_signals)
     except LLMHangError as e:
         print(f"\n[error] LLM hang: {e}")
         sys.exit(1)
     except (ValueError, RuntimeError) as e:
         print(f"\n[error] Synthesis failed: {e}")
         sys.exit(1)
+
+    # Validate coverage and run repair pass if needed
+    warnings = _validate_synthesis(intelligence, selected_signals)
+    if warnings:
+        for w in warnings:
+            print(f"  [quality] {w}")
+        intelligence = _repair_synthesis(intelligence, selected_signals, warnings, model_used)
+        # Re-validate after repair
+        post_warnings = _validate_synthesis(intelligence, selected_signals)
+        if post_warnings:
+            print(f"  [quality] {len(post_warnings)} warning(s) remain after repair.")
+    intelligence["quality_warnings"] = warnings
 
     md_path, json_path = save_report(intelligence, agg, model_used)
 
