@@ -173,7 +173,7 @@ async def sync_company_filings(
     Returns list of upserted Filing objects.
     """
     if not company.cik:
-        logger.warning("no_cik_for_company", ticker=company.ticker)
+        logger.debug("no_cik_skipping_filings_sync", ticker=company.ticker)
         return []
 
     logger.info("sync_filings_start", ticker=company.ticker, cik=company.cik)

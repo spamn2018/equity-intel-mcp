@@ -17,6 +17,15 @@ from equity_intel.sec.client import SECClient, normalize_cik
 
 logger = get_logger(__name__)
 
+# ETFs and funds tracked for news/price context only.
+# They are not in the SEC's equity ticker map and have no useful 10-K/8-K
+# filings — their SEC filings are N-PORT / N-CEN (fund reports), which are
+# out of scope. Upsert with known metadata but skip the WARNING log.
+KNOWN_ETFS: Dict[str, Dict] = {
+    "BOTZ": {"name": "Global X Robotics & Artificial Intelligence ETF", "exchange": "NASDAQ"},
+    "ROBO": {"name": "ROBO Global Robotics and Automation Index ETF",   "exchange": "NYSE"},
+}
+
 
 async def fetch_ticker_cik_map(client: SECClient) -> Dict[str, str]:
     """
@@ -123,8 +132,14 @@ async def sync_company_universe(
         # Also add any tickers not found in map
         for t in tickers_upper:
             if t not in filtered:
-                logger.warning("ticker_not_found_in_sec_map", ticker=t)
-                filtered[t] = {}
+                if t in KNOWN_ETFS:
+                    # ETFs are intentionally absent from the SEC equity map —
+                    # they file N-PORT/N-CEN, not 10-K/8-K. Not a problem.
+                    logger.debug("etf_skipped_no_sec_cik", ticker=t)
+                    filtered[t] = {**KNOWN_ETFS[t], "cik": None}
+                else:
+                    logger.warning("ticker_not_found_in_sec_map", ticker=t)
+                    filtered[t] = {}
         exchange_map = filtered
 
     result: Dict[str, str] = {}
