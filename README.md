@@ -4,7 +4,18 @@ An equities-only financial intelligence pipeline that ingests SEC EDGAR filings,
 disclosures, classifies market-moving events, and exposes everything through an MCP server
 so an AI assistant can answer stock research questions with fresh, source-linked evidence.
 
-**This project has no crypto, no trading execution, no brokerage integrations.**
+The active research scope is an equities watch system for:
+
+- **AI infrastructure and picks-and-shovels**: semiconductors, semiconductor equipment,
+  data centers, power/grid, networking, memory/storage, and critical minerals.
+- **401k overlap replacement ideas**: individual-stock watch buckets that avoid simply
+  duplicating large positions already owned through broad 401k index funds.
+- **TradHedge**: a separate durability-oriented equity watch bucket for old-line,
+  tradable U.S. company lineages.
+
+**This project has no crypto assets, no trading execution, and no brokerage integrations.**
+Bitcoin-miner tickers may appear only when researched as equities with data-center,
+power, or high-performance-computing optionality.
 
 ---
 
@@ -30,6 +41,7 @@ so an AI assistant can answer stock research questions with fresh, source-linked
 | `events/dedup.py` | Deterministic semantic deduplication — title normalization, Jaccard similarity, cross-week cluster matching |
 | `export/` | Delivery adapter abstraction — `LocalFileDelivery` (JSON/Markdown); Email/Slack adapters planned |
 | `dashboard/` | Local Flask research dashboard — evidence viewer with filtering, score rings, source links, and personal bias layer |
+| `config/ai_tickers.json` | Thematic ticker universe including AI infrastructure, replacement candidates, critical minerals, and TradHedge |
 
 ---
 
@@ -495,6 +507,132 @@ Future delivery channels (not yet active — no credentials required):
 | `WebhookDelivery` | 🔲 Planned | Generic HTTP POST to any URL |
 
 None of the planned adapters are defaults. The system works fully offline with local files only.
+
+---
+
+## Research Universe vs Active Watchlist
+
+### Two-layer design
+
+The system separates *what you're watching* from *what you're actively monitoring*:
+
+**Research universe** — `config/ai_tickers.json`
+
+The broad, thesis-driven list of every name that fits the identified investment themes (semiconductors, power, data centers, rare earths, AI software, robotics, and more).
+It is allowed to contain emerging, speculative, or early-stage names.
+This file is the structured source of truth for the full universe and is read at runtime by `equity_intel.research_universe`.
+
+**Active watchlist** — `.env`
+
+The smaller operational set used by daily briefs, ingestion workers, and the dashboard.
+
+```env
+DEFAULT_TICKERS=NVDA,AMD,AVGO,MSFT,GOOGL,AMZN,TSLA,ISRG,SYM,META,PLTR,AI,BOTZ,ROBO
+DAILY_BRIEF_WATCHLIST=
+```
+
+`DEFAULT_TICKERS` is used unless `DAILY_BRIEF_WATCHLIST` is also set, in which case that takes priority for briefs.
+
+### Ticker stages
+
+Every ticker entry in `config/ai_tickers.json` can carry an optional `stage` field:
+
+| Stage | Meaning |
+|---|---|
+| `probe` | Early idea — collect data, do not treat as high-conviction |
+| `watch` | Credible thesis fit — monitor catalysts |
+| `active` | Part of the active research watchlist |
+| `core` | Established high-conviction name |
+| `archived` | No longer relevant, kept for history |
+
+Tickers without an explicit `stage` use the minimal shape and are treated as unclassified.
+
+### Ticker metadata shape
+
+Minimal shape (existing entries are fine as-is):
+
+```json
+{ "ticker": "NVDA", "name": "NVIDIA Corporation", "why": "..." }
+```
+
+Richer shape for emerging or developing opportunities:
+
+```json
+{
+  "ticker": "POWL",
+  "name": "Powell Industries Inc",
+  "why": "Electrical equipment exposure to power infrastructure buildout.",
+  "stage": "watch",
+  "conviction": "medium",
+  "thesis_tags": ["power", "data_centers", "electrification"],
+  "risk_tags": ["cyclical", "small_cap", "execution"],
+  "source": "manual_research",
+  "added_at": "2026-05-25",
+  "review_after": "2026-08-25",
+  "max_position_pct": 3
+}
+```
+
+### How to add a new opportunity
+
+1. Add the ticker to the appropriate category in `config/ai_tickers.json`.
+2. Include `stage`, `conviction`, `thesis_tags`, `risk_tags`, `added_at`, and `review_after`.
+3. If the ticker should be actively monitored every day, add it to `DEFAULT_TICKERS` or `DAILY_BRIEF_WATCHLIST` in `.env`.
+4. Run the ingestion pipeline for the new ticker before expecting catalysts or 13F signals to appear:
+
+```bash
+python -m equity_intel.workers.sync_companies --tickers POWL
+python -m equity_intel.workers.sync_filings --tickers POWL
+python -m equity_intel.workers.sync_documents --tickers POWL
+python -m equity_intel.workers.build_events --tickers POWL
+```
+
+> **Note:** 13F institutional-holdings signals only resolve for companies already present in the `companies` table.
+> New tickers must be synced via `sync_companies` first.
+
+### Language for probe and watch names
+
+The system labels probe-stage catalysts with a clear note:
+
+> *"This is an early-stage research candidate (probe). Treat with extra caution — primary-source confirmation required before drawing any conclusions. Not comparable to established names."*
+
+Avoid language that implies a buy/sell signal.
+Prefer: *early-stage research candidate*, *probe-stage ticker*, *developing thesis*, *watchlist candidate*, *requires primary-source confirmation*.
+
+### Research universe API
+
+The dashboard exposes the full universe at:
+
+```
+GET /api/research_universe
+```
+
+Returns categories, ticker metadata, stage, thesis tags, risk tags, and the total ticker count. Read-only.
+
+### Programmatic access
+
+```python
+from equity_intel.research_universe import (
+    get_all_research_tickers,
+    get_ticker_category_map,
+    get_ticker_metadata,
+    get_tickers_by_stage,
+)
+
+# All tickers in the universe (deduplicated, uppercase)
+tickers = get_all_research_tickers()
+
+# ticker → human-readable category label
+cat_map = get_ticker_category_map()   # {"NVDA": "Semiconductors Compute", ...}
+
+# Full metadata dict keyed by ticker
+meta = get_ticker_metadata()          # {"NVDA": {"stage": "core", ...}, ...}
+
+# Filter by stage
+probes = get_tickers_by_stage("probe")  # early-stage names only
+```
+
+Results are cached per config-file path and thread-safe.
 
 ---
 

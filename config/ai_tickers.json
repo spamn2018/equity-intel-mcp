@@ -1,12 +1,32 @@
 {
-  "_comment": "AI infrastructure ticker universe for the equity intelligence system. Covers all major 'picks and shovels' plays around the AGI/AI build-out: chips, cloud, data centers, power, networking, memory, and adjacent infrastructure.",
-  "_theme": "AGI / AI infrastructure — compute, power, semiconductors, data centers, networking, and picks-and-shovels plays.",
+  "_comment": "AI infrastructure ticker universe for the equity intelligence system. Covers major picks-and-shovels plays around the AGI/AI build-out: chips, cloud, data centers, power, networking, memory, critical minerals, and a separate TradHedge durability watch bucket.",
+  "_theme": "AGI / AI infrastructure - compute, power, semiconductors, data centers, networking, critical supply chains, and replacement candidates for already-owned 401k mega-cap exposure.",
 
   "semiconductors_compute": {
     "_note": "The companies actually building the chips that run AI. NVIDIA is the dominant player — every major AI training workload runs on their GPUs. AMD is the main challenger. AVGO and MRVL make custom AI chips (ASICs) for Google, Microsoft, and Meta. ARM designs the underlying chip architecture used everywhere.",
     "tickers": [
-      { "ticker": "NVDA", "name": "NVIDIA Corporation", "why": "Dominant GPU maker for AI training and inference. H100/H200/Blackwell chips are the backbone of every major AI lab." },
-      { "ticker": "AMD", "name": "Advanced Micro Devices", "why": "Main GPU competitor to NVIDIA. MI300X/MI325X series targeting AI data centers. Also dominant in data center CPUs." },
+      {
+        "ticker": "NVDA",
+        "name": "NVIDIA Corporation",
+        "why": "Dominant GPU maker for AI training and inference. H100/H200/Blackwell chips are the backbone of every major AI lab.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["semiconductors", "ai_compute", "data_centers"],
+        "risk_tags": ["valuation", "concentration_risk", "geopolitical"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
+      {
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices",
+        "why": "Main GPU competitor to NVIDIA. MI300X/MI325X series targeting AI data centers. Also dominant in data center CPUs.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["semiconductors", "ai_compute", "data_centers"],
+        "risk_tags": ["nvidia_competition", "execution", "valuation"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
       { "ticker": "AVGO", "name": "Broadcom Inc", "why": "Builds custom AI chips (ASICs) for Google (TPUs) and Meta. Also dominates network switching silicon for AI clusters." },
       { "ticker": "INTC", "name": "Intel Corporation", "why": "Gaudi AI accelerators and massive data center CPU business. Rebuilding fab capacity in the US." },
       { "ticker": "QCOM", "name": "Qualcomm Inc", "why": "AI inference chips for edge devices (phones, PCs). On-device AI is a major growth vector." },
@@ -31,10 +51,50 @@
   "cloud_hyperscalers": {
     "_note": "The companies building and operating the AI cloud. They are simultaneously the biggest customers of AI chips AND the biggest builders of AI products. Their capex spending announcements move the entire AI supply chain.",
     "tickers": [
-      { "ticker": "MSFT",  "name": "Microsoft Corporation", "why": "OpenAI partner. Azure is the dominant AI cloud. Copilot integrated across Office. Spending $80B+ on AI capex in FY2025." },
-      { "ticker": "GOOGL", "name": "Alphabet Inc (Google)", "why": "Gemini AI, Google Cloud AI, TPU custom chips, DeepMind/Google Brain. Both an AI cloud provider and an AI frontier lab." },
-      { "ticker": "AMZN",  "name": "Amazon.com Inc", "why": "AWS is the largest cloud platform. Building Trainium/Inferentia AI chips. Heavy AI infrastructure investment across logistics and AWS." },
-      { "ticker": "META",  "name": "Meta Platforms Inc", "why": "Llama open-source AI models. Building massive GPU clusters. AI powers all ad targeting. One of the top 3 AI compute spenders globally." },
+      {
+        "ticker": "MSFT",
+        "name": "Microsoft Corporation",
+        "why": "OpenAI partner. Azure is the dominant AI cloud. Copilot integrated across Office. Spending $80B+ on AI capex in FY2025.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["cloud", "ai_software", "enterprise"],
+        "risk_tags": ["valuation", "regulation", "antitrust"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
+      {
+        "ticker": "GOOGL",
+        "name": "Alphabet Inc (Google)",
+        "why": "Gemini AI, Google Cloud AI, TPU custom chips, DeepMind/Google Brain. Both an AI cloud provider and an AI frontier lab.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["cloud", "ai_software", "search"],
+        "risk_tags": ["regulation", "antitrust", "ai_disruption_to_search"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
+      {
+        "ticker": "AMZN",
+        "name": "Amazon.com Inc",
+        "why": "AWS is the largest cloud platform. Building Trainium/Inferentia AI chips. Heavy AI infrastructure investment across logistics and AWS.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["cloud", "ai_compute", "ecommerce"],
+        "risk_tags": ["valuation", "regulation", "aws_competition"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
+      {
+        "ticker": "META",
+        "name": "Meta Platforms Inc",
+        "why": "Llama open-source AI models. Building massive GPU clusters. AI powers all ad targeting. One of the top 3 AI compute spenders globally.",
+        "stage": "core",
+        "conviction": "high",
+        "thesis_tags": ["ai_software", "social_media", "ai_compute"],
+        "risk_tags": ["regulation", "privacy", "ad_market"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
       { "ticker": "ORCL",  "name": "Oracle Corporation", "why": "Oracle Cloud Infrastructure (OCI) is the fastest-growing AI cloud. Signed massive GPU cluster deals with OpenAI and others. Cofounder Larry Ellison has made AI the company's entire identity." }
     ]
   },
@@ -42,7 +102,17 @@
   "ai_software_platforms": {
     "_note": "Software companies that are the 'rails' for AI — data pipelines, observability, developer tools, and AI applications. These companies win as AI adoption scales across enterprises.",
     "tickers": [
-      { "ticker": "PLTR", "name": "Palantir Technologies Inc", "why": "AI Platform (AIP) deployed across US government and defense. Real AI revenue growth. AIP is considered the leading enterprise AI deployment platform." },
+      {
+        "ticker": "PLTR",
+        "name": "Palantir Technologies Inc",
+        "why": "AI Platform (AIP) deployed across US government and defense. Real AI revenue growth. AIP is considered the leading enterprise AI deployment platform.",
+        "stage": "active",
+        "conviction": "high",
+        "thesis_tags": ["ai_software", "defense_tech", "enterprise"],
+        "risk_tags": ["valuation", "contract_concentration", "government_budget"],
+        "source": "manual_research",
+        "added_at": "2024-01-01"
+      },
       { "ticker": "SNOW", "name": "Snowflake Inc", "why": "Data cloud and AI data platform. AI workloads need centralized, governed data — Snowflake is where enterprises store and process that data." },
       { "ticker": "DDOG", "name": "Datadog Inc", "why": "Observability and monitoring for cloud and AI infrastructure. As AI workloads scale, monitoring spend scales with them." },
       { "ticker": "NET",  "name": "Cloudflare Inc", "why": "Global network and edge computing platform. AI inference at the edge is a major growth thesis. Also provides AI security tools." },
@@ -56,20 +126,52 @@
     "tickers": [
       { "ticker": "EQIX", "name": "Equinix Inc", "why": "Largest global data center REIT. Operates in 70 metros across 33 countries. AI workloads require colocation near network hubs — Equinix is where that happens." },
       { "ticker": "DLR",  "name": "Digital Realty Trust Inc", "why": "Second largest data center REIT. Hyperscale campuses purpose-built for cloud and AI. Expanding rapidly to meet AI demand." },
-      { "ticker": "IRON", "name": "Iron Mountain Inc", "why": "Moving from document storage to data center/AI infrastructure. Fastest-growing data center developer in the REIT sector." }
+      { "ticker": "IRM", "name": "Iron Mountain Inc", "why": "Moving from document storage to data center/AI infrastructure. Fast-growing data center developer in the REIT sector." }
     ]
   },
 
   "power_and_energy": {
     "_note": "AI's dirtiest secret is how much electricity it consumes. A single H100 GPU cluster uses as much power as a small town. Data centers are now the fastest-growing source of electricity demand in the US. The companies that generate and manage that power are direct AI plays.",
     "tickers": [
-      { "ticker": "CEG",  "name": "Constellation Energy Corporation", "why": "Largest nuclear energy producer in the US. AI data centers are signing long-term power purchase agreements (PPAs) with nuclear plants for 24/7 clean power. Microsoft/Google/Amazon deals are driving massive valuation re-rating." },
+      {
+        "ticker": "CEG",
+        "name": "Constellation Energy Corporation",
+        "why": "Largest nuclear energy producer in the US. AI data centers are signing long-term power purchase agreements (PPAs) with nuclear plants for 24/7 clean power. Microsoft/Google/Amazon deals are driving massive valuation re-rating.",
+        "stage": "active",
+        "conviction": "high",
+        "thesis_tags": ["power", "nuclear", "data_centers"],
+        "risk_tags": ["regulatory", "policy_risk", "valuation"],
+        "source": "manual_research",
+        "added_at": "2024-06-01"
+      },
+      {
+        "ticker": "VRT",
+        "name": "Vertiv Holdings Co",
+        "why": "Data center power and cooling infrastructure — UPS, busway, thermal management. Revenue is directly tied to GPU rack density growth. Considered one of the purest AI infrastructure plays.",
+        "stage": "active",
+        "conviction": "high",
+        "thesis_tags": ["power", "data_centers", "electrification"],
+        "risk_tags": ["valuation", "supply_chain", "cyclical"],
+        "source": "manual_research",
+        "added_at": "2024-06-01"
+      },
+      {
+        "ticker": "POWL",
+        "name": "Powell Industries Inc",
+        "why": "Electrical switchgear and distribution equipment for industrial and data center use. Benefits directly from data center buildout.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["power", "data_centers", "electrification"],
+        "risk_tags": ["cyclical", "small_cap", "execution"],
+        "source": "manual_research",
+        "added_at": "2026-05-25",
+        "review_after": "2026-08-25",
+        "max_position_pct": 3
+      },
       { "ticker": "VST",  "name": "Vistra Energy Corp", "why": "Nuclear and natural gas power generation. Signed AI data center PPAs. Seen as a direct AI power play alongside Constellation." },
       { "ticker": "NEE",  "name": "NextEra Energy Inc", "why": "Largest renewable energy company in the world. Wind/solar buildout for data center customers. Long-term power contracting with hyperscalers." },
       { "ticker": "NRG",  "name": "NRG Energy Inc", "why": "Power generation and retail energy. Growing data center power supply business." },
       { "ticker": "ETN",  "name": "Eaton Corporation plc", "why": "Power management and electrical equipment. Makes the UPS systems, switchgear, and PDUs that every data center requires. Direct infrastructure picks-and-shovels." },
-      { "ticker": "VRT",  "name": "Vertiv Holdings Co", "why": "Data center power and cooling infrastructure — UPS, busway, thermal management. Revenue is directly tied to GPU rack density growth. Considered one of the purest AI infrastructure plays." },
-      { "ticker": "POWL", "name": "Powell Industries Inc", "why": "Electrical switchgear and distribution equipment for industrial and data center use. Benefits directly from data center buildout." },
       { "ticker": "FSLR", "name": "First Solar Inc", "why": "Largest US solar panel manufacturer. Hyperscalers are signing massive solar PPAs to power AI data centers." }
     ]
   },
@@ -96,22 +198,279 @@
   "bitcoin_miners_data_center_angle": {
     "_note": "Some Bitcoin miners are pivoting their power contracts and physical infrastructure toward AI and HPC (high-performance computing) hosting. They have cheap power deals and large physical footprints that are valuable for GPU colocation. This is the 'power arbitrage' AI thesis.",
     "tickers": [
-      { "ticker": "CORZ", "name": "Core Scientific Inc", "why": "Largest Bitcoin miner by hash rate. Has signed massive contracts to convert mining facilities to AI/HPC hosting (CoreWeave deal). Explicit AI infrastructure pivot." },
-      { "ticker": "CLSK", "name": "CleanSpark Inc", "why": "Bitcoin miner with low-cost, clean energy contracts. Power infrastructure is reusable for AI hosting." },
-      { "ticker": "RIOT", "name": "Riot Platforms Inc", "why": "Large-scale Bitcoin mining with Texas power infrastructure. Evaluating AI/HPC hosting conversion." },
-      { "ticker": "MARA", "name": "MARA Holdings Inc (Marathon Digital)", "why": "One of the largest Bitcoin miners. Power and facility scale makes AI hosting conversion possible." },
-      { "ticker": "HUT",  "name": "Hut 8 Corp", "why": "Canadian Bitcoin miner that has explicitly pivoted to AI and high-performance computing services." }
+      {
+        "ticker": "CORZ",
+        "name": "Core Scientific Inc",
+        "why": "Largest Bitcoin miner by hash rate. Has signed massive contracts to convert mining facilities to AI/HPC hosting (CoreWeave deal). Explicit AI infrastructure pivot.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["data_centers", "power", "ai_compute"],
+        "risk_tags": ["bitcoin_price", "execution", "leverage", "small_cap"],
+        "source": "manual_research",
+        "added_at": "2025-01-01"
+      },
+      {
+        "ticker": "CLSK",
+        "name": "CleanSpark Inc",
+        "why": "Bitcoin miner with low-cost, clean energy contracts. Power infrastructure is reusable for AI hosting.",
+        "stage": "watch",
+        "conviction": "low",
+        "thesis_tags": ["power", "data_centers"],
+        "risk_tags": ["bitcoin_price", "execution", "small_cap"],
+        "source": "manual_research",
+        "added_at": "2025-01-01"
+      },
+      {
+        "ticker": "RIOT",
+        "name": "Riot Platforms Inc",
+        "why": "Large-scale Bitcoin mining with Texas power infrastructure. Evaluating AI/HPC hosting conversion.",
+        "stage": "watch",
+        "conviction": "low",
+        "thesis_tags": ["power", "data_centers"],
+        "risk_tags": ["bitcoin_price", "execution", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2025-01-01"
+      },
+      {
+        "ticker": "MARA",
+        "name": "MARA Holdings Inc (Marathon Digital)",
+        "why": "One of the largest Bitcoin miners. Power and facility scale makes AI hosting conversion possible.",
+        "stage": "watch",
+        "conviction": "low",
+        "thesis_tags": ["power", "data_centers"],
+        "risk_tags": ["bitcoin_price", "execution", "leverage"],
+        "source": "manual_research",
+        "added_at": "2025-01-01"
+      },
+      {
+        "ticker": "HUT",
+        "name": "Hut 8 Corp",
+        "why": "Canadian Bitcoin miner that has explicitly pivoted to AI and high-performance computing services.",
+        "stage": "watch",
+        "conviction": "low",
+        "thesis_tags": ["data_centers", "ai_compute"],
+        "risk_tags": ["bitcoin_price", "execution", "small_cap", "liquidity"],
+        "source": "manual_research",
+        "added_at": "2025-01-01"
+      }
     ]
   },
 
   "critical_minerals_rare_earth": {
     "_note": "US rare earth independence play. China controls ~90% of processed rare earths critical for AI chips, defense, EVs, and magnets. Trump's Project Vault ($12B critical mineral reserve), CHIPS Act funding, and 2026 trade negotiations are accelerating a domestic mine-to-magnet supply chain. These are early-stage, policy-driven plays with high volatility.",
     "tickers": [
-      { "ticker": "MP", "name": "MP Materials Corp", "why": "Owns Mountain Pass, the only large-scale rare earth mine in North America. Transitioning from concentrate to finished magnets at Independence facility (magnet sales H2 2026). Closest to a blue-chip in this space." },
-      { "ticker": "USAR", "name": "USA Rare Earth Inc", "why": "Received $1.6B government investment (CHIPS Act + equity stake). Building mine-to-magnet platform. Phase 1a magnet plant commissioned, targeting 600 MTPA by Q4 2026. Heavy SEC filing activity — high signal for the intel system." },
-      { "ticker": "UUUU", "name": "Energy Fuels Inc", "why": "Dual uranium + rare earth play. Extracts rare earths from monazite sands using existing uranium processing infrastructure. In offtake talks with magnet makers outside Chinese supply chains." },
-      { "ticker": "AREC", "name": "American Resources Corporation", "why": "ReElement Technologies subsidiary building scalable rare earth refining and separation platform in the US. Earlier stage but addresses the processing gap." },
-      { "ticker": "UAMY", "name": "United States Antimony Corporation", "why": "Antimony and critical minerals producer. US antimony is a strategic mineral with defense applications. Benefits from same supply chain independence thesis." }
+      {
+        "ticker": "MP",
+        "name": "MP Materials Corp",
+        "why": "Owns Mountain Pass, the only large-scale rare earth mine in North America. Transitioning from concentrate to finished magnets at Independence facility (magnet sales H2 2026). Closest to a blue-chip in this space.",
+        "stage": "probe",
+        "conviction": "medium",
+        "thesis_tags": ["rare_earth", "defense_supply_chain", "electrification"],
+        "risk_tags": ["policy_risk", "commodity_price", "execution", "china_competition"],
+        "source": "manual_research",
+        "added_at": "2026-01-01",
+        "review_after": "2026-09-01"
+      },
+      {
+        "ticker": "USAR",
+        "name": "USA Rare Earth Inc",
+        "why": "Received $1.6B government investment (CHIPS Act + equity stake). Building mine-to-magnet platform. Phase 1a magnet plant commissioned, targeting 600 MTPA by Q4 2026. Heavy SEC filing activity — high signal for the intel system.",
+        "stage": "probe",
+        "conviction": "medium",
+        "thesis_tags": ["rare_earth", "defense_supply_chain", "electrification"],
+        "risk_tags": ["policy_risk", "execution", "small_cap", "liquidity", "government_dependency"],
+        "source": "manual_research",
+        "added_at": "2026-03-01",
+        "review_after": "2026-10-01"
+      },
+      {
+        "ticker": "UUUU",
+        "name": "Energy Fuels Inc",
+        "why": "Dual uranium + rare earth play. Extracts rare earths from monazite sands using existing uranium processing infrastructure. In offtake talks with magnet makers outside Chinese supply chains.",
+        "stage": "probe",
+        "conviction": "low",
+        "thesis_tags": ["rare_earth", "uranium", "defense_supply_chain"],
+        "risk_tags": ["commodity_price", "execution", "small_cap", "dual_commodity_risk"],
+        "source": "manual_research",
+        "added_at": "2026-01-01",
+        "review_after": "2026-09-01"
+      },
+      {
+        "ticker": "AREC",
+        "name": "American Resources Corporation",
+        "why": "ReElement Technologies subsidiary building scalable rare earth refining and separation platform in the US. Earlier stage but addresses the processing gap.",
+        "stage": "probe",
+        "conviction": "low",
+        "thesis_tags": ["rare_earth", "defense_supply_chain"],
+        "risk_tags": ["early_stage", "execution", "small_cap", "liquidity", "dilution_risk"],
+        "source": "manual_research",
+        "added_at": "2026-01-01",
+        "review_after": "2026-12-01"
+      },
+      {
+        "ticker": "UAMY",
+        "name": "United States Antimony Corporation",
+        "why": "Antimony and critical minerals producer. US antimony is a strategic mineral with defense applications. Benefits from same supply chain independence thesis.",
+        "stage": "probe",
+        "conviction": "low",
+        "thesis_tags": ["rare_earth", "defense_supply_chain", "critical_minerals"],
+        "risk_tags": ["early_stage", "execution", "small_cap", "liquidity", "commodity_price"],
+        "source": "manual_research",
+        "added_at": "2026-01-01",
+        "review_after": "2026-12-01"
+      }
+    ]
+  },
+
+  "ai_infrastructure_replacements": {
+    "_note": "Project-focus replacement card: 20 AI infrastructure and supply-chain tickers selected to reduce direct duplication with 401k mega-cap holdings while preserving exposure to the AI buildout.",
+    "tickers": [
+      { "ticker": "POWL", "name": "Powell Industries Inc", "why": "Domestic electrical switchgear and power-control equipment for data centers, utilities, and industrial power distribution.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "data_centers", "electrification"], "risk_tags": ["small_cap", "cyclical", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "ETN", "name": "Eaton Corporation plc", "why": "Power-management equipment used across data centers: switchgear, UPS systems, PDUs, and electrical distribution.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "electrification", "data_centers"], "risk_tags": ["valuation", "cyclical", "industrial_demand"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "VST", "name": "Vistra Corp", "why": "Power-generation platform with nuclear, gas, solar, and battery assets positioned for rising AI data-center electricity demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "nuclear", "data_centers"], "risk_tags": ["commodity_price", "regulatory", "power_market"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "NEE", "name": "NextEra Energy Inc", "why": "Large-scale power generation and renewables developer with data-center power demand as a major long-term growth vector.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "renewables", "data_centers"], "risk_tags": ["interest_rates", "regulatory", "project_execution"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "NRG", "name": "NRG Energy Inc", "why": "Power generation and retail energy exposure with optionality from data-center load growth and grid stress.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "data_centers"], "risk_tags": ["power_market", "commodity_price", "regulatory"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "ANET", "name": "Arista Networks Inc", "why": "High-speed switching and networking infrastructure inside AI data-center clusters.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "networking", "data_centers"], "risk_tags": ["valuation", "customer_concentration", "competition"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "CIEN", "name": "Ciena Corporation", "why": "Optical networking and bandwidth infrastructure for AI-era data-center interconnect and carrier capacity demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "optical_networking", "data_centers"], "risk_tags": ["cyclical", "carrier_spending", "competition"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "MRVL", "name": "Marvell Technology Inc", "why": "Custom AI silicon, optical DSP, silicon photonics, and data-infrastructure chips that complement AI accelerator buildouts.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "custom_silicon", "optical_interconnect"], "risk_tags": ["valuation", "execution", "customer_concentration"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "AMAT", "name": "Applied Materials Inc", "why": "Semiconductor manufacturing equipment and materials engineering required for advanced AI chips, DRAM, and packaging.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "advanced_packaging"], "risk_tags": ["semicap_cycle", "china_restrictions", "capex_cycle"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "LRCX", "name": "Lam Research Corporation", "why": "Etch and deposition tools for memory, NAND, DRAM, and advanced chip manufacturing tied to AI memory demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "memory"], "risk_tags": ["semicap_cycle", "memory_cycle", "china_restrictions"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "KLAC", "name": "KLA Corporation", "why": "Process-control and inspection tools that become more critical as AI chips, packaging, and fabs grow more complex.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "process_control"], "risk_tags": ["valuation", "semicap_cycle", "china_restrictions"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "MU", "name": "Micron Technology Inc", "why": "HBM, DRAM, and memory exposure for AI accelerators and data-center workloads.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "memory", "ai_compute"], "risk_tags": ["memory_cycle", "commodity_price", "capex_cycle"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "WDC", "name": "Western Digital Corporation", "why": "Storage infrastructure for massive AI training and inference datasets.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "storage", "data_centers"], "risk_tags": ["storage_cycle", "competition", "commodity_price"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "STX", "name": "Seagate Technology Holdings plc", "why": "Nearline hard-drive storage for hyperscale and AI data-center capacity growth.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "storage", "data_centers"], "risk_tags": ["storage_cycle", "competition", "commodity_price"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "EQIX", "name": "Equinix Inc", "why": "Global colocation and interconnection platform for data-center workloads and network-dense AI infrastructure.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "valuation", "capex_intensity"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "DLR", "name": "Digital Realty Trust Inc", "why": "Hyperscale data-center REIT with direct exposure to AI and cloud infrastructure demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "leverage", "capex_intensity"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "IRM", "name": "Iron Mountain Inc", "why": "Storage-to-data-center transition story with expanding digital infrastructure and colocation exposure.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "leverage", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "MP", "name": "MP Materials Corp", "why": "Domestic rare earth mining, processing, and magnet supply-chain exposure tied to AI, defense, electrification, and semiconductor resilience.", "stage": "probe", "conviction": "medium", "thesis_tags": ["ai_replacement", "critical_minerals", "rare_earth"], "risk_tags": ["commodity_price", "policy_risk", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "USAR", "name": "USA Rare Earth Inc", "why": "Domestic mine-to-magnet rare earth platform supported by U.S. supply-chain reshoring incentives.", "stage": "probe", "conviction": "medium", "thesis_tags": ["ai_replacement", "critical_minerals", "rare_earth"], "risk_tags": ["early_stage", "policy_risk", "execution", "liquidity"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "UUUU", "name": "Energy Fuels Inc", "why": "Uranium and rare-earth processing optionality for domestic critical-minerals supply chains.", "stage": "probe", "conviction": "low", "thesis_tags": ["ai_replacement", "critical_minerals", "uranium", "rare_earth"], "risk_tags": ["commodity_price", "execution", "small_cap"], "source": "manual_research", "added_at": "2026-05-27" }
+    ]
+  },
+
+  "trad_hedge": {
+    "_note": "TradHedge: old-line, tradable U.S. company lineages used as a durability-oriented alternative watch bucket when bond purchases do not fit the portfolio thesis. Dates are founding or predecessor-lineage dates, not always the exact modern corporate entity date.",
+    "tickers": [
+      {
+        "ticker": "BNY",
+        "name": "The Bank of New York Mellon Corporation",
+        "why": "Oldest continuously operating U.S. bank lineage through Bank of New York, founded in 1784 by Alexander Hamilton and other investors. Durability-oriented financial infrastructure exposure.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "financial_infrastructure"],
+        "risk_tags": ["interest_rates", "banking_cycle", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1784"
+      },
+      {
+        "ticker": "BAC",
+        "name": "Bank of America Corporation",
+        "why": "Traces one major predecessor lineage to Massachusetts Bank, chartered in 1784. Large U.S. banking exposure with deep historical roots.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "banking"],
+        "risk_tags": ["interest_rates", "credit_cycle", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1784"
+      },
+      {
+        "ticker": "FLS",
+        "name": "Flowserve Corporation",
+        "why": "Industrial flow-control lineage dating to 1790. Old-line infrastructure and industrial equipment exposure outside the mega-cap tech stack.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "industrials"],
+        "risk_tags": ["cyclical", "energy_capex", "industrial_demand"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1790"
+      },
+      {
+        "ticker": "CI",
+        "name": "The Cigna Group",
+        "why": "Insurance Company of North America lineage dates to 1792, making it one of the oldest U.S. insurance franchises. Defensive health and benefits exposure.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "healthcare"],
+        "risk_tags": ["healthcare_policy", "margin_pressure", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1792"
+      },
+      {
+        "ticker": "STT",
+        "name": "State Street Corporation",
+        "why": "Financial-services lineage dating to 1792. Custody, asset servicing, and institutional financial infrastructure exposure.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "financial_infrastructure"],
+        "risk_tags": ["market_levels", "fee_pressure", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1792"
+      },
+      {
+        "ticker": "JPM",
+        "name": "JPMorgan Chase & Co.",
+        "why": "Traces roots to The Manhattan Company, founded in 1799. Premier large U.S. bank with a long operating lineage and broad financial exposure.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "banking"],
+        "risk_tags": ["interest_rates", "credit_cycle", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1799"
+      },
+      {
+        "ticker": "WASH",
+        "name": "Washington Trust Bancorp, Inc.",
+        "why": "Community banking lineage dating to 1800. Smaller old-line bank exposure with a very long operating history.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "regional_banking"],
+        "risk_tags": ["regional_bank_risk", "credit_cycle", "liquidity"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1800"
+      },
+      {
+        "ticker": "CTVA",
+        "name": "Corteva, Inc.",
+        "why": "DuPont agricultural lineage dating to 1802. TradHedge exposure to seed, crop protection, and food-system inputs.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "agriculture"],
+        "risk_tags": ["commodity_cycle", "weather", "regulatory"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1802"
+      },
+      {
+        "ticker": "CL",
+        "name": "Colgate-Palmolive Company",
+        "why": "Consumer-products business founded in 1806. Durable household and personal-care brand exposure with global staples characteristics.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "consumer_staples"],
+        "risk_tags": ["valuation", "input_costs", "currency"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1806"
+      },
+      {
+        "ticker": "WLY",
+        "name": "John Wiley & Sons, Inc.",
+        "why": "Publishing and research-information company founded in 1807. Old-line knowledge and education infrastructure exposure.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "publishing"],
+        "risk_tags": ["digital_transition", "education_spending", "small_mid_cap"],
+        "source": "manual_research",
+        "added_at": "2026-05-27",
+        "founded": "1807"
+      }
     ]
   }
 }
