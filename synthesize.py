@@ -22,6 +22,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import copy
 import json
 import os
@@ -46,6 +47,16 @@ HERE          = Path(__file__).parent.resolve()
 BRIEFS_DIR    = HERE / "briefs"
 OUTPUT_DIR    = HERE / "intelligence"
 PROJECT_NAME  = "Stocks"
+SRC_DIR       = HERE / "src"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from equity_intel.lmstudio_runtime import (
+    note_model_usage,
+    register_atexit_unload,
+    wait_for_local_model_capacity,
+)
 
 SOLO_INTEL_DIR = Path(
     r"C:\Users\noleg\Desktop\Claude\Projects\SOLO BUILDS\solo-intel\intelligence"
@@ -73,7 +84,27 @@ API_KEY        = (
 )
 LMS_CLI        = os.getenv("LMS_CLI", r"C:\Users\noleg\.lmstudio\bin\lms.exe")
 LMS_CONTEXT    = int(os.getenv("LMSTUDIO_CONTEXT", "16384"))
-LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_OUTPUT_TOKENS", "3000"))
+LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_OUTPUT_TOKENS", "6000"))
+
+register_atexit_unload("stocks-second-pass-synthesis")
+
+# Probe lms.exe once at import time â€” catches architecture mismatches before
+# subprocess.run can trigger a Windows "This app can't run on your PC" dialog.
+def _probe_lms_cli() -> bool:
+    try:
+        r = subprocess.run(
+            [LMS_CLI, "--version"],
+            capture_output=True, timeout=10,
+        )
+        return True
+    except (OSError, PermissionError, FileNotFoundError):
+        return False
+
+LMS_CLI_AVAILABLE: bool = (
+    LLM_PROVIDER != "openai"
+    and os.path.isfile(LMS_CLI)
+    and _probe_lms_cli()
+)
 
 RISK_EVENT_TYPES = {
     "bankruptcy_or_going_concern", "restatement", "litigation",
@@ -81,18 +112,18 @@ RISK_EVENT_TYPES = {
     "unusual_price_volume",
 }
 
-# Dashboard API base — started at step 0, always running by step 12
+# Dashboard API base â€” started at step 0, always running by step 12
 DASHBOARD_API = os.getenv("DASHBOARD_API", "http://127.0.0.1:5173")
 
 DEFAULT_TICKERS = [
     t.strip().upper()
-    for t in os.getenv("DEFAULT_TICKERS", "NVDA,AMD,AVGO,MSFT,GOOGL,AMZN,TSLA,ISRG,SYM,META,PLTR,AI,BOTZ,ROBO").split(",")
+    for t in os.getenv("DEFAULT_TICKERS", "POWL,ETN,VST,NEE,ANET,MRVL,AMAT,LRCX,KLAC,MU,EQIX,DLR,IRM,MP,USAR,UUUU,QCOM,ON,CSCO,FSLR").split(",")
     if t.strip()
 ]
 
 
 # ---------------------------------------------------------------------------
-# Domain classification (maps equity event types → synthesis domains)
+# Domain classification (maps equity event types â†’ synthesis domains)
 # ---------------------------------------------------------------------------
 
 EQUITY_DOMAINS = [
@@ -230,15 +261,28 @@ class LLMHangError(RuntimeError):
 
 
 def _lms(*args, timeout=180):
+    if not LMS_CLI_AVAILABLE:
+        raise RuntimeError(
+            "lms.exe is not available on this system (architecture mismatch or missing). "
+            "Load your model manually in LM Studio before running synthesis."
+        )
     result = subprocess.run(
-        [LMS_CLI, *args], capture_output=True, text=True, timeout=timeout
+        [LMS_CLI, *args], capture_output=True, encoding='utf-8', errors='replace', timeout=timeout
     )
     if result.returncode != 0:
-        raise RuntimeError(f"lms {' '.join(args)} failed: {result.stderr.strip()}")
-    return result.stdout.strip()
+        raise RuntimeError(f"lms {' '.join(args)} failed: {(result.stderr or '').strip()}")
+    return (result.stdout or '').strip()
 
 
 def _load_model(model):
+    if not LMS_CLI_AVAILABLE:
+        print(
+            f"  [LMS] lms.exe unavailable â€” skipping headless load of '{model}'.\n"
+            f"  Assuming model is already loaded in LM Studio GUI."
+        )
+        return
+    wait_for_local_model_capacity("stocks-synthesize", model)
+    note_model_usage(model)
     print(f"  Loading {model} (context {LMS_CONTEXT})...", end="", flush=True)
     _lms("unload", "--all", timeout=15)
     time.sleep(1)
@@ -279,6 +323,8 @@ def list_models():
 def _ensure_model(model):
     if LLM_PROVIDER == "openai":
         return model
+    wait_for_local_model_capacity("stocks-synthesize", model)
+    note_model_usage(model)
     if model in _loaded_models():
         return model
     print(f"  [LMS] '{model}' not loaded -- loading headlessly...")
@@ -308,22 +354,52 @@ def _extract_json(text):
             return json.loads(text[s: e + 1])
         except json.JSONDecodeError:
             pass
+    # Last resort: truncated JSON â€” close any open braces/brackets and retry
+    if s != -1:
+        fragment = text[s:]
+        open_b = fragment.count("{") - fragment.count("}")
+        open_sq = fragment.count("[") - fragment.count("]")
+        # close any open string first (odd number of unescaped quotes)
+        in_str = False
+        for ch in fragment:
+            if ch == '"':
+                in_str = not in_str
+        closing = ('"' if in_str else "") + ("]" * max(0, open_sq)) + ("}" * max(0, open_b))
+        try:
+            return json.loads(fragment + closing)
+        except json.JSONDecodeError:
+            pass
     raise ValueError(f"Could not extract JSON. Output starts:\n{text[:400]}")
 
 
 def _complete(messages, model, temperature=0.1, max_tokens=2500, json_mode=False):
     model = _ensure_model(model)
-    idle_s = int(os.getenv("LLM_TOKEN_IDLE_TIMEOUT_SECONDS", "300"))
+    # Per-token idle timeout: if no new token arrives within this many seconds,
+    # treat as a hang. Reduced from 300 â†’ 90 to catch stalled inference quickly.
+    idle_s = int(os.getenv("LLM_TOKEN_IDLE_TIMEOUT_SECONDS", "90"))
+    # Hard wall-clock cap on the entire generation. Prevents the machine from
+    # freezing when a large model runs out of VRAM/RAM and swaps heavily.
+    total_s = int(os.getenv("LLM_TOTAL_TIMEOUT_SECONDS", "480"))  # 8 min
     payload = {
-        "model": model, "messages": messages,
-        "temperature": temperature, "max_tokens": max_tokens, "stream": True,
+        "model": model, "messages": messages, "stream": True,
     }
+    model_lower = model.lower()
+    uses_completion_token_param = (
+        LLM_PROVIDER == "openai"
+        and (model_lower.startswith(("o1", "o3", "o4", "gpt-5")))
+    )
+    if uses_completion_token_param:
+        payload["max_completion_tokens"] = max_tokens
+    else:
+        payload["temperature"] = temperature
+        payload["max_tokens"] = max_tokens
+
     if LLM_PROVIDER != "openai":
         payload["context_length"] = LMS_CONTEXT
         payload["ttl"] = int(os.getenv("LMSTUDIO_TTL_SECONDS", "60"))
-    # Grammar-constrained JSON generation — supported by LM Studio 0.3+ and OpenAI
+    # Grammar-constrained JSON generation â€” supported by LM Studio 0.3+ and OpenAI
     if json_mode:
-        payload["response_format"] = {"type": "json_object"}
+        payload["response_format"] = {"type": "json_object" if LLM_PROVIDER == "openai" else "text"}
 
     headers = {"Authorization": f"Bearer {API_KEY}"}
     url = f"{BASE_URL}/chat/completions"
@@ -364,7 +440,8 @@ def _complete(messages, model, temperature=0.1, max_tokens=2500, json_mode=False
         finally:
             resp.close()
 
-    try:
+    def _guarded_call():
+        """Run _call() inside a thread so we can enforce a hard wall-clock limit."""
         try:
             return _strip_think(_call())
         except _Http400 as e:
@@ -373,6 +450,20 @@ def _complete(messages, model, temperature=0.1, max_tokens=2500, json_mode=False
             print(f"  [LMS] 400 -- reloading and retrying. Body: {e.body[:200]}")
             _load_model(model)
             return _strip_think(_call())
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:
+            _fut = _ex.submit(_guarded_call)
+            try:
+                return _fut.result(timeout=total_s)
+            except concurrent.futures.TimeoutError:
+                raise LLMHangError(
+                    f"LLM synthesis exceeded the {total_s}s wall-clock limit "
+                    f"(LLM_TOTAL_TIMEOUT_SECONDS). "
+                    "LM Studio may be RAM-starved. "
+                    "Try: smaller model, fewer pipeline steps before synthesis, "
+                    "or set LLM_TOTAL_TIMEOUT_SECONDS=600 for a longer cap."
+                )
     except LLMHangError:
         raise
     except requests.exceptions.ConnectionError:
@@ -398,10 +489,11 @@ def _complete_json(messages, model, temperature=0.1, max_tokens=2500):
         return msgs
 
     attempts = [
-        (model,          messages,                  temperature),
-        (model,          _append(messages, strict),  0.05),
-        (FALLBACK_MODEL, _append(messages, strict),  0.05),
+        (model, messages, temperature),
+        (model, _append(messages, strict), 0.05),
     ]
+    if LLM_PROVIDER != "openai" or FALLBACK_MODEL.lower().startswith(("gpt-", "o1", "o3", "o4")):
+        attempts.append((FALLBACK_MODEL, _append(messages, strict), 0.05))
     last_err = ValueError("no attempts")
     for m, msgs, t in attempts:
         try:
@@ -564,7 +656,7 @@ def _load_gemini_news() -> str:
                 lines.append(f"    Summary      : {summary[:200]}")
             headlines = info.get("headlines", [])
             for h in headlines[:3]:
-                lines.append(f"    · {str(h)[:140]}")
+                lines.append(f"    Â· {str(h)[:140]}")
             lines.append("")
         return "\n".join(lines)
     except Exception:
@@ -575,7 +667,7 @@ def _fetch_api_brief(tickers=None, days=7):
     """
     Pull live catalyst data from the running EquityIntel dashboard API.
 
-    Used as a fallback when briefs/ contains no brief_*.json files — the
+    Used as a fallback when briefs/ contains no brief_*.json files â€” the
     dashboard is always started at step 0, so it is online by the time
     synthesize.py runs at step 12.
 
@@ -828,7 +920,7 @@ def format_for_llm(agg):
             lines.append(f"  [{t['date']}] {t['takeaway']}")
         lines.append("")
 
-    # ── Podcast intelligence (solo-intel second-pass on Podcasts Pull) ──
+    # â”€â”€ Podcast intelligence (solo-intel second-pass on Podcasts Pull) â”€â”€
     podcast_ctx = _load_podcast_intel()
     if podcast_ctx:
         lines.append("-- PODCAST INTELLIGENCE (solo-intel / Podcasts Pull) --")
@@ -838,7 +930,7 @@ def format_for_llm(agg):
         lines.append("-- PODCAST INTELLIGENCE -- [not available]")
         lines.append("")
 
-    # ── Real-time news (Gemini Flash + Google Search grounding) ─────────
+    # â”€â”€ Real-time news (Gemini Flash + Google Search grounding) â”€â”€â”€â”€â”€â”€â”€â”€â”€
     gemini_ctx = _load_gemini_news()
     if gemini_ctx:
         lines.append("-- REAL-TIME NEWS (Gemini Flash / Google Search) --")
@@ -1059,11 +1151,11 @@ def synthesize(aggregated_text: str, model: str, selected_signals: list[dict] | 
         "Rules:\n"
         "- DOMINANT THEMES: event types, sectors, or macro themes repeating across briefs. "
         "Cover all domains that had selected signals above.\n"
-        "- TOP SIGNALS: tickers with strongest cross-brief signal (mentions × materiality). "
+        "- TOP SIGNALS: tickers with strongest cross-brief signal (mentions Ã— materiality). "
         "Flag price moves. Aim for 4-6 signals.\n"
         "- CONVERGING THESES: directional arguments appearing across multiple tickers or briefs.\n"
         "- DIVERGING VIEWS: contradictory signals on the same ticker or theme.\n"
-        "- RISKS: restatement, bankruptcy, dilution, litigation — by frequency and severity.\n"
+        "- RISKS: restatement, bankruptcy, dilution, litigation â€” by frequency and severity.\n"
         "- ACTIONABLE INTELLIGENCE: specific tickers and events to investigate next. "
         "Aim for 2-4 items.\n"
         "- Be specific: use names, numbers, exact claims. Return ONLY the JSON object.\n"
@@ -1169,7 +1261,7 @@ def _repair_synthesis(
         return synthesis  # nothing to repair
 
     md_str = ", ".join(sorted(missing_domains)) if missing_domains else "(none)"
-    print(f"  [repair] running targeted repair — missing domains: {md_str}")
+    print(f"  [repair] running targeted repair â€” missing domains: {md_str}")
 
     relevant = [s for s in selected_signals if not missing_domains or s.get("domain") in missing_domains]
     sig_lines = []
@@ -1196,7 +1288,7 @@ def _repair_synthesis(
     try:
         patch, _ = _complete_json(messages, model, max_tokens=1200)
     except (ValueError, RuntimeError) as e:
-        print(f"  [repair] WARNING: repair call failed: {e} — skipping.")
+        print(f"  [repair] WARNING: repair call failed: {e} â€” skipping.")
         return synthesis
 
     # Merge patch into synthesis
@@ -1378,7 +1470,7 @@ def main():
     print()
 
     if not folder.exists():
-        print(f"[warn] Briefs folder does not exist: {folder} — will try API fallback.")
+        print(f"[warn] Briefs folder does not exist: {folder} â€” will try API fallback.")
         files = []
     else:
         files = _find_briefs(folder)
@@ -1391,7 +1483,7 @@ def main():
         print()
         agg_input = files
     else:
-        print("[warn] No brief_*.json files found — falling back to live API data.")
+        print("[warn] No brief_*.json files found â€” falling back to live API data.")
         brief_dicts = _fetch_api_brief(days=args.days or 7)
         if not brief_dicts:
             print("[error] Dashboard API also unavailable. Cannot synthesize.")
