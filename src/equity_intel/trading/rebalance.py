@@ -82,13 +82,30 @@ def _get_current_positions(adapter: Any) -> Dict[str, Dict[str, Any]]:
     return {p["symbol"].upper(): p for p in positions}
 
 
+def _yfinance_price(symbol: str) -> float:
+    """Return last price from yfinance, or 0.0 on any failure."""
+    try:
+        import yfinance as yf
+        info = yf.Ticker(symbol).fast_info
+        price = float(getattr(info, "last_price", 0) or 0)
+        if price > 0:
+            return price
+        # fallback: last close from 5-day history
+        hist = yf.Ticker(symbol).history(period="5d")
+        if not hist.empty:
+            return float(hist["Close"].iloc[-1])
+    except Exception:
+        pass
+    return 0.0
+
+
 def _get_quotes(
     adapter: Any,
     symbols: List[str],
 ) -> Dict[str, float]:
     """
     Return {SYMBOL: mid_price} for each symbol.
-    Falls back to current_price from positions if quote fails.
+    Falls back to yfinance, then to current_price from positions if quote fails.
     """
     prices: Dict[str, float] = {}
     for sym in symbols:
@@ -97,6 +114,13 @@ def _get_quotes(
             prices[sym] = q.get("mid") or q.get("mid_price") or q.get("ask") or q.get("ask_price") or 0.0
         except Exception:
             prices[sym] = 0.0
+    # yfinance fallback for any symbol that came back zero
+    zero_syms = [s for s in symbols if prices.get(s, 0) == 0]
+    if zero_syms:
+        for sym in zero_syms:
+            yf_price = _yfinance_price(sym)
+            if yf_price > 0:
+                prices[sym] = yf_price
     return prices
 
 
