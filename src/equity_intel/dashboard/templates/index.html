@@ -1008,6 +1008,18 @@ function formatDate(s) {
   return String(s).slice(0, 10);
 }
 
+function sortCatalystsNewestFirst(items) {
+  return [...items].sort((a, b) => {
+    const aDate = Date.parse(a.last_seen_at || a.first_seen_at || a.occurred_at || '') || 0;
+    const bDate = Date.parse(b.last_seen_at || b.first_seen_at || b.occurred_at || '') || 0;
+    if (bDate !== aDate) return bDate - aDate;
+
+    const aMat = Number(a.materiality_score || 0);
+    const bMat = Number(b.materiality_score || 0);
+    return bMat - aMat;
+  });
+}
+
 function pctHtml(price) {
   if (!price || price.pct_change == null) return '';
   const pct = price.pct_change;
@@ -1288,7 +1300,7 @@ function renderContent() {
   const brief   = briefData;
   if (!brief) return;
 
-  const cats = brief.catalysts || [];
+  const cats = sortCatalystsNewestFirst(brief.catalysts || []);
   const highMat  = cats.filter(c => (c.materiality_score||0) >= 0.7).length;
   const modMat   = cats.filter(c => (c.materiality_score||0) >= 0.4 && (c.materiality_score||0) < 0.7).length;
 
