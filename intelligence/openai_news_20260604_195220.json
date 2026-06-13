@@ -1,0 +1,211 @@
+{
+  "generated_at": "2026-06-04T23:52:20.497779+00:00",
+  "provider": "openai_local_news",
+  "model": "gpt-4o-mini",
+  "tickers_queried": [
+    "POWL",
+    "ETN",
+    "VST",
+    "NEE",
+    "ANET",
+    "MRVL",
+    "AMAT",
+    "LRCX",
+    "KLAC",
+    "MU",
+    "EQIX",
+    "DLR",
+    "IRM",
+    "MP",
+    "USAR",
+    "UUUU",
+    "QCOM",
+    "ON",
+    "CSCO",
+    "FSLR"
+  ],
+  "news": {
+    "MRVL": {
+      "headlines": [
+        "3 Most Upgraded Stocks Last Month According to MarketBeat",
+        "Stock Market Today: Dow Futures Fall, Nasdaq Gains As Middle East Tensions Intensify— Palo Alto, Marvell In Focus"
+      ],
+      "summary": "Marvell Technology was among the most upgraded stocks in May 2026, receiving 32 upgrades, which contributed to a 24% surge in its stock price. The company is in focus amid mixed market performance due to geopolitical tensions.",
+      "sentiment": "bullish",
+      "key_catalyst": "Analyst upgrades and strong market interest."
+    },
+    "MU": {
+      "headlines": [
+        "Should You Buy Micron Stock Before June 24? History Has a Clear Answer.",
+        "Stock Market Today, June 3: Stocks Slip at Midday on Fresh Geopolitical Tensions"
+      ],
+      "summary": "Micron Technology's stock has nearly doubled over the past month, driven by AI demand for memory chips. However, historical trends suggest that buying before earnings announcements may not yield optimal results.",
+      "sentiment": "mixed",
+      "key_catalyst": "Upcoming earnings report and historical buying patterns."
+    },
+    "QCOM": {
+      "headlines": [
+        "This Sleeping Semiconductor Giant Will Be the Biggest Winner of the AI Inference Era (Hint: It's Not Intel)"
+      ],
+      "summary": "Qualcomm is positioned to benefit significantly from the AI inference era, with reports indicating strong demand for its custom AI processors from major companies like ByteDance.",
+      "sentiment": "bullish",
+      "key_catalyst": "Growing demand for AI processors."
+    },
+    "AMAT": {
+      "headlines": [
+        "Photomask Market Size to Grow USD 8.19 Billion by 2035 | Research by SNS Insider"
+      ],
+      "summary": "The global photomask market is projected to grow significantly, driven by increasing semiconductor complexity and AI applications, which could positively impact companies like Applied Materials.",
+      "sentiment": "bullish",
+      "key_catalyst": "Growth in semiconductor and AI applications."
+    },
+    "EQIX": {
+      "headlines": [
+        "Global Data Center Colocation Market to Reach USD 327.3 Billion by 2035, Expanding at a 14.5% CAGR: Custom Market Insights"
+      ],
+      "summary": "The data center colocation market is expected to grow substantially, driven by demand for edge computing and digitalization initiatives, which may benefit Equinix.",
+      "sentiment": "bullish",
+      "key_catalyst": "Increasing demand for data center services."
+    }
+  },
+  "grounding_sources": [
+    {
+      "url": "https://www.benzinga.com/markets/tech/26/06/52984876/broadcoms-ai-revenue-doubled-and-it-may-not-even-be-halfway-done?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Broadcom's AI Revenue Doubled — And It May Not Even Be Halfway Done",
+      "publisher": "Benzinga",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.investing.com/analysis/broadcom-stock-ready-for-bull-run-as-ai-giants-fuel-demand-surge-200681454",
+      "title": "Broadcom Stock Ready for Bull Run as AI Giants Fuel Demand Surge",
+      "publisher": "Investing.com",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/equities/26/06/52980840/stocks-retreat-records-rate-hike-bets-oil-climbs-iran-markets-wednesday?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "S&P 500, Nasdaq 100 Drop From Records As Rate-Hike Bets Build, Oil Climbs: Stock Market Today",
+      "publisher": "Benzinga",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/03/the-ai-race-is-quietly-becoming-a-race-for-power-n/?source=iedfolrf0000001",
+      "title": "The AI Race Is Quietly Becoming a Race for Electricity, Not Chips",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/03/should-you-buy-micron-stock-before-june-24-history/?source=iedfolrf0000001",
+      "title": "Should You Buy Micron Stock Before June 24? History Has a Clear Answer.",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/coverage/stock-market-today/2026/06/03/stock-market-today-june-3-stocks-slip-in-morning-trading-on-fresh-geopolitical-tensions/?source=iedfolrf0000001",
+      "title": "Stock Market Today, June 3: Stocks Slip at Midday on Fresh Geopolitical Tensions",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/03/3-top-driverless-vehicle-stocks-to-buy-before-its/?source=iedfolrf0000001",
+      "title": "3 Top Driverless Vehicle Stocks to Buy Before It's Too Late",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/02/market-correction-etf-buy-without-hesitation-schd/?source=iedfolrf0000001",
+      "title": "Market Correction: The ETFs I'd Buy Without Hesitation",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/market-summary/26/06/52916311/sp-500-halts-gains-oil-jumps-percent-iran-ceasefire-risk-stock-market-today?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "S&P 500 Halts Gains As Oil Jumps 8% On Iran Ceasefire Standoff: Stock Market Today",
+      "publisher": "Benzinga",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/03/3305802/0/en/Photomask-Market-Size-to-Grow-USD-8-19-Billion-by-2035-Research-by-SNS-Insider.html",
+      "title": "Photomask Market Size to Grow USD 8.19 Billion by 2035 | Research by SNS Insider",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "AMAT"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/large-cap/26/05/52880329/broadcom-stock-attracts-a-billionaire-buyer-as-ai-momentum-accelerates?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Broadcom Stock Attracts A Billionaire Buyer As AI Momentum Accelerates",
+      "publisher": "Benzinga",
+      "ticker": "AMAT"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/01/is-it-a-mistake-waiting-for-better-entry-point/?source=iedfolrf0000001",
+      "title": "Are Investors Making a Mistake by Waiting for a Better Market Entry Point?",
+      "publisher": "The Motley Fool",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/01/3303980/0/en/NVIDIA-Vera-BlueField-4-STX-Brings-Agentic-AI-Storage-Processing-With-In-Silicon-Security.html",
+      "title": "NVIDIA Vera BlueField-4 STX Brings Agentic AI Storage Processing With In-Silicon Security",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/04/3306498/0/en/Global-Data-Center-Colocation-Market-to-Reach-USD-327-3-Billion-by-2035-Expanding-at-a-14-5-CAGR-Custom-Market-Insights-Analysis-Outlook-Leaders-Report-Trends-Forecast-Segmentation.html",
+      "title": "Global Data Center Colocation Market to Reach USD 327.3 Billion by 2035, Expanding at a 14.5% CAGR: Custom Market Insights (Analysis, Outlook, Leaders, Report, Trends, Forecast, Segmentation, Growth Rate, Value, SWOT Analysis)",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "EQIX"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/01/is-oklo-stock-your-ticket-to-becoming-a-millionair/?source=iedfolrf0000001",
+      "title": "Is Oklo Stock Your Ticket to Becoming a Millionaire?",
+      "publisher": "The Motley Fool",
+      "ticker": "EQIX"
+    },
+    {
+      "url": "https://finance.yahoo.com/news/live/stock-market-today-friday-may-29-222720064.html",
+      "title": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for US-Iran update",
+      "publisher": "RSS",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-everpure-p-shares-trading-235800053.html",
+      "title": "Why Everpure (P) Shares Are Trading Lower Today",
+      "publisher": "RSS",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/29/3303413/0/en/Battery-Energy-Storage-System-Market-198-8-Bn-by-2031-Fueled-by-On-Grid-Utility-Storage-and-North-America-Europe-Investments-Says-Mordor-Intelligence.html",
+      "title": "Battery Energy Storage System Market: $198.8 Bn by 2031, Fueled by On-Grid Utility Storage and North America, Europe Investments | Says Mordor Intelligence",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "ETN"
+    },
+    {
+      "url": "https://www.fool.com/coverage/etfs/2026/06/02/ishares-clean-energy-or-invesco-solar-which-energy-etf-is-a-better-bet/?source=iedfolrf0000001",
+      "title": "iShares Clean Energy or Invesco Solar: Which Energy ETF Is a Better Bet?",
+      "publisher": "The Motley Fool",
+      "ticker": "FSLR"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/29/klac-stock-investors-need-to-see-this/?source=iedfolrf0000001",
+      "title": "KLAC Stock Investors Need to See This",
+      "publisher": "The Motley Fool",
+      "ticker": "KLAC"
+    },
+    {
+      "url": "https://www.benzinga.com/pressreleases/26/05/n52869454/inside-the-north-atlantic-critical-minerals-push-a-68-billion-greenland-deposit-lands-at-the-eu-ra?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Inside The North Atlantic Critical Minerals Push: A $68 Billion Greenland Deposit Lands At The EU Raw Materials Summit",
+      "publisher": "Benzinga",
+      "ticker": "MP"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/31/this-is-the-first-energy-stock-i-plan-to-buy-in-ju/?source=iedfolrf0000001",
+      "title": "This Is the First Energy Stock I Plan to Buy in June (Hint: It's Not ExxonMobil)",
+      "publisher": "The Motley Fool",
+      "ticker": "NEE"
+    },
+    {
+      "url": "https://www.fool.com/coverage/charts/2026/06/01/vistra-vs-constellation-energy-the-big-revenue-face-off/?source=iedfolrf0000001",
+      "title": "Vistra vs. Constellation Energy: The Big Revenue Face-Off",
+      "publisher": "The Motley Fool",
+      "ticker": "VST"
+    }
+  ]
+}

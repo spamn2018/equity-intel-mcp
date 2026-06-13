@@ -285,15 +285,23 @@ def _complete(messages: list, max_tokens: int = 2500) -> str:
                     last_token = time.monotonic()
             except (json.JSONDecodeError, KeyError, IndexError):
                 pass
+            if time.monotonic() - last_token > idle_s:
+                raise RuntimeError(
+                    f"LLM stream idle for {idle_s}s with no new tokens; giving up."
+                )
         return _strip_think("".join(chunks))
+    except requests.exceptions.Timeout:
+        raise RuntimeError(
+            f"LLM request timed out after {idle_s}s with no data from {BASE_URL}."
+        )
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
-            f"Cannot connect to LM Studio at {BASE_URL}. "
-            "Make sure LM Studio is running and the local server is enabled."
+            f"Cannot connect to {BASE_URL}. "
+            "Make sure the LLM provider is reachable."
         )
     except requests.exceptions.HTTPError as exc:
         raise RuntimeError(
-            f"LM Studio HTTP {exc.response.status_code}: {exc.response.text[:300]}"
+            f"LLM HTTP {exc.response.status_code}: {exc.response.text[:300]}"
         )
 
 

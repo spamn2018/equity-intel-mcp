@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import atexit
 import os
+import re
 import subprocess
 import time
 from threading import Lock
@@ -14,7 +15,7 @@ _PROVIDER = os.getenv(
 ).lower()
 _LMS_CLI = os.getenv("LMS_CLI", r"C:\Users\noleg\.lmstudio\bin\lms.exe")
 _OLLAMA_CLI = os.getenv("OLLAMA_CLI", "ollama")
-_LOCAL_MODEL_BLOCK_AT_OR_ABOVE = int(os.getenv("LOCAL_MODEL_BLOCK_AT_OR_ABOVE", "2"))
+_LOCAL_MODEL_BLOCK_AT_OR_ABOVE = int(os.getenv("LOCAL_MODEL_BLOCK_AT_OR_ABOVE", "1"))
 _LOCAL_MODEL_RETRY_SECONDS = float(os.getenv("LMSTUDIO_MODEL_RETRY_SECONDS", "600"))
 _UNLOAD_REGISTERED = False
 _TRACKED_MODELS: set[str] = set()
@@ -29,14 +30,64 @@ def _cli_available() -> bool:
     return _is_lmstudio() and os.path.isfile(_LMS_CLI)
 
 
+def _loaded_lmstudio_rows() -> list[dict[str, str]]:
+    if not _cli_available():
+        return []
+    try:
+        result = subprocess.run(
+            [_LMS_CLI, "ps"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+    except Exception:
+        return []
+    if result.returncode != 0:
+        return []
+    rows: list[dict[str, str]] = []
+    for line in (result.stdout or "").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("IDENTIFIER"):
+            continue
+        parts = re.split(r"\s{2,}", stripped)
+        if len(parts) < 2:
+            continue
+        rows.append({"identifier": parts[0].strip(), "model": parts[1].strip()})
+    return rows
+
+
+def _matching_lmstudio_identifiers(model: str) -> list[str]:
+    if not model:
+        return []
+    requested = model.strip()
+    requested_base = requested.split(":")[0]
+    matches: list[str] = []
+    for row in _loaded_lmstudio_rows():
+        identifier = row["identifier"]
+        loaded_model = row["model"]
+        if (
+            identifier == requested
+            or loaded_model == requested
+            or identifier.split(":")[0] == requested
+            or loaded_model.split(":")[0] == requested_base
+        ):
+            matches.append(identifier)
+    return matches
+
+
 def note_model_usage(model: str | None) -> None:
-    if not _is_lmstudio() or not model:
+    if not model:
         return
     model_id = model.strip()
     if not model_id:
         return
     with _LOCK:
-        _TRACKED_MODELS.add(model_id)
+        if _PROVIDER == "lmstudio":
+            identifiers = _matching_lmstudio_identifiers(model_id)
+            _TRACKED_MODELS.update(identifiers or {model_id})
+        elif _PROVIDER == "ollama":
+            _TRACKED_MODELS.add(model_id)
 
 
 def _loaded_model_count(command: list[str], header_prefix: str) -> int:
@@ -89,19 +140,33 @@ def unload_tracked_models(reason: str = "") -> None:
 
 
 def unload_models(models: Iterable[str], reason: str = "") -> None:
-    if not _cli_available():
-        return
     for model in list(dict.fromkeys(m for m in models if m)):
-        try:
-            subprocess.run(
-                [_LMS_CLI, "unload", model],
-                capture_output=True,
-                text=True,
-                timeout=60,
-                check=False,
-            )
-        except Exception:
-            continue
+        if _PROVIDER == "lmstudio":
+            if not _cli_available():
+                return
+            identifiers = _matching_lmstudio_identifiers(model) or [model]
+            for identifier in identifiers:
+                try:
+                    subprocess.run(
+                        [_LMS_CLI, "unload", identifier],
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
+                        check=False,
+                    )
+                except Exception:
+                    continue
+        elif _PROVIDER == "ollama":
+            try:
+                subprocess.run(
+                    [_OLLAMA_CLI, "stop", model],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                )
+            except Exception:
+                continue
     if reason:
         _ = reason
 

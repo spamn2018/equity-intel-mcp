@@ -67,6 +67,38 @@ from equity_intel.db.session import SessionLocal
 from equity_intel.export import LocalFileDelivery
 from equity_intel.logging_config import configure_logging, get_logger
 
+# Trading signal generation (optional — only imported when TRADING_SIGNALS_ENABLED=True)
+def _maybe_generate_signals(session, brief: dict, cfg) -> None:
+    """
+    Generate trade signals from the brief when TRADING_SIGNALS_ENABLED=True.
+    Logs but never raises — brief delivery must not fail because of trading code.
+    """
+    if not cfg.trading_signals_enabled:
+        return
+    try:
+        from equity_intel.trading.signals import generate_trade_signals_from_brief  # noqa: PLC0415
+        signals = generate_trade_signals_from_brief(
+            session=session,
+            brief=brief,
+            min_materiality=cfg.trading_min_materiality,
+            min_confidence=cfg.trading_min_confidence,
+            min_signal_strength=cfg.trading_min_signal_strength,
+            require_primary_source=cfg.trading_require_primary_source,
+            allow_news_only=cfg.trading_allow_news_only_signals,
+            allow_probe_stage=cfg.trading_allow_probe_stage_signals,
+            cfg=cfg,
+        )
+        session.commit()
+        _log = get_logger(__name__)
+        _log.info(
+            "daily_brief_signals_generated",
+            count=len(signals),
+            buy=sum(1 for s in signals if s.signal_side == "buy"),
+            monitor=sum(1 for s in signals if s.signal_side == "monitor"),
+        )
+    except Exception as exc:
+        get_logger(__name__).warning("daily_brief_signal_generation_failed", error=str(exc))
+
 logger = get_logger(__name__)
 
 ADVICE_DISCLAIMER = (
@@ -157,6 +189,8 @@ def run_daily_brief(
             include_news=True,
             include_filings=True,
         )
+        # Optional: generate trade signals from this brief when enabled
+        _maybe_generate_signals(session, brief, settings)
     finally:
         session.close()
 
@@ -262,6 +296,26 @@ def main(
         if tickers
         else settings.daily_brief_tickers
     )
+    # Fall back to research universe → DEFAULT_TICKERS if brief-specific list is empty
+    if not resolved_tickers:
+        try:
+            from equity_intel.research_universe import load_research_universe
+            universe = load_research_universe()
+            prohibited = set(settings.prohibited_tickers_list)
+            seen: set = set()
+            resolved_tickers = []
+            for cat_data in universe.get("categories", {}).values():
+                for entry in cat_data.get("tickers", []):
+                    if not isinstance(entry, dict):
+                        continue
+                    ticker = (entry.get("ticker") or "").strip().upper()
+                    if ticker and ticker not in prohibited and ticker not in seen:
+                        seen.add(ticker)
+                        resolved_tickers.append(ticker)
+        except Exception:
+            pass
+    if not resolved_tickers:
+        resolved_tickers = settings.tickers_list
     resolved_days = days if days is not None else settings.daily_brief_days
     resolved_min_mat = min_materiality if min_materiality is not None else settings.daily_brief_min_materiality
     resolved_max_items = max_items if max_items is not None else settings.daily_brief_max_items

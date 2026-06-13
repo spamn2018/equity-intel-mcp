@@ -1,0 +1,165 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron Technology reaches $1 trillion market cap amid AI-driven memory chip demand.",
+      "why_it_matters": "Micron's surge to a $1 trillion market cap is fueled by a significant increase in AI-related memory chip demand, indicating strong growth potential in the semiconductor sector. This milestone reflects broader market trends favoring tech stocks, particularly those linked to AI advancements.",
+      "related_tickers": [
+        "WDC",
+        "SKHYN"
+      ],
+      "sources": [
+        {
+          "title": "Micron hits trillion dollar value amid AI euphoria",
+          "url": "https://www.nbcnews.com/business/markets/micron-hits-trillion-dollar-value-ai-euphoria-rcna347159",
+          "publisher": "NBC News"
+        },
+        {
+          "title": "Micron Is Nearing $1,000. Is a Stock Split Next?",
+          "url": "https://www.fool.com/investing/2026/05/28/as-micron-approaches-1000-is-a-stock-split-next/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "The Memory Shortage Powering Micron's $1 Trillion Run Is Lifting These Stocks, Too",
+          "url": "https://www.fool.com/investing/2026/05/27/the-memory-shortage-powering-microns-1-trillion-ru/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ON",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Chip stocks surge as AI demand drives significant gains in the semiconductor sector.",
+      "why_it_matters": "The Philadelphia Semiconductor Index has seen a remarkable 75% gain in 2026, driven by increased spending in AI and data centers. This trend highlights the growing importance of semiconductor companies like ON Semiconductor in the tech landscape.",
+      "related_tickers": [
+        "NVDA",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Chip stocks race towards biggest gains since dotcom era on AI demand",
+          "url": "https://www.ft.com/content/48cdf575-5509-4b50-a54d-1b767e41be47",
+          "publisher": "Financial Times"
+        },
+        {
+          "title": "Stock Market Today: Investors Cautious After Fresh Mideast Hostilities",
+          "url": "https://www.wsj.com/livecoverage/stock-market-today-dow-sp-500-nasdaq-05-28-2026",
+          "publisher": "Wall Street Journal"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Marvell Technology beats Q1 estimates and raises revenue outlook for fiscal years 2027 and 2028.",
+      "why_it_matters": "Marvell's strong Q1 earnings and raised revenue guidance reflect robust demand in the semiconductor market, particularly for AI applications. This positive outlook could enhance investor confidence and drive further stock appreciation.",
+      "related_tickers": [
+        "AVGO",
+        "QCOM"
+      ],
+      "sources": [
+        {
+          "title": "Marvell Shares Climb After Q1 Results Beat Estimates: Details",
+          "url": "https://www.benzinga.com/markets/earnings/26/05/52824993/marvell-shares-climb-after-q1-results-beat-estimates-details?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        },
+        {
+          "title": "AI Earnings Test: Salesforce, Snowflake, Marvell, HP Report After The Bell",
+          "url": "https://www.benzinga.com/markets/tech/26/05/52820272/ai-earnings-test-salesforce-snowflake-marvell-hp-report-after-the-bell?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Cisco Systems continues to expand its market presence amid rising tech sponsorship spending.",
+      "why_it_matters": "The doubling of tech sponsorship spending in the EMEA region indicates a growing market for technology companies like Cisco. This trend could lead to increased brand visibility and potential revenue growth as companies invest more in marketing.",
+      "related_tickers": [
+        "MSFT",
+        "ORCL"
+      ],
+      "sources": [
+        {
+          "title": "EMEA Technology Industry Sports Sponsorship Analysis Report 2025-2026",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302579/28124/en/EMEA-Technology-Industry-Sports-Sponsorship-Analysis-Report-2025-2026-Market-is-Booming-with-Doubled-Spending-Led-by-Soccer-and-F1.html",
+          "publisher": "GlobeNewswire"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ETN",
+      "category": "Other",
+      "importance": "low",
+      "headline": "High-end lighting market projected to grow significantly, benefiting companies like Eaton.",
+      "why_it_matters": "The anticipated growth in the high-end lighting market, driven by smart home integration and luxury construction, may present opportunities for Eaton. However, the impact on Eaton's stock may be limited compared to other sectors experiencing more immediate growth.",
+      "related_tickers": [
+        "PH",
+        "ABB"
+      ],
+      "sources": [
+        {
+          "title": "High-End Lighting Market Size to Hit USD 30.5 Billion by 2035",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302536/0/en/High-End-Lighting-Market-Size-to-Hit-USD-30-5-Billion-by-2035-Report-by-SNS-Insider.html",
+          "publisher": "GlobeNewswire"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "NEE",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "NextEra Energy's merger under investigation amid ongoing M&A scrutiny.",
+      "why_it_matters": "The investigation into NextEra's merger with Dominion Energy highlights potential regulatory challenges that could impact the deal's completion. This scrutiny may create uncertainty for investors and affect stock performance in the near term.",
+      "related_tickers": [
+        "D",
+        "ED"
+      ],
+      "sources": [
+        {
+          "title": "$HAREHOLDER ALERT: The M&A Class Action Firm Continues to Investigate the Merger",
+          "url": "https://www.globenewswire.com/news-release/2026/05/27/3302179/0/en/HAREHOLDER-ALERT-The-M-A-Class-Action-Firm-Continues-to-Investigate-the-Merger-RAMP-NEE-CNTA-and-HCBN.html",
+          "publisher": "GlobeNewswire"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "UUUU",
+      "category": "Other",
+      "importance": "low",
+      "headline": "U.S. tungsten supply chain tightens as prices surge amid geopolitical tensions.",
+      "why_it_matters": "The tightening of the tungsten supply chain and rising prices could impact companies involved in tungsten production and distribution. However, the broader market implications may be limited unless significant supply disruptions occur.",
+      "related_tickers": [
+        "TGB",
+        "TUC"
+      ],
+      "sources": [
+        {
+          "title": "U.S. Tungsten Supply Chain Tightens As A Nevada Past-Producer Mobilizes",
+          "url": "https://www.benzinga.com/pressreleases/26/05/n52805430/u-s-tungsten-supply-chain-tightens-as-a-nevada-past-producer-mobilizes-drone-geophysics-and-proper?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-28T11:06:19.309754+00:00",
+  "article_count": 18,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 7,
+  "shortfall_note": "Only 7 strong ticker group(s) found in the last 24h; generating 7 real block(s) instead of padding to 8."
+}

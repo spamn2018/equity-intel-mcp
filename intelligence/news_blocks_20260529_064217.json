@@ -1,0 +1,169 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "ON",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Stock market edges up as Wall Street awaits US-Iran negotiations update.",
+      "why_it_matters": "While the overall market is reacting positively to earnings reports and geopolitical developments, the impact on ON Semiconductor is minimal. The focus remains on broader market trends rather than specific developments for ON.",
+      "related_tickers": [
+        "TSM",
+        "INTC"
+      ],
+      "sources": [
+        {
+          "title": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for US-Iran update",
+          "url": "https://finance.yahoo.com/news/live/stock-market-today-friday-may-29-222720064.html",
+          "publisher": "Yahoo Finance"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MU",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Micron's stock soars with 850% return driven by AI demand for memory chips.",
+      "why_it_matters": "Micron's impressive performance is fueled by unprecedented demand for high-bandwidth memory chips, particularly from AI applications. This strong demand signals a robust growth trajectory for the company, making it a key player in the semiconductor market.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "If You Had Invested $1,000 in Micron 1 Year Ago, Here's How Much You'd Have Now.",
+          "url": "https://www.fool.com/investing/2026/05/28/if-you-had-invested-1000-in-micron-1-year-ago-here/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MP",
+      "category": "Materials",
+      "importance": "low",
+      "headline": "Redwire and Kratos stocks surge on potential U.S. drone manufacturing subsidies.",
+      "why_it_matters": "The proposed subsidies for U.S. drone manufacturers could enhance the competitive landscape for companies like Redwire and Kratos. However, the impact on MP Materials is less direct, making this news less significant for its stock performance.",
+      "related_tickers": [
+        "RDW",
+        "KTOS"
+      ],
+      "sources": [
+        {
+          "title": "Why Redwire Stock Popped This Morning",
+          "url": "https://www.fool.com/investing/2026/05/28/why-redwire-stock-popped-this-morning/",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Why Kratos Defense Stock Popped Today",
+          "url": "https://www.fool.com/investing/2026/05/28/why-kratos-defense-stock-popped-today/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Qualcomm shares surge as company expands into the data center market.",
+      "why_it_matters": "This expansion represents a strategic shift for Qualcomm, tapping into the lucrative data center segment. Investors are optimistic about the potential revenue growth from this new market, which could significantly enhance Qualcomm's overall performance.",
+      "related_tickers": [
+        "NVDA",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Massive News for Qualcomm Stock Investors",
+          "url": "https://www.fool.com/investing/2026/05/28/massive-news-for-qualcomm-stock-investors/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "KLAC",
+      "category": "Chips",
+      "importance": "medium",
+      "headline": "KLA Corporation benefits from strong growth in semiconductor equipment sector.",
+      "why_it_matters": "The positive developments in the semiconductor equipment market indicate a robust demand for KLA's products, which are essential for chip manufacturing. This growth trend positions KLA favorably as the industry expands, potentially leading to increased revenues.",
+      "related_tickers": [
+        "LRCX",
+        "ASML"
+      ],
+      "sources": [
+        {
+          "title": "Great News for KLAC Stock Investors",
+          "url": "https://www.fool.com/investing/2026/05/28/great-news-for-klac-stock-investors/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "FSLR",
+      "category": "Renewables",
+      "importance": "medium",
+      "headline": "First Solar approaches buy zone amid S&P 500 record highs.",
+      "why_it_matters": "First Solar's positioning near buy zones coincides with broader market optimism, particularly in the renewable energy sector. As the market rallies, investor interest in solar energy stocks like First Solar may increase, potentially driving up share prices.",
+      "related_tickers": [
+        "TSLA",
+        "ENPH"
+      ],
+      "sources": [
+        {
+          "title": "S&P 500, Nasdaq Set More Record Highs On Iran Deal Hopes; Tesla, First Solar In Or Near Buy Zones",
+          "url": "https://www.investors.com/market-trend/the-big-picture/stock-market-sp500-nasdaq-us-iran-deal-tesla-tsla-first-solar-fslr/",
+          "publisher": "Investor's Business Daily"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "LRCX",
+      "category": "Chips",
+      "importance": "medium",
+      "headline": "Lam Research poised to benefit from sustainable AI growth in semiconductor sector.",
+      "why_it_matters": "As the semiconductor industry transitions to sustainable growth, Lam Research stands to gain from increased demand for its equipment. The anticipated growth in AI-related sales could further enhance its market position and revenue potential.",
+      "related_tickers": [
+        "KLAC",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Is the AI Trade Entering Its Second Wave? This ETF Could Be a Major Beneficiary.",
+          "url": "https://www.fool.com/investing/2026/05/28/ai-trade-entering-second-wave-smh-etf-beneficiary/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Marvell's data center revenue hits record $1.83B, exceeding estimates.",
+      "why_it_matters": "Marvell's strong earnings report highlights the explosive growth in its data center business, which is a critical area for future expansion. The company's guidance projecting 40% growth further underscores its potential to capitalize on the booming demand for data services.",
+      "related_tickers": [
+        "QCOM",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Marvell CEO Says Data Center Business Is 'On Fire'",
+          "url": "https://www.benzinga.com/trading-ideas/movers/26/05/52833213/marvell-ceo-says-data-center-business-is-on-fire",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-29T10:42:17.430435+00:00",
+  "article_count": 17,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 8,
+  "shortfall_note": ""
+}

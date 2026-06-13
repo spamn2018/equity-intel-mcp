@@ -110,6 +110,7 @@ def _call_llm(text: str) -> Optional[Dict[str, Any]]:
                              timeout=(10, _IDLE_TIMEOUT))
         resp.raise_for_status()
         chunks: List[str] = []
+        last_token = time.monotonic()
         for raw in resp.iter_lines():
             if not raw:
                 continue
@@ -123,8 +124,12 @@ def _call_llm(text: str) -> Optional[Dict[str, Any]]:
                 delta = json.loads(data)["choices"][0]["delta"].get("content", "")
                 if delta:
                     chunks.append(delta)
+                    last_token = time.monotonic()
             except (json.JSONDecodeError, KeyError, IndexError):
                 pass
+            if time.monotonic() - last_token > _IDLE_TIMEOUT:
+                logger.warning("llm_scorer_stream_idle_timeout", idle_s=_IDLE_TIMEOUT)
+                return None
         raw_text = _strip_think("".join(chunks))
         return json.loads(raw_text)
     except Exception as exc:

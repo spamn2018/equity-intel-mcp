@@ -51,8 +51,13 @@ equity-cluster-events = "equity_intel.workers.cluster_events:main"
 equity-generate-watchlist-brief = "equity_intel.workers.generate_watchlist_brief:main"
 equity-run-daily-brief = "equity_intel.workers.run_daily_brief:main"
 equity-cleanup-news = "equity_intel.workers.cleanup_news:main"
+equity-synthesize-news-blocks = "equity_intel.workers.synthesize_news_blocks:main"
 equity-mcp = "equity_intel.mcp_server.server:main"
 equity-dashboard = "equity_intel.dashboard.cli:main"
+equity-generate-trade-signals = "equity_intel.workers.generate_trade_signals:main"
+equity-execute-trade-signals = "equity_intel.workers.execute_trade_signals:main"
+equity-auto-rebalance = "equity_intel.workers.auto_rebalance:main"
+equity-discover-tickers = "equity_intel.workers.discover_tickers:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/equity_intel"]

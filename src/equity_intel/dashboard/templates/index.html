@@ -680,6 +680,180 @@
       overflow-y: auto;
     }
     .intel-empty { font-size: 0.82rem; color: var(--muted); font-style: italic; padding: 4px 0; }
+
+    /* ---- Tab bar ---- */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-dim);
+      padding: 6px 18px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: var(--text); border-color: var(--border); }
+    .tab-btn.active {
+      background: var(--surface2);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* ---- My Views panel ---- */
+    .my-views-panel {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .news-blocks-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) { .news-blocks-grid { grid-template-columns: 1fr; } }
+    .nb-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-dim);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-left-color 0.15s;
+    }
+    .nb-card.imp-high   { border-left-color: var(--red); }
+    .nb-card.imp-medium { border-left-color: var(--yellow); }
+    .nb-card.imp-low    { border-left-color: var(--muted); }
+    .nb-card-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nb-ticker {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .nb-cat {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .nb-imp {
+      margin-left: auto;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+    .nb-imp-high   { background: rgba(239,68,68,0.12);  color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
+    .nb-imp-medium { background: rgba(245,158,11,0.1);  color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+    .nb-imp-low    { background: rgba(107,114,128,0.1); color: var(--muted);  border: 1px solid rgba(107,114,128,0.2); }
+    .nb-headline {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .nb-why {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .nb-related {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .nb-related-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .nb-related-tag {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    .nb-sources {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-top: 1px solid var(--border);
+      padding-top: 6px;
+    }
+    .nb-source-link {
+      font-size: 0.72rem;
+      color: var(--accent);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nb-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .mv-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mv-disclaimer {
+      font-size: 0.72rem;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: var(--yellow);
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+    .mv-diagnostic {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .mv-diagnostic .mv-diag-icon { font-size: 2rem; margin-bottom: 12px; }
+    .mv-diagnostic .mv-diag-msg  { font-size: 0.88rem; margin-bottom: 6px; color: var(--text-dim); }
+    .mv-diagnostic .mv-diag-hint { font-size: 0.78rem; }
   </style>
 </head>
 <body>
@@ -689,7 +863,7 @@
   <header>
     <div class="header-left">
       <span class="logo">Equity<span>Intel</span></span>
-      <span class="not-advice">Research only — not investment advice</span>
+      <a href="#" onclick="fetch('/open-portfolio');return false;" style="font-size:12px;color:var(--text-muted,#888);text-decoration:none;padding:3px 10px;border:1px solid var(--border,#333);border-radius:4px;cursor:pointer;">AI Portfolio</a>
     </div>
     <div class="header-right">
       <span id="lastUpdated"></span>
@@ -749,12 +923,26 @@
     </aside>
 
     <!-- ===== MAIN CONTENT ===== -->
-    <main class="content" id="content">
-      <div class="empty-state" id="loadingState">
-        <div class="spinner"></div>
-        <div class="empty-msg">Loading catalyst brief…</div>
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+
+      <!-- Tab bar -->
+      <div class="tab-bar" style="padding:12px 24px 0;background:var(--surface);border-bottom:1px solid var(--border);">
+        <button class="tab-btn active" id="tabBtnFeed"    onclick="switchTab('feed')">Catalyst Feed</button>
+        <button class="tab-btn"        id="tabBtnMyViews" onclick="switchTab('myviews')">My Views</button>
       </div>
-    </main>
+
+      <!-- Catalyst feed panel (default) -->
+      <main class="content" id="content" style="display:flex;flex-direction:column;">
+        <div class="empty-state" id="loadingState">
+          <div class="spinner"></div>
+          <div class="empty-msg">Loading catalyst brief…</div>
+        </div>
+      </main>
+
+      <!-- My Views panel -->
+      <div class="content my-views-panel" id="myViewsPanel" style="display:none;"></div>
+
+    </div>
 
   </div><!-- /main -->
 </div><!-- /app -->
@@ -1085,4 +1273,460 @@ function renderBias(bias) {
 
 function toggleBias() {
   const body = document.getElementById('biasBody');
-  const btn  = document
+  const btn  = document.getElementById('biasBtnToggle');
+  const isCollapsed = body.classList.contains('collapsed');
+  if (isCollapsed) { body.classList.remove('collapsed'); btn.textContent = 'hide'; }
+  else             { body.classList.add('collapsed');    btn.textContent = 'show'; }
+}
+
+// ================================================================ //
+//  Main render                                                      //
+// ================================================================ //
+
+function renderContent() {
+  const content = document.getElementById('content');
+  const brief   = briefData;
+  if (!brief) return;
+
+  const cats = brief.catalysts || [];
+  const highMat  = cats.filter(c => (c.materiality_score||0) >= 0.7).length;
+  const modMat   = cats.filter(c => (c.materiality_score||0) >= 0.4 && (c.materiality_score||0) < 0.7).length;
+
+  const statsHtml = `
+    <div class="stat"><div class="stat-val">${cats.length}</div><div class="stat-key">Catalysts</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--red)">${highMat}</div><div class="stat-key">High materiality</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--yellow)">${modMat}</div><div class="stat-key">Moderate</div></div>
+    <div class="stat"><div class="stat-val">${brief.time_window_days||7}d</div><div class="stat-key">Window</div></div>
+    <div class="stat"><div class="stat-val">${(brief.watchlist||[]).join(', ')||'—'}</div><div class="stat-key">Watchlist</div></div>`;
+
+  const summaryHtml = `
+    <div class="summary-bar">
+      <div class="stat-row">${statsHtml}</div>
+      ${brief.brief_summary ? `<div class="brief-summary">${esc(brief.brief_summary)}</div>` : ''}
+    </div>
+    ${brief.caution ? `<div class="caution-bar">⚠️ ${esc(brief.caution)}</div>` : ''}`;
+
+  let catHtml = '';
+  if (cats.length === 0) {
+    catHtml = `<div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-msg">No catalysts matched the current filters.</div>
+      <div style="font-size:0.8rem;color:var(--muted)">Try lowering min materiality or increasing the lookback window.</div>
+    </div>`;
+  } else {
+    catHtml = `
+      <div class="catalysts-header">
+        <div class="catalysts-title">Ranked Catalysts</div>
+        <span class="count-badge">${cats.length}</span>
+      </div>
+      <div class="catalyst-list">
+        ${cats.map((c, i) => renderCard(c, i)).join('')}
+      </div>`;
+  }
+
+  const biasHtml = renderBias(true);
+
+  content.innerHTML = summaryHtml + renderIntelligence() + catHtml + biasHtml;
+}
+
+// ================================================================ //
+//  Data loading                                                     //
+// ================================================================ //
+
+async function loadBiasLayer() {
+  try {
+    const r = await fetch('/api/bias');
+    biasData = await r.json();
+  } catch(e) {
+    biasData = null;
+  }
+}
+
+async function loadIntelligence() {
+  try {
+    const r = await fetch('/api/intelligence/latest');
+    intelligenceData = await r.json();
+  } catch(e) {
+    intelligenceData = null;
+  }
+}
+
+async function refreshDashboard() {
+  // Intelligence is a fast file read — load first, then brief (DB query).
+  // loadBrief() manages its own spinner and button state.
+  await loadIntelligence();
+  await loadBrief();
+}
+
+function toggleIntel() {
+  const body = document.getElementById('intelBody');
+  const btn  = document.getElementById('intelToggleBtn');
+  if (!body) return;
+  const col = body.classList.contains('collapsed');
+  if (col) { body.classList.remove('collapsed'); btn.textContent = 'hide'; }
+  else     { body.classList.add('collapsed');    btn.textContent = 'show'; }
+}
+
+function toggleIntelReport() {
+  const body = document.getElementById('intelFullReport');
+  const btn  = document.getElementById('intelReportBtn');
+  if (!body) return;
+  const col = body.classList.contains('collapsed');
+  if (col) {
+    body.style.maxHeight = '2000px';
+    body.classList.remove('collapsed');
+    btn.textContent = '▾ Full report';
+  } else {
+    body.classList.add('collapsed');
+    btn.textContent = '▶ Full report';
+  }
+}
+
+function renderIntelligence() {
+  const d = intelligenceData;
+
+  // Empty / unavailable state — show a muted placeholder, not an error
+  if (!d || !d.available) {
+    const msg = (d && d.message) || 'Run run.bat to generate a synthesis report.';
+    return `
+    <div class="intel-section">
+      <div class="intel-header">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="intel-label">Latest Intelligence Synthesis</span>
+          <span class="ai-badge">AI synthesis · research only</span>
+        </div>
+      </div>
+      <div class="intel-empty">${esc(msg)}</div>
+    </div>`;
+  }
+
+  const r      = d.report || {};
+  const genAt  = (d.generated_at || '').slice(0, 19).replace('T', ' ');
+
+  // ── Top Signals ──────────────────────────────────────────────────
+  const signals = (r.top_signals || []).slice(0, 6);
+  const signalsHtml = signals.length
+    ? signals.map(s => {
+        const sig = (s.signal || 'neutral').toLowerCase();
+        const cls = ['bullish','bearish','mixed'].includes(sig) ? sig : 'neutral';
+        const why = (s.why || '').slice(0, 120);
+        return `<div class="signal-chip signal-${cls}">
+          <div class="signal-top-row">
+            <span class="signal-asset">${esc(s.asset||'')}</span>
+            <span class="signal-dir">${esc(sig)}</span>
+            <span style="font-size:0.68rem;color:var(--muted)">${esc(s.conviction||'')}</span>
+          </div>
+          ${why ? `<div class="signal-why">${esc(why)}</div>` : ''}
+        </div>`;
+      }).join('')
+    : '<div class="intel-empty">No signals in this report.</div>';
+
+  // ── Key Risks ────────────────────────────────────────────────────
+  const risks = (r.key_risks || []).slice(0, 4);
+  const risksHtml = risks.length
+    ? risks.map(rk => {
+        const sev = (rk.severity || 'low').toLowerCase();
+        const cls = ['high','medium'].includes(sev) ? sev : 'low';
+        return `<div class="risk-chip risk-${cls}">
+          <span class="risk-sev">${esc(sev)}</span>
+          <span>${esc((rk.risk||'').slice(0,130))}</span>
+          ${rk.frequency ? `<span style="font-size:0.68rem;color:var(--muted)">${esc(rk.frequency)}</span>` : ''}
+        </div>`;
+      }).join('')
+    : '<div class="intel-empty">No risks flagged.</div>';
+
+  // ── Actionable Intelligence ──────────────────────────────────────
+  const actions = (r.actionable_intelligence || []).slice(0, 4);
+  const actionsHtml = actions.length
+    ? actions.map(a => {
+        const urg = (a.urgency || 'low').toLowerCase();
+        const cls = ['high','medium'].includes(urg) ? urg : 'low';
+        return `<div class="action-chip action-${cls}">
+          <span class="action-urg">${esc(urg)}</span>
+          <span>${esc((a.action||'').slice(0,130))}</span>
+          ${a.rationale ? `<span style="font-size:0.68rem;color:var(--muted)">${esc(a.rationale.slice(0,100))}</span>` : ''}
+        </div>`;
+      }).join('')
+    : '<div class="intel-empty">No actions in this report.</div>';
+
+  // ── Meta line ────────────────────────────────────────────────────
+  const dr      = r.date_range || {};
+  const period  = dr.earliest ? `${dr.earliest} → ${dr.latest}` : '';
+  const briefs  = r.brief_count ? `${r.brief_count} brief(s)` : '';
+  const model   = r.model_used  ? `model: ${r.model_used}` : '';
+  const metaTxt = [briefs, period, model].filter(Boolean).join(' · ');
+
+  // ── Full report toggle ───────────────────────────────────────────
+  const fullReportHtml = d.markdown
+    ? `<div style="margin-top:8px;">
+        <button class="collapse-btn" onclick="toggleIntelReport()" id="intelReportBtn">▶ Full report</button>
+        <div class="collapsible collapsed intel-full-report" id="intelFullReport" style="max-height:0;">
+          <pre>${esc(d.markdown)}</pre>
+        </div>
+       </div>`
+    : '';
+
+  return `
+  <div class="intel-section">
+    <div class="intel-header">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="intel-label">Latest Intelligence Synthesis</span>
+        <span class="ai-badge">AI synthesis · research only</span>
+        <span class="not-execution">Not an execution instruction</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:0.72rem;color:var(--muted)">${esc(genAt)}</span>
+        <button class="collapse-btn" onclick="toggleIntel()" id="intelToggleBtn">hide</button>
+      </div>
+    </div>
+    <div class="collapsible" id="intelBody" style="max-height:6000px;">
+      ${r.one_sentence_takeaway
+        ? `<div class="intel-takeaway">${esc(r.one_sentence_takeaway)}</div>` : ''}
+      ${r.summary
+        ? `<div class="intel-summary">${esc(r.summary.slice(0,600))}${r.summary.length>600?'…':''}</div>` : ''}
+      <div class="intel-grid">
+        <div class="intel-col">
+          <div class="intel-col-title">Top Signals</div>
+          ${signalsHtml}
+        </div>
+        <div class="intel-col">
+          <div class="intel-col-title">Key Risks</div>
+          ${risksHtml}
+        </div>
+        <div class="intel-col">
+          <div class="intel-col-title">Actionable Intelligence</div>
+          ${actionsHtml}
+        </div>
+      </div>
+      ${fullReportHtml}
+      ${metaTxt ? `<div class="intel-meta">${esc(metaTxt)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+async function loadBrief() {
+  const btn = document.getElementById('refreshBtn');
+  const content = document.getElementById('content');
+  btn.disabled = true;
+
+  content.innerHTML = `<div class="empty-state">
+    <div><span class="spinner"></span> Generating brief…</div>
+  </div>`;
+
+  const params = buildParams();
+
+  try {
+    const r = await fetch('/api/brief?' + params.toString());
+    if (!r.ok) {
+      const err = await r.json().catch(()=>({error:'Unknown error'}));
+      content.innerHTML = `<div class="error-banner">⚠️ Error: ${esc(err.error||r.statusText)}</div>`;
+      return;
+    }
+    briefData = await r.json();
+    document.getElementById('lastUpdated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+    renderContent();
+  } catch(e) {
+    content.innerHTML = `<div class="error-banner">⚠️ Failed to load brief: ${esc(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ================================================================ //
+//  Bootstrap                                                        //
+// ================================================================ //
+
+(async function init() {
+  // Populate event type checklist
+  await loadEventTypes();
+
+  // Pre-fill tickers from server default
+  try {
+    const r = await fetch('/api/tickers');
+    const d = await r.json();
+    const el = document.getElementById('fTickers');
+    if (d.tickers && d.tickers.length && !el.value) {
+      el.value = d.tickers.join(',');
+    }
+  } catch(e) {}
+
+  // Load bias layer (async, don't block brief)
+  loadBiasLayer();
+
+  // Load intelligence synthesis (runs in parallel with brief)
+  await loadIntelligence();
+
+  // Load initial brief
+  await loadBrief();
+})();
+
+// ================================================================ //
+//  Tab switching                                                  //
+// ================================================================ //
+
+let currentTab      = 'feed';
+let newsBlocksData  = null;
+let newsBlocksLoaded = false;
+
+function switchTab(tab) {
+  currentTab = tab;
+
+  // Toggle buttons
+  document.getElementById('tabBtnFeed').classList.toggle('active',    tab === 'feed');
+  document.getElementById('tabBtnMyViews').classList.toggle('active', tab === 'myviews');
+
+  // Toggle panels
+  document.getElementById('content').style.display      = tab === 'feed'    ? 'flex'  : 'none';
+  document.getElementById('myViewsPanel').style.display = tab === 'myviews' ? 'flex'  : 'none';
+
+  // Toggle sidebar (filters are only relevant for the catalyst feed)
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.style.display = tab === 'feed' ? '' : 'none';
+
+  if (tab === 'myviews' && !newsBlocksLoaded) {
+    loadNewsBlocks();
+  }
+}
+
+// ================================================================ //
+//  News blocks loader & renderer                                   //
+// ================================================================ //
+
+async function loadNewsBlocks() {
+  const panel = document.getElementById('myViewsPanel');
+  panel.innerHTML = `<div class="empty-state"><div class="spinner"></div><div class="empty-msg">Loading My Views…</div></div>`;
+  try {
+    const r = await fetch('/api/news-blocks/latest');
+    newsBlocksData = await r.json();
+    newsBlocksLoaded = true;
+    renderMyViews();
+  } catch(e) {
+    panel.innerHTML = `<div class="mv-diagnostic">
+      <div class="mv-diag-icon">⚠️</div>
+      <div class="mv-diag-msg">Could not load news blocks: ${esc(e.message)}</div>
+      <div class="mv-diag-hint">Is the dashboard server running?</div>
+    </div>`;
+  }
+}
+
+async function refreshMyViews() {
+  newsBlocksLoaded = false;
+  await loadNewsBlocks();
+}
+
+function renderMyViews() {
+  const panel = document.getElementById('myViewsPanel');
+  const d     = newsBlocksData;
+
+  if (!d || !d.available) {
+    const msg  = (d && d.message) || 'Run run.bat step 11b to generate My Views data.';
+    const hint = 'equity-synthesize-news-blocks --hours 24 --blocks 8';
+    panel.innerHTML = `
+      <div class="mv-header">
+        <span class="mv-title">My Views — 24h News Intelligence</span>
+        <span class="mv-disclaimer">AI synthesis for research only · Not an execution instruction</span>
+      </div>
+      <div class="mv-diagnostic">
+        <div class="mv-diag-icon">📰</div>
+        <div class="mv-diag-msg">${esc(msg)}</div>
+        <div class="mv-diag-hint">Run: <code>${esc(hint)}</code></div>
+      </div>`;
+    return;
+  }
+
+  const blocks   = d.blocks || [];
+  const genAt    = (d.generated_at || '').slice(0, 19).replace('T', ' ');
+  const artCount = d.article_count || 0;
+  const window_h = d.window_hours  || 24;
+  const model    = d.model_used    || '';
+
+  let blocksHtml = '';
+  if (blocks.length === 0) {
+    blocksHtml = `<div class="mv-diagnostic">
+      <div class="mv-diag-icon">🔍</div>
+      <div class="mv-diag-msg">No news blocks were synthesized.</div>
+      <div class="mv-diag-hint">There may not be enough 24h news. Run equity-sync-news first.</div>
+    </div>`;
+  } else {
+    blocksHtml = `<div class="news-blocks-grid">` +
+      blocks.map(blk => renderNewsBlock(blk)).join('') +
+    `</div>`;
+  }
+
+  const metaParts = [
+    `${artCount} article${artCount !== 1 ? 's' : ''} analysed`,
+    `${window_h}h window`,
+    genAt ? `Generated ${genAt} UTC` : '',
+    model ? `Model: ${esc(model)}` : '',
+  ].filter(Boolean);
+
+  panel.innerHTML = `
+    <div class="mv-header">
+      <span class="mv-title">My Views — 24h News Intelligence</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="mv-disclaimer">AI synthesis for research only · Not an execution instruction</span>
+        <button class="collapse-btn" onclick="refreshMyViews()">⟳ Refresh</button>
+      </div>
+    </div>
+    <div class="nb-meta">${metaParts.map(esc).join(' · ')}</div>
+    ${blocksHtml}`;
+}
+
+function renderNewsBlock(blk) {
+  const ticker   = esc(blk.ticker    || '?');
+  const cat      = esc(blk.category  || 'Other');
+  const imp      = (blk.importance   || 'low').toLowerCase();
+  const headline = esc(blk.headline  || '');
+  const why      = esc(blk.why_it_matters || '');
+  const related  = (blk.related_tickers || []).filter(t => t && t !== blk.ticker);
+  const sources  = (blk.sources || []).slice(0, 3);
+
+  const impCls  = ['high','medium'].includes(imp) ? imp : 'low';
+  const impBadge = `<span class="nb-imp nb-imp-${impCls}">${esc(imp)}</span>`;
+
+  const relHtml = related.length
+    ? `<div class="nb-related">
+         <span class="nb-related-label">Also:</span>
+         ${related.slice(0,4).map(t => `<span class="nb-related-tag">${esc(t)}</span>`).join('')}
+       </div>`
+    : '';
+
+  const srcHtml = sources.length
+    ? `<div class="nb-sources">` +
+        sources.map(s => {
+          const title = esc(s.title || s.url || 'Source');
+          const pub   = s.publisher ? ` — ${esc(s.publisher)}` : '';
+          const url   = s.url || '';
+          return url
+            ? `<a class="nb-source-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(url)}">${title}${pub}</a>`
+            : `<span class="nb-source-link">${title}${pub}</span>`;
+        }).join('') +
+      `</div>`
+    : '';
+
+  return `
+  <div class="nb-card imp-${impCls}">
+    <div class="nb-card-top">
+      <span class="nb-ticker">${ticker}</span>
+      <span class="nb-cat">${cat}</span>
+      ${impBadge}
+    </div>
+    ${headline ? `<div class="nb-headline">${headline}</div>` : ''}
+    ${why      ? `<div class="nb-why">${why}</div>`           : ''}
+    ${relHtml}
+    ${srcHtml}
+  </div>`;
+}
+
+// ---- Idle-shutdown heartbeat ----
+// Pings the server every 5 s so it knows the tab is still open.
+// When this tab closes the pings stop; the server exits after ~25 s.
+(function startHeartbeat() {
+  const ping = () => fetch('/api/ping', { method: 'POST' }).catch(() => {});
+  ping(); // immediate ping on load
+  setInterval(ping, 5000);
+})();
+</script>
+</body>
+</html>

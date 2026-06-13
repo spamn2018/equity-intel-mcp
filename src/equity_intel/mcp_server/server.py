@@ -13,6 +13,7 @@ import mcp.server.stdio
 import mcp.types as types
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
+from mcp.server.lowlevel.server import NotificationOptions
 
 from equity_intel.config import settings
 from equity_intel.db.session import SessionLocal, create_all_tables
@@ -619,7 +620,7 @@ async def _serve() -> None:
                 server_name=settings.mcp_server_name,
                 server_version="0.1.0",
                 capabilities=app.get_capabilities(
-                    notification_options=None,
+                    notification_options=NotificationOptions(),
                     experimental_capabilities={},
                 ),
             ),

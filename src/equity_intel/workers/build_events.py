@@ -7,7 +7,6 @@ Usage:
 """
 from __future__ import annotations
 
-import asyncio
 from typing import List, Optional
 
 import click
@@ -24,10 +23,22 @@ logger = get_logger(__name__)
 def run(tickers: Optional[List[str]] = None, days: int = 90) -> None:
     configure_logging(settings.log_level)
 
+    # TradHedge tickers are always-hold positions — skip signal/event generation for them.
+    # They are still synced for data (filings, prices, news) by other workers.
+    trad_hedge = set(settings.trad_hedge_list)
+
     with get_session() as session:
         query = session.query(Company).filter(Company.is_active == True)
         if tickers:
-            query = query.filter(Company.ticker.in_([t.upper() for t in tickers]))
+            # If caller explicitly requested tickers, honour them but still skip TradHedge.
+            effective = [t.upper() for t in tickers if t.upper() not in trad_hedge]
+            if not effective:
+                logger.info("build_events_skipped_all_trad_hedge", requested=tickers)
+                return
+            query = query.filter(Company.ticker.in_(effective))
+        else:
+            # Default run: exclude TradHedge from event generation.
+            query = query.filter(Company.ticker.notin_(trad_hedge))
         companies = query.all()
 
         total = 0

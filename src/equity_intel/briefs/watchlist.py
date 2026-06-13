@@ -14,6 +14,10 @@ Key design choices:
 from __future__ import annotations
 
 import datetime
+import hashlib
+import json
+import os
+import time
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -28,6 +32,107 @@ from equity_intel.db.models import (
 from equity_intel.logging_config import get_logger
 
 logger = get_logger(__name__)
+
+# ---------------------------------------------------------------------------
+# Brief output cache (avoids re-pulling articles on every run)
+# ---------------------------------------------------------------------------
+
+def _brief_cache_key(tickers: List[str], days: int, min_materiality: float) -> str:
+    """Stable cache key based on the parameters that affect brief content."""
+    payload = json.dumps({"t": sorted(tickers), "d": days, "m": round(min_materiality, 4)},
+                         sort_keys=True)
+    return hashlib.sha1(payload.encode()).hexdigest()[:16]
+
+
+def _brief_cache_path(key: str) -> str:
+    cache_dir = os.path.join(".cache", "brief")
+    os.makedirs(cache_dir, exist_ok=True)
+    return os.path.join(cache_dir, f"{key}.json")
+
+
+def _brief_cache_get(key: str, ttl_seconds: int) -> Optional[Dict[str, Any]]:
+    """Return cached brief if it exists and is fresh, else None."""
+    path = _brief_cache_path(key)
+    if not os.path.exists(path):
+        return None
+    age = time.time() - os.path.getmtime(path)
+    if age > ttl_seconds:
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        logger.info("brief_cache_hit", key=key, age_seconds=int(age), ttl=ttl_seconds)
+        return data
+    except Exception:
+        return None
+
+
+def _brief_cache_set(key: str, brief: Dict[str, Any]) -> None:
+    path = _brief_cache_path(key)
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(brief, f, default=str)
+    except Exception as exc:
+        logger.warning("brief_cache_write_failed", error=str(exc))
+
+# ------------------------------------------------------------------ #
+# Research universe metadata enrichment                                #
+# ------------------------------------------------------------------ #
+
+_PROBE_NOTE = (
+    "This is an early-stage research candidate (probe). "
+    "Treat with extra caution — primary-source confirmation required before "
+    "drawing any conclusions. Not comparable to established names."
+)
+
+
+def _load_research_meta() -> Dict[str, Any]:
+    """
+    Load the research universe ticker metadata dict (cached).
+
+    Returns an empty dict if the research_universe module is unavailable
+    or the config file is missing, so callers never crash.
+    """
+    try:
+        from equity_intel.research_universe import get_ticker_metadata  # noqa: PLC0415
+        return get_ticker_metadata()
+    except Exception:
+        return {}
+
+
+def _enrich_catalyst_with_research_meta(
+    catalyst: Dict[str, Any],
+    research_meta: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Attach available research-universe metadata to a catalyst item.
+
+    Added fields (only when present in the universe config):
+        research_stage   – probe / watch / active / core / archived
+        thesis_tags      – list of thesis theme strings
+        risk_tags        – list of risk factor strings
+        research_note    – plain-language note for probe-stage names
+
+    This function is non-destructive — it never removes existing keys.
+    """
+    ticker = (catalyst.get("ticker") or "").upper()
+    meta = research_meta.get(ticker)
+    if not meta:
+        return catalyst
+
+    if "stage" in meta:
+        catalyst["research_stage"] = meta["stage"]
+        if meta["stage"] == "probe":
+            catalyst["research_note"] = _PROBE_NOTE
+
+    if "thesis_tags" in meta:
+        catalyst["thesis_tags"] = meta["thesis_tags"]
+
+    if "risk_tags" in meta:
+        catalyst["risk_tags"] = meta["risk_tags"]
+
+    return catalyst
+
 
 # ------------------------------------------------------------------ #
 # Constants                                                            #
@@ -431,6 +536,18 @@ def get_watchlist_brief(
         generated_at, watchlist, time_window_days, filters_applied,
         brief_summary, total_catalysts, catalysts (ranked list)
     """
+    # --- Cache check ---
+    try:
+        from equity_intel.config import settings as _s
+        ttl = getattr(_s, "daily_brief_cache_ttl_seconds", 0)
+    except Exception:
+        ttl = 0
+    if ttl > 0:
+        _key = _brief_cache_key(tickers, days, min_materiality)
+        _cached = _brief_cache_get(_key, ttl)
+        if _cached is not None:
+            return _cached
+
     generated_at = datetime.datetime.now(datetime.timezone.utc)
     tickers_upper = [t.strip().upper() for t in tickers if t.strip()]
 
@@ -536,9 +653,20 @@ def get_watchlist_brief(
     # ── Apply max_items cap ──────────────────────────────────────────
     catalysts = catalysts[:max_items]
 
+    # ── Enrich with research-universe metadata (stage, tags, etc.) ──
+    try:
+        research_meta = _load_research_meta()
+        if research_meta:
+            catalysts = [
+                _enrich_catalyst_with_research_meta(c, research_meta)
+                for c in catalysts
+            ]
+    except Exception as _enrich_exc:  # never break the brief on enrichment failure
+        logger.warning("research_meta_enrich_failed", error=str(_enrich_exc))
+
     brief_summary = _generate_brief_summary(tickers_upper, catalysts, days)
 
-    return {
+    result = {
         "generated_at": _serialize_date(generated_at),
         "watchlist": tickers_upper,
         "time_window_days": days,
@@ -557,6 +685,13 @@ def get_watchlist_brief(
         "note": SOURCE_NOTE,
         "caution": CAUTION_DEFAULT,
     }
+
+    # Write to cache if TTL is configured
+    if ttl > 0:
+        _brief_cache_set(_key, result)
+        logger.info("brief_cache_written", key=_key, ttl=ttl)
+
+    return result
 
 # ------------------------------------------------------------------ #
 # Markdown renderer (thin delegation to CLI renderer)                  #

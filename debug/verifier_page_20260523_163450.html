@@ -1,0 +1,152 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link type="text/css" href="https://cdn2.etrade.net/1/20260512.0/stylesheet/prospect.css" rel="stylesheet">
+<link type="text/css" href="https://cdn2.etrade.net/1/20260512.0/stylesheet/design-language/design-language/2023.3.17/edesign-language.css" rel="stylesheet">
+</head>
+<body>
+<style>
+                    body {
+                        font:11px Arial,Helvetica,sans-serif;
+                    }
+                    .api-container {
+                        border:1px solid #ccc;
+                        width:760px;
+                        margin:10px;
+                    }
+                    .api-inner-container {
+                        height:auto;
+                        border:1px solid #fff;
+                        padding:10px 15px 15px 15px;
+                        text-align:left;
+                        background:url("https://cdn2.etrade.net/1/20260512.0/images/237x75_banner_bg.jpg") repeat-x scroll center bottom transparent;
+                    }
+                    .api-header{
+                        margin:10px 0;
+                        padding:10px;
+                        height:20px;
+                        width:760px;
+                    }
+                    .subheaderLeft,.clearAll {
+                        clear:both;
+                    }
+                    
+                    .subheaderLeft ul{
+                        margin-left:13px
+                    }
+
+                    .subheaderLeft ul li{
+                        padding:0
+                    }
+
+                    .api-title-cont{
+                        border-bottom:1px dotted #D4D4D4
+                    }
+
+                    .api-title{
+                        color:#7CA500;
+                        font-size:16px;
+                        font-weight:bold;
+                        width:100%;
+                        text-align:left
+                    }
+
+                    .agreementUpdate{
+                        text-align:center;
+                        margin-left: auto;
+                        margin-right: auto;
+                        width: 50em;
+                    }
+
+                    #scrollContent{
+                        height:500px;
+                        overflow-y:scroll;
+                        overflow-x: hidden;
+                        float:left;
+                        border:1px dotted #D4D4D4;
+                        padding:15px;
+                    }
+
+                </style>
+<script src="https://cdn2.etrade.net/1/20260512.0/javascript/jquery/jquery.min.js"></script><script type="text/javascript">
+                    $(document).ready(function(){
+                    $("#scrollContent").on( 'scroll', function(event){
+                    var element = event.target;
+
+                    if (element.scrollHeight - Math.ceil(element.scrollTop) === element.clientHeight) {
+                        $("#agreementCheckBox").removeAttr("disabled");
+                    }
+                    });
+
+                    $("#agreementCheckBox").change( function(){
+                    if($('#agreementCheckBox').prop('checked')) {
+                    $("#acceptSubmit").removeAttr("disabled");
+
+                    } else {
+                    $("#acceptSubmit").attr('disabled','disabled');
+                    }
+                    });
+
+                    $("#acceptSubmit").on("click", function() {
+                    $( ".spinner-overlay").addClass("show-spinner");
+                    });
+                    });
+
+                </script>
+<div class="row-flex">
+<div class="col-auto">
+<div class="api-header">
+<div class="float-left">
+<img height="27" width="189" alt="ETRADE from Morgan Stanley" src="/content/dam/etrade/retail/en_US/images/global/logos/etrade-from-MS.svg"></div>
+<div class="float-right">
+<img alt="JOHN MORGAN" src="/e/t/etws/getimage?consumer_key=a79a8d8a27636223198b3f67079ea0c0"></div>
+</div>
+</div>
+</div>
+<div class="row-flex">
+<div class="col-auto">
+<div class="api-container spinner-overlay">
+<div class="sr-only" aria-live="polite"></div>
+<div class="spinner-overlay-spinner">
+<div aria-busy="true" class="spinner">
+<svg viewBox="25 25 50 50" class="circular">
+<circle stroke-width="2" stroke-miterlimit="10" r="20" fill="none" cy="50" cx="50" class="background"></circle>
+<circle stroke-width="2" stroke-miterlimit="10" r="20" fill="none" cy="50" cx="50" class="path"></circle>
+</svg>
+</div>
+</div>
+<div class="api-inner-container">
+<table width="100%" class="api-title-cont">
+<tbody><tr>
+<td><img alt="E*TRADE FINANCIAL" src="https://cdn2.etrade.net/1/20260512.0/images/lock_api.gif"></td><td class="api-title">Indicate Terms Agreement</td>
+</tr>
+</tbody></table>
+<br>
+
+                                To continue, please acknowledge that you agree to allow the indicated platform to submit requests and retrieve data from your E*TRADE FINANCIAL account(s)
+                                <br>
+<br>
+<b>JOHN MORGAN</b> will be able to:
+                                <br>
+<div class="subheaderLeft">
+<ul>
+<li>Retrieves account information including: list of accounts, account type, account balance info, transaction details, and more.</li>
+<li>Accesses order previews, place order functionality, lists of orders, cancel order functionality, and more.</li>
+<li>Retrieves quote information, option chains, option expiry information, and more.</li>
+<li>Accesses user's account alerts upon request from user.</li>
+</ul>
+</div>
+<br>
+<div style="text-align:center" class="clearAll">
+<form name="CustInfo" method="post" action="/e/t/etws/TradingAPICustomerInfo">
+<input name="stk1" type="hidden" value="E4YenZDUfd2poBrrPnf6m2IumzQWmv+T9EsMWaM/nQA6gYcrp7kHHpDw00FxHlTQqytkng=="><input name="formpost" type="hidden" value="1"><input name="submit" type="submit" id="acceptSubmit" value="Accept">&nbsp;
+                                        <input name="submit" type="submit" value="Decline" onclick="javascript:window.close();">
+</form>
+<br>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript" src="/WB1eqfTBWUAJXrquJmjG/O1L7kXhbuNf6bbuSb9/LlUCAg/e0NyZ/SNqaEYB"></script>
+
+</body></html>

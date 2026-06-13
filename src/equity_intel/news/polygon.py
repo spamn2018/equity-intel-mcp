@@ -23,7 +23,7 @@ POLYGON_NEWS_URL = "https://api.polygon.io/v2/reference/news"
 def _is_retryable(exc: BaseException) -> bool:
     if isinstance(exc, httpx.HTTPStatusError):
         return exc.response.status_code in (429, 500, 502, 503, 504)
-    return isinstance(exc, (httpx.TimeoutException, httpx.ConnectError))
+    return isinstance(exc, (httpx.TimeoutException, httpx.ConnectError, httpx.RemoteProtocolError))
 
 
 def _parse_published_at(ts: Optional[str]) -> Optional[datetime.datetime]:

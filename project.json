@@ -1,0 +1,8 @@
+{
+  "name": "Equity Intelligence MCP",
+  "description": "A local-first equities research system that ingests SEC filings, company disclosures, financial news, and price data, then exposes it through an MCP server so an AI assistant can answer stock research questions with fresh, source-linked evidence.",
+  "status": "RESEARCH",
+  "emoji": "📊",
+  "code_dir": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Stocks",
+  "obsidian_wiki_page": "wiki/sources/equity-intelligence-project.md"
+}

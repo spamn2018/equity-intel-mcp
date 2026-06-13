@@ -527,11 +527,12 @@ This file is the structured source of truth for the full universe and is read at
 The smaller operational set used by daily briefs, ingestion workers, and the dashboard.
 
 ```env
-DEFAULT_TICKERS=NVDA,AMD,AVGO,MSFT,GOOGL,AMZN,TSLA,ISRG,SYM,META,PLTR,AI,BOTZ,ROBO
+DEFAULT_TICKERS=POWL,ETN,VST,NEE,ANET,MRVL,AMAT,LRCX,KLAC,MU,EQIX,DLR,IRM,MP,USAR,UUUU,QCOM,ON,CSCO,FSLR
 DAILY_BRIEF_WATCHLIST=
 ```
 
 `DEFAULT_TICKERS` is used unless `DAILY_BRIEF_WATCHLIST` is also set, in which case that takes priority for briefs.
+`PROHIBITED_TICKERS` is the hard exclusion list for companies already represented in the user's listed 401k fund top holdings; sync workers and the research-universe loader filter those tickers out even if they are accidentally reintroduced elsewhere.
 
 ### Ticker stages
 

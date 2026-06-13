@@ -1,0 +1,174 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "ON",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Stock market shows resilience as Wall Street anticipates US-Iran negotiations.",
+      "why_it_matters": "The overall market's positive movement amid geopolitical tensions indicates investor confidence. While ON's specific impact is minimal, the broader market sentiment can influence stock performance across sectors, including technology.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for US-Iran update.",
+          "url": "https://finance.yahoo.com/news/live/stock-market-today-friday-may-29-222720064.html",
+          "publisher": "Yahoo Finance"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MU",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Micron's stock surges 850% over the past year due to AI-driven demand for memory chips.",
+      "why_it_matters": "Micron's remarkable growth is fueled by unprecedented demand for high-bandwidth memory chips, particularly in AI applications. This trend is likely to continue, positioning Micron favorably in the semiconductor market. Investors are optimistic about sustained revenue growth as AI adoption accelerates.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "If You Had Invested $1,000 in Micron 1 Year Ago, Here's How Much You'd Have Now.",
+          "url": "https://www.fool.com/investing/2026/05/28/if-you-had-invested-1000-in-micron-1-year-ago-here/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "The Roundhill Memory ETF (DRAM) Packages Micron, Sandisk, Samsung, and SK Hynix in 1 Ticker for Just $60.",
+          "url": "https://www.fool.com/investing/2026/05/28/roundhill-memory-etf-dram-micron-sandisk-dram/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MP",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Redwire and Kratos stocks surge on potential US drone manufacturing subsidies.",
+      "why_it_matters": "The proposed government support for drone manufacturers highlights a growing interest in defense technology. While MP is not directly involved, the trend may influence investor sentiment in related sectors, potentially benefiting companies like MP in the long run.",
+      "related_tickers": [
+        "KRNT",
+        "RDW"
+      ],
+      "sources": [
+        {
+          "title": "Why Redwire Stock Popped This Morning.",
+          "url": "https://www.fool.com/investing/2026/05/28/why-redwire-stock-popped-this-morning/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Why Kratos Defense Stock Popped Today.",
+          "url": "https://www.fool.com/investing/2026/05/28/why-kratos-defense-stock-popped-today/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Marvell's Q1 earnings beat estimates with $2.42B revenue, driven by data center growth.",
+      "why_it_matters": "Marvell's strong performance in the data center segment, which generated record revenue, highlights the company's pivotal role in the semiconductor industry. The positive guidance projecting 40% growth indicates robust demand, making Marvell a key player in the ongoing tech expansion.",
+      "related_tickers": [
+        "QCOM",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Marvell CEO Says Data Center Business Is 'On Fire'.",
+          "url": "https://www.benzinga.com/trading-ideas/movers/26/05/52833213/marvell-ceo-says-data-center-business-is-on-fire?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Qualcomm shares soar as the company expands into the data center market.",
+      "why_it_matters": "Qualcomm's strategic move into the data center sector is seen as a significant growth opportunity, attracting investor interest. This expansion aligns with the increasing demand for high-performance computing solutions, positioning Qualcomm to capitalize on the tech industry's evolution.",
+      "related_tickers": [
+        "MRVL",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "Massive News for Qualcomm Stock Investors.",
+          "url": "https://www.fool.com/investing/2026/05/28/massive-news-for-qualcomm-stock-investors/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "KLAC",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "KLA Corporation benefits from strong semiconductor industry growth.",
+      "why_it_matters": "KLA's positive outlook reflects the booming semiconductor market, driven by increased demand for advanced manufacturing equipment. As the industry expands, KLA is well-positioned to capture growth opportunities, making it an attractive investment in the tech sector.",
+      "related_tickers": [
+        "LRCX",
+        "AMAT"
+      ],
+      "sources": [
+        {
+          "title": "Great News for KLAC Stock Investors.",
+          "url": "https://www.fool.com/investing/2026/05/28/great-news-for-klac-stock-investors/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "FSLR",
+      "category": "Renewables",
+      "importance": "medium",
+      "headline": "First Solar approaches buy zone as S&P 500 and Nasdaq hit record highs.",
+      "why_it_matters": "First Solar's positioning near buy zones coincides with broader market optimism, particularly in renewable energy sectors. As investors seek growth in sustainable technologies, First Solar could benefit from increased capital inflow, enhancing its market presence.",
+      "related_tickers": [
+        "TSLA",
+        "ENPH"
+      ],
+      "sources": [
+        {
+          "title": "S&P 500, Nasdaq Set More Record Highs On Iran Deal Hopes; Tesla, First Solar In Or Near Buy Zones.",
+          "url": "https://www.investors.com/market-trend/the-big-picture/stock-market-sp500-nasdaq-us-iran-deal-tesla-tsla-first-solar-fslr/",
+          "publisher": "Investors Business Daily"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "LRCX",
+      "category": "Chips",
+      "importance": "medium",
+      "headline": "Lam Research poised for growth as AI market expands significantly.",
+      "why_it_matters": "The anticipated growth in the AI market presents a substantial opportunity for Lam Research, which provides essential equipment for semiconductor manufacturing. As AI technologies evolve, Lam Research is likely to see increased demand for its products, supporting its revenue growth.",
+      "related_tickers": [
+        "KLAC",
+        "AMAT"
+      ],
+      "sources": [
+        {
+          "title": "Is the AI Trade Entering Its Second Wave? This ETF Could Be a Major Beneficiary.",
+          "url": "https://www.fool.com/investing/2026/05/28/ai-trade-entering-second-wave-smh-etf-beneficiary/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-29T01:29:09.959738+00:00",
+  "article_count": 20,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 8,
+  "shortfall_note": ""
+}

@@ -1,0 +1,50 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "AMAT",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Photomask market projected to grow significantly, benefiting semiconductor firms like AMAT.",
+      "why_it_matters": "The anticipated growth in the photomask market indicates rising demand for semiconductor manufacturing, which could positively impact companies like Applied Materials. As semiconductor complexity increases, AMAT stands to gain from enhanced sales in photomask-related technologies.",
+      "related_tickers": [
+        "NVDA",
+        "MRVL"
+      ],
+      "sources": [
+        {
+          "title": "Photomask Market Size to Grow USD 8.19 Billion by 2035 | Research by SNS Insider",
+          "url": "https://www.globenewswire.com/news-release/2026/06/03/3305802/0/en/Photomask-Market-Size-to-Grow-USD-8-19-Billion-by-2035-Research-by-SNS-Insider.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Marvell stock soars 32.71% after Nvidia CEO praises its role in AI infrastructure.",
+      "why_it_matters": "This surge is driven by a strong endorsement from Nvidia's CEO, highlighting Marvell's critical position in AI data centers. Such recognition can lead to increased investor confidence and potential partnerships, significantly impacting future revenue growth.",
+      "related_tickers": [
+        "NVDA",
+        "AMAT"
+      ],
+      "sources": [
+        {
+          "title": "Why Marvell Stock Rocketed to a New All-Time High Today",
+          "url": "https://www.fool.com/investing/2026/06/02/why-marvell-stock-rocketed-new-all-time-high-today/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-03T21:55:37.240648+00:00",
+  "article_count": 2,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 2,
+  "shortfall_note": "Only 2 strong ticker group(s) found in the last 24h; generating 2 real block(s) instead of padding to 8."
+}

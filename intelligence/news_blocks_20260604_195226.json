@@ -1,0 +1,28 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "EQIX",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Global data center colocation market projected to reach $327.3B by 2035, growing at 14.5% CAGR.",
+      "why_it_matters": "This growth forecast indicates strong demand for data center services, which is crucial for EQIX's business model. As more companies shift to cloud and edge computing, EQIX stands to benefit significantly from increased colocation needs. This trend could enhance EQIX's revenue and market position in the data center sector.",
+      "related_tickers": [],
+      "sources": [
+        {
+          "title": "Global Data Center Colocation Market to Reach USD 327.3 Billion by 2035",
+          "url": "https://www.globenewswire.com/news-release/2026/06/04/3306498/0/en/Global-Data-Center-Colocation-Market-to-Reach-USD-327-3-Billion-by-2035-Expanding-at-a-14-5-CAGR-Custom-Market-Insights-Analysis-Outlook-Leaders-Report-Trends-Forecast-Segmentation.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-04T23:52:26.569281+00:00",
+  "article_count": 1,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 1,
+  "shortfall_note": "Only 1 strong ticker group(s) found in the last 24h; generating 1 real block(s) instead of padding to 8."
+}

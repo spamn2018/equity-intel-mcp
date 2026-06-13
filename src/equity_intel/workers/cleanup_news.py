@@ -2,7 +2,7 @@
 Worker: clean up old news articles beyond the retention window.
 
 Deletes rows from news_articles where published_at (or created_at as fallback)
-is older than the configured retention period. Safe to run repeatedly —
+is older than the configured retention period. Safe to run repeatedly -
 idempotent, rolls back on any error.
 
 Usage:
@@ -62,7 +62,7 @@ def cleanup_news(days: int = DEFAULT_RETENTION_DAYS, dry_run: bool = False) -> i
         if dry_run or count == 0:
             return count
 
-        # Real delete — session.commit() is called by get_session() context manager
+        # Real delete - session.commit() is called by get_session() context manager
         stale_query.delete(synchronize_session=False)
 
     return count
@@ -92,7 +92,7 @@ def main(days: int, dry_run: bool, log_level: str) -> None:
     """
     Delete news_articles older than --days (default 60).
 
-    Run this as a periodic maintenance step — it does not affect the active
+    Run this as a periodic maintenance step - it does not affect the active
     synthesis window (7 days) or any other table. Safe to run repeatedly.
     """
     configure_logging(log_level)
@@ -100,7 +100,7 @@ def main(days: int, dry_run: bool, log_level: str) -> None:
     cutoff = _cutoff_utc(days)
     cutoff_str = cutoff.strftime("%Y-%m-%d %H:%M UTC")
 
-    mode = "DRY RUN — " if dry_run else ""
+    mode = "DRY RUN - " if dry_run else ""
     click.echo(
         f"\n  {mode}News article cleanup\n"
         f"    Retention : {days} days\n"
@@ -111,7 +111,7 @@ def main(days: int, dry_run: bool, log_level: str) -> None:
     try:
         deleted = cleanup_news(days=days, dry_run=dry_run)
     except Exception as exc:
-        click.echo(f"\n  ERROR: cleanup failed — {exc}", err=True)
+        click.echo(f"\n  ERROR: cleanup failed - {exc}", err=True)
         logger.error("news_cleanup_failed", error=str(exc))
         sys.exit(1)
 
@@ -119,7 +119,7 @@ def main(days: int, dry_run: bool, log_level: str) -> None:
         click.echo(f"  Would delete : {deleted} row(s)")
         click.echo("  No changes made (--dry-run).\n")
     elif deleted == 0:
-        click.echo("  Nothing to delete — all articles are within the retention window.\n")
+        click.echo("  Nothing to delete - all articles are within the retention window.\n")
     else:
         click.echo(f"  Deleted      : {deleted} row(s) older than {cutoff_str}\n")
         logger.info("news_cleanup_complete", deleted=deleted, cutoff=cutoff_str)

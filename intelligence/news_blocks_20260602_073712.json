@@ -1,0 +1,111 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Micron reaches trillion-dollar market cap amid surging AI memory demand.",
+      "why_it_matters": "Micron's recent fiscal Q2 revenue surge, driven by high-bandwidth memory demand for AI, marks a significant milestone. This growth reflects the increasing reliance on AI technologies, positioning Micron favorably in the semiconductor market. The company's strong performance could attract further investment and bolster its competitive edge.",
+      "related_tickers": [
+        "AVGO",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Micron Joins the Trillion-Dollar Club on Surging AI Memory Demand",
+          "url": "https://www.investing.com/analysis/micron-joins-the-trilliondollar-club-on-surging-ai-memory-demand-200681311",
+          "publisher": "Investing.com"
+        },
+        {
+          "title": "Micron Powers AI Everywhere at COMPUTEX 2026",
+          "url": "https://www.globenewswire.com/news-release/2026/06/01/3304776/14450/en/Micron-Powers-AI-Everywhere-at-COMPUTEX-2026.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Marvell Technology hits all-time highs amid positive business outlook.",
+      "why_it_matters": "Marvell's management expressed optimism about its growth prospects, contributing to the stock reaching new highs. This reflects strong demand in the semiconductor sector, particularly in AI and data infrastructure. Investors may view this momentum as a signal for continued growth, potentially leading to increased market confidence.",
+      "related_tickers": [
+        "NVDA",
+        "QCOM"
+      ],
+      "sources": [
+        {
+          "title": "Should You Buy Marvell Stock Today?",
+          "url": "https://www.fool.com/investing/2026/06/01/should-you-buy-marvell-stock-today/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "VST",
+      "category": "Energy",
+      "importance": "medium",
+      "headline": "Vistra's revenue fluctuates compared to Constellation Energy's consistent growth.",
+      "why_it_matters": "Vistra's revenue inconsistency highlights challenges in the energy sector, especially against competitors like Constellation Energy, which recently reported a significant revenue spike. This comparison may influence investor sentiment and strategic decisions within the energy market, as stability becomes a key focus.",
+      "related_tickers": [
+        "CEG"
+      ],
+      "sources": [
+        {
+          "title": "Vistra vs. Constellation Energy: The Big Revenue Face-Off",
+          "url": "https://www.fool.com/coverage/charts/2026/06/01/vistra-vs-constellation-energy-the-big-revenue-face-off/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Tech",
+      "importance": "medium",
+      "headline": "Investors cautious about market entry despite AI's potential.",
+      "why_it_matters": "Cisco's commentary on market valuations amid AI advancements suggests a cautious approach from investors. This sentiment reflects broader concerns about overvaluation in tech stocks, which could lead to volatility. Understanding these dynamics is crucial for investors navigating the tech landscape.",
+      "related_tickers": [
+        "MSFT",
+        "GOOGL"
+      ],
+      "sources": [
+        {
+          "title": "Are Investors Making a Mistake by Waiting for a Better Market Entry Point?",
+          "url": "https://www.fool.com/investing/2026/06/01/is-it-a-mistake-waiting-for-better-entry-point/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Tech",
+      "importance": "low",
+      "headline": "S&P 500 stalls as oil prices surge amid geopolitical tensions.",
+      "why_it_matters": "Qualcomm's performance may be indirectly affected by broader market trends, including rising oil prices due to geopolitical tensions. This situation can lead to increased costs for tech companies and impact consumer spending. Investors should monitor these external factors as they could influence Qualcomm's market position.",
+      "related_tickers": [
+        "AAPL",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "S&P 500 Halts Gains As Oil Jumps 8% On Iran Ceasefire Standoff: Stock Market Today",
+          "url": "https://www.benzinga.com/markets/market-summary/26/06/52916311/sp-500-halts-gains-oil-jumps-percent-iran-ceasefire-risk-stock-market-today?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-02T11:37:12.516164+00:00",
+  "article_count": 10,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 5,
+  "shortfall_note": "Only 5 strong ticker group(s) found in the last 24h; generating 5 real block(s) instead of padding to 8."
+}

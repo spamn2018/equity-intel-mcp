@@ -1,0 +1,66 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron could be next to secure government investment under CHIPS Act, following Intel.",
+      "why_it_matters": "This speculation suggests potential government support for Micron, which could enhance its competitive position in the semiconductor market. If true, this could lead to increased funding and resources for Micron, boosting its growth prospects and stock performance.",
+      "related_tickers": [
+        "INTC"
+      ],
+      "sources": [
+        {
+          "title": "Prediction: After Intel, This Artificial Intelligence (AI) Semiconductor Stock Could be Next to Secure an Investment From the Trump Administration",
+          "url": "https://www.fool.com/investing/2026/06/01/prediction-after-intel-this-artificial-intelligenc/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "NVIDIA introduces new security features for AI systems with Vera BlueField-4 STX.",
+      "why_it_matters": "NVIDIA's advancements in AI storage processing could influence Cisco's competitive landscape in networking and security solutions. As AI integration grows, companies like Cisco may need to adapt their offerings to maintain relevance in a rapidly evolving market.",
+      "related_tickers": [
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA Vera BlueField-4 STX Brings Agentic AI Storage Processing With In-Silicon Security",
+          "url": "https://www.globenewswire.com/news-release/2026/06/01/3303980/0/en/NVIDIA-Vera-BlueField-4-STX-Brings-Agentic-AI-Storage-Processing-With-In-Silicon-Security.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "NVIDIA CEO to keynote at COMPUTEX, expected to unveil new AI products.",
+      "why_it_matters": "Jensen Huang's keynote at COMPUTEX could signal significant advancements in AI technology, impacting competitors like Qualcomm. The announcements may drive market sentiment and influence investment strategies in the semiconductor sector.",
+      "related_tickers": [
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "Will Nvidia Stock Rise During June 1 to June 4 From CEO Jensen Huang's Participation in COMPUTEX 2026?",
+          "url": "https://www.fool.com/investing/2026/05/31/nvda-stock-jensen-huang-keynote-computex/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-01T23:11:31.848252+00:00",
+  "article_count": 3,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 3,
+  "shortfall_note": "Only 3 strong ticker group(s) found in the last 24h; generating 3 real block(s) instead of padding to 8."
+}

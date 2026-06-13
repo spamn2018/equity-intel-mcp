@@ -1,0 +1,207 @@
+{
+  "generated_at": "2026-06-10T11:30:29.709249+00:00",
+  "provider": "openai_local_news",
+  "model": "gpt-4o-mini",
+  "tickers_queried": [
+    "POWL",
+    "ETN",
+    "VST",
+    "NEE",
+    "ANET",
+    "MRVL",
+    "AMAT",
+    "LRCX",
+    "KLAC",
+    "MU",
+    "EQIX",
+    "DLR",
+    "IRM",
+    "MP",
+    "USAR",
+    "UUUU",
+    "QCOM",
+    "ON",
+    "CSCO",
+    "FSLR"
+  ],
+  "news": {
+    "MRVL": {
+      "headlines": [
+        "Will This Jensen Huang-Endorsed AI Chip Stock Be the Next Trillion-Dollar Company?",
+        "Better Buy After the Semiconductor Sell-Off: Marvell or Broadcom?"
+      ],
+      "summary": "Nvidia CEO Jensen Huang's endorsement of Marvell Technology led to significant stock volatility, with a 32% jump followed by a 16% drop. Despite strong revenue growth in its data center business, the stock's valuation may already reflect high expectations. Comparatively, Broadcom is seen as a better buy post semiconductor sell-off due to faster revenue growth and a higher contribution from AI sales.",
+      "sentiment": "mixed",
+      "key_catalyst": "Nvidia CEO's endorsement and market volatility"
+    },
+    "MU": {
+      "headlines": [
+        "Market Indexes Retreat Tuesday as the Tech Sell-Off Returns",
+        "Micron's 750% Surge Just Got Upstaged By These Two Russell 2000 Stocks"
+      ],
+      "summary": "The tech sector faced a sell-off, with major indexes declining. Micron Technology's recent surge was overshadowed by significant gains in Bloom Energy and Applied Optoelectronics, raising concerns about Micron's valuation amidst a broader market correction.",
+      "sentiment": "bearish",
+      "key_catalyst": "Tech sector sell-off and valuation concerns"
+    },
+    "NEE": {
+      "headlines": [
+        "Want Income for Life? Here Are 3 Stocks to Buy Now and Never Sell."
+      ],
+      "summary": "NextEra Energy is highlighted as a strong dividend stock for long-term income investors, with a 2.9% yield and expected growth of 6%. This positions the company favorably amidst rising electricity demand.",
+      "sentiment": "bullish",
+      "key_catalyst": "Dividend yield and growth expectations"
+    },
+    "DLR": {
+      "headlines": [
+        "Digital Realty Launches Malaysia Operations to Advance Southeast Asia’s Digital Connectivity"
+      ],
+      "summary": "Digital Realty has launched operations in Malaysia, expanding its presence in Southeast Asia with plans for significant data center capacity development, which is expected to enhance its market position.",
+      "sentiment": "bullish",
+      "key_catalyst": "Expansion into Southeast Asia"
+    },
+    "MP": {
+      "headlines": [
+        "The Catalyst Is Coming. Here's Why Smart Investors Are Buying MP Materials Before the SpaceX IPO."
+      ],
+      "summary": "MP Materials, the only large-scale rare-earth mine in the U.S., is poised to benefit from SpaceX's upcoming IPO and its satellite expansion plans, which will require rare-earth materials.",
+      "sentiment": "bullish",
+      "key_catalyst": "Potential demand from SpaceX's satellite plans"
+    },
+    "ON": {
+      "headlines": [
+        "onsemi Introduces Industry-First Elite Pairing Studio to Simplify Power Design"
+      ],
+      "summary": "onsemi has launched a cloud-based design tool aimed at simplifying power electronics design, which could enhance its competitive edge in the semiconductor market.",
+      "sentiment": "bullish",
+      "key_catalyst": "Launch of innovative design tool"
+    }
+  },
+  "grounding_sources": [
+    {
+      "url": "https://www.fool.com/investing/2026/06/10/alphabet-is-raising-80-billion-for-ai-infrastructu/?source=iedfolrf0000001",
+      "title": "Alphabet Is Raising $80 Billion for AI Infrastructure. These 4 Semiconductor Stocks Win the Most.",
+      "publisher": "The Motley Fool",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/09/will-this-jensen-huang-endorsed-stock-be-the-next/?source=iedfolrf0000001",
+      "title": "Will This Jensen Huang-Endorsed AI Chip Stock Be the Next Trillion-Dollar Company?",
+      "publisher": "The Motley Fool",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/09/whats-going-on-with-broadcom-stock/?source=iedfolrf0000001",
+      "title": "What's Going on With Broadcom Stock?",
+      "publisher": "The Motley Fool",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/09/market-indexes-retreat-tuesday-as-the-tech-sell-of/?source=iedfolrf0000001",
+      "title": "Market Indexes Retreat Tuesday as the Tech Sell-Off Returns",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/tech/26/06/53095242/tech-stocks-relief-rally-crumbles-soxl-amd-fall?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Tech Stocks' Relief Rally Crumbles: SOXL Craters 15%, AMD Sheds 6% As Recovery Fizzles",
+      "publisher": "Benzinga",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.benzinga.com/news/26/06/53090106/micron-stock-rally-bloom-energy-applied-optoelectronics-russell-2000?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Micron's 750% Surge Just Got Upstaged By These Two Russell 2000 Stocks",
+      "publisher": "Benzinga",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/05/why-ubiquiti-plunged-42-in-may-2026/?source=iedfolrf0000001",
+      "title": "Why Ubiquiti Plunged 42% In May 2026",
+      "publisher": "The Motley Fool",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.investing.com/analysis/as-ai-data-breaches-become-more-common-this-cybersecurity-etf-is-surging-200681611",
+      "title": "As AI Data Breaches Become More Common, This Cybersecurity ETF Is Surging",
+      "publisher": "Investing.com",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/04/3306890/0/en/Mobile-Forensics-Market-Surges-to-9-99-billion-at-a-CAGR-11-8-by-2031-Exclusive-Report-by-MarketsandMarkets.html",
+      "title": "Mobile Forensics Market Surges to $9.99 billion at a CAGR 11.8% by 2031 | Exclusive Report by MarketsandMarkets™",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/07/want-income-for-life-here-are-3-stocks-to-buy-now/?source=iedfolrf0000001",
+      "title": "Want Income for Life? Here Are 3 Stocks to Buy Now and Never Sell.",
+      "publisher": "The Motley Fool",
+      "ticker": "NEE"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/06/are-these-3-energy-stocks-about-to-soar-as-driving/?source=iedfolrf0000001",
+      "title": "Are These 3 Energy Stocks About to Soar as Driving Season Kicks Off in the United States?",
+      "publisher": "The Motley Fool",
+      "ticker": "NEE"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/09/3309403/0/en/Jim-Rickards-One-Small-Stock-An-estimated-2-7-Trillion-Deposit-And-a-Deadline-That-Could-Make-All-the-Difference.html",
+      "title": "Jim Rickards: One Small Stock. An estimated $2.7 Trillion Deposit. And a Deadline That Could Make All the Difference.",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "USAR"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/07/3307748/0/en/He-Predicted-Gold-at-5-000-Now-He-Says-This-2-Stock-Could-Be-Even-Bigger.html",
+      "title": "He Predicted Gold at $5,000. Now He Says This $2 Stock Could Be Even Bigger.",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "USAR"
+    },
+    {
+      "url": "https://www.benzinga.com/pressreleases/26/06/g53081715/applied-materials-announces-cash-dividend?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Applied Materials Announces Cash Dividend",
+      "publisher": "Benzinga",
+      "ticker": "AMAT"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/08/3307771/0/en/Digital-Realty-Launches-Malaysia-Operations-to-Advance-Southeast-Asia-s-Digital-Connectivity.html",
+      "title": "Digital Realty Launches Malaysia Operations to Advance Southeast Asia’s Digital Connectivity",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "DLR"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/04/3306498/0/en/Global-Data-Center-Colocation-Market-to-Reach-USD-327-3-Billion-by-2035-Expanding-at-a-14-5-CAGR-Custom-Market-Insights-Analysis-Outlook-Leaders-Report-Trends-Forecast-Segmentation.html",
+      "title": "Global Data Center Colocation Market to Reach USD 327.3 Billion by 2035, Expanding at a 14.5% CAGR: Custom Market Insights (Analysis, Outlook, Leaders, Report, Trends, Forecast, Segmentation, Growth Rate, Value, SWOT Analysis)",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "EQIX"
+    },
+    {
+      "url": "https://www.fool.com/coverage/filings/2026/06/04/director-trims-ichor-holdings-the-cycle-bet-is-what-matters-now/?source=iedfolrf0000001",
+      "title": "Director Trims Ichor Holdings — the Cycle Bet Is What Matters Now",
+      "publisher": "The Motley Fool",
+      "ticker": "LRCX"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/09/catalyst-why-smart-investors-buy-mp-spacex-ipo/?source=iedfolrf0000001",
+      "title": "The Catalyst Is Coming. Here's Why Smart Investors Are Buying MP Materials Before the SpaceX IPO.",
+      "publisher": "The Motley Fool",
+      "ticker": "MP"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/08/3307812/0/en/onsemi-Introduces-Industry-First-Elite-Pairing-Studio-to-Simplify-Power-Design.html",
+      "title": "onsemi Introduces Industry-First Elite Pairing Studio to Simplify Power Design",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/03/3-top-driverless-vehicle-stocks-to-buy-before-its/?source=iedfolrf0000001",
+      "title": "3 Top Driverless Vehicle Stocks to Buy Before It's Too Late",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/05/3-stocks-that-could-double-in-the-next-few-years/?source=iedfolrf0000001",
+      "title": "3 Stocks That Could Double in the next Few Years",
+      "publisher": "The Motley Fool",
+      "ticker": "VST"
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "ON",
+      "category": "Chips",
+      "importance": "medium",
+      "headline": "ON Semiconductor benefits from tech sector rally, contributing to market gains.",
+      "why_it_matters": "The recent rally in the tech sector, driven by strong earnings and positive sentiment, has positively impacted ON Semiconductor. As a key player in the semiconductor industry, ON stands to gain from increased demand for chips across various applications, particularly in AI and automotive sectors. This trend reflects broader market dynamics favoring tech stocks.",
+      "related_tickers": [
+        "MU",
+        "MRVL"
+      ],
+      "sources": [
+        {
+          "title": "Stock Market Today, May 28: Inflation Isn't Stopping This Stock Market Rally",
+          "url": "https://www.fool.com/coverage/stock-market-today/2026/05/28/stock-market-today-may-28-inflation-isn-t-stopping-this-stock-market-rally/",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MU",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Micron's stock surges 850% over the past year amid AI-driven demand for memory chips.",
+      "why_it_matters": "Micron's extraordinary return is fueled by unprecedented demand for high-bandwidth memory chips, driven by AI applications. This trend highlights the growing importance of memory technology in the AI sector, positioning Micron as a key player in the market. Investors are closely watching its performance as it reflects broader trends in tech and AI investments.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "If You Had Invested $1,000 in Micron 1 Year Ago, Here's How Much You'd Have Now.",
+          "url": "https://www.fool.com/investing/2026/05/28/if-you-had-invested-1000-in-micron-1-year-ago-here/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Famed Investor Stanley Druckenmiller Sold Every Share of Alphabet. He Just Bought 5 AI Hardware Stocks Instead.",
+          "url": "https://www.fool.com/investing/2026/05/28/famed-investor-stanley-druckenmiller-sold-every-sh/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MP",
+      "category": "Materials",
+      "importance": "low",
+      "headline": "Redwire and Kratos stocks surge on potential U.S. drone manufacturing subsidies.",
+      "why_it_matters": "The proposed U.S. government subsidies for drone manufacturers could enhance the competitive landscape for companies like Redwire and Kratos. While this news is positive, its impact on MP Materials is indirect, as it relates more to defense and aerospace sectors. Investors should monitor how these developments affect broader market sentiment.",
+      "related_tickers": [
+        "LMT",
+        "NOC"
+      ],
+      "sources": [
+        {
+          "title": "Why Redwire Stock Popped This Morning",
+          "url": "https://www.fool.com/investing/2026/05/28/why-redwire-stock-popped-this-morning/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Why Kratos Defense Stock Popped Today",
+          "url": "https://www.fool.com/investing/2026/05/28/why-kratos-defense-stock-popped-today/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Marvell's Q1 earnings beat estimates with $2.42B revenue, driven by data center growth.",
+      "why_it_matters": "Marvell's strong earnings report, particularly in its data center segment, indicates robust demand in the tech sector. The company’s guidance projects a 40% revenue growth, which could attract more investor interest and bolster its stock price. This performance underscores the increasing reliance on data centers amid the AI boom.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "Marvell CEO Says Data Center Business Is 'On Fire'",
+          "url": "https://www.benzinga.com/trading-ideas/movers/26/05/52833213/marvell-ceo-says-data-center-business-is-on-fire?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "FSLR",
+      "category": "Renewables",
+      "importance": "high",
+      "headline": "First Solar is nearing buy zones as S&P 500 and Nasdaq hit record highs.",
+      "why_it_matters": "First Solar's positioning near buy zones coincides with broader market optimism, particularly in the renewable energy sector. The potential for increased investment in clean energy technologies could drive demand for First Solar's products, enhancing its growth prospects. This trend reflects a growing focus on sustainability in investment strategies.",
+      "related_tickers": [
+        "TSLA",
+        "ENPH"
+      ],
+      "sources": [
+        {
+          "title": "S&P 500, Nasdaq Set More Record Highs On Iran Deal Hopes; Tesla, First Solar In Or Near Buy Zones",
+          "url": "https://www.investors.com/market-trend/the-big-picture/stock-market-sp500-nasdaq-us-iran-deal-tesla-tsla-first-solar-fslr/",
+          "publisher": "Investors Business Daily"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "LRCX",
+      "category": "Chips",
+      "importance": "medium",
+      "headline": "Lam Research benefits from AI market growth, with expectations for sustainable growth.",
+      "why_it_matters": "Lam Research is positioned to benefit from the anticipated growth in the AI market, which is projected to expand significantly over the next decade. As semiconductor demand rises, Lam's role in providing essential equipment for chip manufacturing could enhance its revenue streams. This trend indicates a shift towards long-term growth in the semiconductor sector.",
+      "related_tickers": [
+        "NVDA",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Is the AI Trade Entering Its Second Wave? This ETF Could Be a Major Beneficiary.",
+          "url": "https://www.fool.com/investing/2026/05/28/ai-trade-entering-second-wave-smh-etf-beneficiary/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Networking",
+      "importance": "medium",
+      "headline": "Cisco's sponsorship analysis highlights booming tech industry spending in EMEA.",
+      "why_it_matters": "Cisco's insights into the growing technology sponsorship market in EMEA indicate a robust demand for tech solutions. The doubling of sponsorship spending reflects increased investment in technology, which could lead to higher sales for Cisco's networking products. This trend underscores the importance of strategic partnerships in driving growth.",
+      "related_tickers": [
+        "JNPR",
+        "ARUN"
+      ],
+      "sources": [
+        {
+          "title": "EMEA Technology Industry Sports Sponsorship Analysis Report 2025-2026",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302579/28124/en/EMEA-Technology-Industry-Sports-Sponsorship-Analysis-Report-2025-2026-Market-is-Booming-with-Doubled-Spending-Led-by-Soccer-and-F1.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ETN",
+      "category": "Industrial",
+      "importance": "low",
+      "headline": "High-end lighting market projected to grow significantly by 2035, benefiting Eaton.",
+      "why_it_matters": "The projected growth in the high-end lighting market suggests increased demand for Eaton's products in the coming years. As smart home integration and luxury construction activities rise, Eaton could see a boost in sales. However, this growth is more gradual and less immediate compared to other sectors.",
+      "related_tickers": [
+        "GE",
+        "PH"
+      ],
+      "sources": [
+        {
+          "title": "High-End Lighting Market Size to Hit USD 30.5 Billion by 2035 | Report by SNS Insider",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302536/0/en/High-End-Lighting-Market-Size-to-Hit-USD-30-5-Billion-by-2035-Report-by-SNS-Insider.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-28T22:55:54.251430+00:00",
+  "article_count": 18,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 8,
+  "shortfall_note": ""
+}

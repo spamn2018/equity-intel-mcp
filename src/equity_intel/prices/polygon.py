@@ -6,7 +6,9 @@ Endpoint: GET https://api.polygon.io/v2/aggs/ticker/{ticker}/range/{mult}/{span}
 """
 from __future__ import annotations
 
+import asyncio
 import datetime
+from collections import deque
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -19,6 +21,28 @@ logger = get_logger(__name__)
 
 POLYGON_AGGS_URL = "https://api.polygon.io/v2/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{from_date}/{to_date}"
 POLYGON_PREV_CLOSE_URL = "https://api.polygon.io/v2/aggs/ticker/{ticker}/prev"
+
+
+class _SlidingWindowRateLimiter:
+    """Enforce at most `calls` requests per `period` seconds (sliding window)."""
+
+    def __init__(self, calls: int = 5, period: float = 60.0) -> None:
+        self._calls = calls
+        self._period = period
+        self._timestamps: deque = deque()
+
+    async def acquire(self) -> None:
+        loop = asyncio.get_event_loop()
+        now = loop.time()
+        # Drop timestamps outside the window
+        while self._timestamps and now - self._timestamps[0] >= self._period:
+            self._timestamps.popleft()
+        if len(self._timestamps) >= self._calls:
+            sleep_for = self._period - (now - self._timestamps[0]) + 0.05
+            if sleep_for > 0:
+                logger.info("polygon_rate_limit_pause", sleep_seconds=round(sleep_for, 1))
+                await asyncio.sleep(sleep_for)
+        self._timestamps.append(loop.time())
 
 
 def _is_retryable(exc: BaseException) -> bool:
@@ -40,9 +64,10 @@ def _ms_to_datetime(ms: Optional[int]) -> Optional[datetime.datetime]:
 class PolygonPriceProvider(PriceProvider):
     """Fetch OHLCV price bars from Polygon.io (Massive) REST API."""
 
-    def __init__(self, api_key: str) -> None:
+    def __init__(self, api_key: str, calls_per_minute: int = 5) -> None:
         self.api_key = api_key
         self._client: Optional[httpx.AsyncClient] = None
+        self._limiter = _SlidingWindowRateLimiter(calls=calls_per_minute, period=60.0)
 
     @property
     def name(self) -> str:
@@ -70,6 +95,7 @@ class PolygonPriceProvider(PriceProvider):
         reraise=True,
     )
     async def _get(self, url: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        await self._limiter.acquire()
         client = self._client or self._make_client()
         p = dict(params or {})
         p["apiKey"] = self.api_key

@@ -1,0 +1,245 @@
+{
+  "generated_at": "2026-06-01T23:21:39.259540+00:00",
+  "provider": "openai_local_news",
+  "model": "gpt-4o-mini",
+  "tickers_queried": [
+    "POWL",
+    "ETN",
+    "VST",
+    "NEE",
+    "ANET",
+    "MRVL",
+    "AMAT",
+    "LRCX",
+    "KLAC",
+    "MU",
+    "EQIX",
+    "DLR",
+    "IRM",
+    "MP",
+    "USAR",
+    "UUUU",
+    "QCOM",
+    "ON",
+    "CSCO",
+    "FSLR"
+  ],
+  "news": {
+    "MRVL": {
+      "headlines": [
+        "Marvell’s Pullback May Be the Setup Bulls Were Waiting For",
+        "Marvell CEO Says Data Center Business Is 'On Fire'",
+        "Marvell Shares Climb After Q1 Results Beat Estimates: Details"
+      ],
+      "summary": "Marvell Technology reported strong fiscal Q1 2027 results with revenue of $2.42 billion, driven by record data center revenue. Analysts remain bullish, projecting significant revenue growth fueled by AI. The stock experienced a pullback, but support levels suggest a potential recovery.",
+      "sentiment": "bullish",
+      "key_catalyst": "Strong Q1 results and positive forward guidance driven by AI demand."
+    },
+    "MU": {
+      "headlines": [
+        "Prediction: After Intel, This Artificial Intelligence (AI) Semiconductor Stock Could be Next to Secure an Investment From the Trump Administration",
+        "Micron Just Entered the Trillion-Dollar Club. Is It Too Late to Buy the Stock?"
+      ],
+      "summary": "Micron Technology is speculated to potentially receive government investment similar to Intel, as it continues to benefit from strong AI data center demand. The company has reached a $1 trillion market valuation, indicating significant growth.",
+      "sentiment": "bullish",
+      "key_catalyst": "Potential government investment and strong market position in AI memory products."
+    },
+    "QCOM": {
+      "headlines": [
+        "This Sleeping Semiconductor Giant Will Be the Biggest Winner of the AI Inference Era",
+        "Massive News for Qualcomm Stock Investors"
+      ],
+      "summary": "Qualcomm is positioned to benefit significantly from the AI inference market, with reports of ByteDance deploying millions of its custom AI processors. The company's expansion into the data center market has led to positive investor sentiment.",
+      "sentiment": "bullish",
+      "key_catalyst": "Expansion into AI and data center markets."
+    },
+    "KLAC": {
+      "headlines": [
+        "Great News for KLAC Stock Investors"
+      ],
+      "summary": "The semiconductor industry is experiencing strong growth, with positive developments for KLA Corporation. The article highlights bullish news for investors as the sector continues to boom.",
+      "sentiment": "bullish",
+      "key_catalyst": "Strong growth in the semiconductor industry."
+    },
+    "NEE": {
+      "headlines": [
+        "This Is the First Energy Stock I Plan to Buy in June (Hint: It's Not ExxonMobil)"
+      ],
+      "summary": "NextEra Energy is highlighted as a top investment choice due to its merger with Dominion Energy, which will create the world's largest regulated electric utility, positioning it to capitalize on rising electricity demand.",
+      "sentiment": "bullish",
+      "key_catalyst": "Merger with Dominion Energy and increasing electricity demand."
+    },
+    "FSLR": {
+      "headlines": [
+        "S&P 500, Nasdaq Set More Record Highs On Iran Deal Hopes; Tesla, First Solar In Or Near Buy Zones"
+      ],
+      "summary": "The S&P 500 and Nasdaq reached new record highs, with First Solar noted as being in or near buy zones, indicating positive market sentiment.",
+      "sentiment": "bullish",
+      "key_catalyst": "Market optimism surrounding potential geopolitical developments."
+    }
+  },
+  "grounding_sources": [
+    {
+      "url": "https://www.investing.com/analysis/marvells-pullback-may-be-the-setup-bulls-were-waiting-for-200681186",
+      "title": "Marvell’s Pullback May Be the Setup Bulls Were Waiting For",
+      "publisher": "Investing.com",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.benzinga.com/trading-ideas/movers/26/05/52833213/marvell-ceo-says-data-center-business-is-on-fire?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Marvell CEO Says Data Center Business Is 'On Fire'",
+      "publisher": "Benzinga",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/equities/26/05/52831354/stock-market-today-sp-500-dow-futures-decline-as-us-and-iran-exchange-strikes-snowfalke-salesfor?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Stock Market Today: S&P 500, Dow Futures Decline As US And Iran Exchange Strikes— Snowfalke, Salesforce, Costco In Focus",
+      "publisher": "Benzinga",
+      "ticker": "MRVL"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/06/01/prediction-after-intel-this-artificial-intelligenc/?source=iedfolrf0000001",
+      "title": "Prediction: After Intel, This Artificial Intelligence (AI) Semiconductor Stock Could be Next to Secure an Investment From the Trump Administration",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/31/this-is-my-best-artificial-intelligence-ai-stock-t/?source=iedfolrf0000001",
+      "title": "This Is My Best Artificial Intelligence (AI) Stock to Buy in June (Hint: It's Not Micron Technology)",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/31/missed-out-on-nvidia-heres-1-ai-stock-you-can-buy/?source=iedfolrf0000001",
+      "title": "Missed Out on Nvidia? Here's 1 AI Stock You Can Buy Right Now.",
+      "publisher": "The Motley Fool",
+      "ticker": "MU"
+    },
+    {
+      "url": "https://finance.yahoo.com/news/live/stock-market-today-friday-may-29-222720064.html",
+      "title": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for US-Iran update",
+      "publisher": "RSS",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-everpure-p-shares-trading-235800053.html",
+      "title": "Why Everpure (P) Shares Are Trading Lower Today",
+      "publisher": "RSS",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://www.cnbc.com/2026/05/28/fridays-big-stock-stories-whats-likely-to-move-the-market.html",
+      "title": "Friday's big stock stories: What’s likely to move the market in the next trading session",
+      "publisher": "RSS",
+      "ticker": "ON"
+    },
+    {
+      "url": "https://www.benzinga.com/pressreleases/26/05/n52869454/inside-the-north-atlantic-critical-minerals-push-a-68-billion-greenland-deposit-lands-at-the-eu-ra?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Inside The North Atlantic Critical Minerals Push: A $68 Billion Greenland Deposit Lands At The EU Raw Materials Summit",
+      "publisher": "Benzinga",
+      "ticker": "MP"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/28/why-redwire-stock-popped-this-morning/?source=iedfolrf0000001",
+      "title": "Why Redwire Stock Popped This Morning",
+      "publisher": "The Motley Fool",
+      "ticker": "MP"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/28/why-kratos-defense-stock-popped-today/?source=iedfolrf0000001",
+      "title": "Why Kratos Defense Stock Popped Today",
+      "publisher": "The Motley Fool",
+      "ticker": "MP"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/31/nvda-stock-jensen-huang-keynote-computex/?source=iedfolrf0000001",
+      "title": "Will Nvidia Stock Rise During June 1 to June 4 From CEO Jensen Huang's Participation in COMPUTEX 2026?",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/29/this-sleeping-semiconductor-giant-will-be-the-bigg/?source=iedfolrf0000001",
+      "title": "This Sleeping Semiconductor Giant Will Be the Biggest Winner of the AI Inference Era (Hint: It's Not Intel)",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/28/massive-news-for-qualcomm-stock-investors/?source=iedfolrf0000001",
+      "title": "Massive News for Qualcomm Stock Investors",
+      "publisher": "The Motley Fool",
+      "ticker": "QCOM"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/06/01/3303980/0/en/NVIDIA-Vera-BlueField-4-STX-Brings-Agentic-AI-Storage-Processing-With-In-Silicon-Security.html",
+      "title": "NVIDIA Vera BlueField-4 STX Brings Agentic AI Storage Processing With In-Silicon Security",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/28/3302579/28124/en/EMEA-Technology-Industry-Sports-Sponsorship-Analysis-Report-2025-2026-Market-is-Booming-with-Doubled-Spending-Led-by-Soccer-and-F1.html",
+      "title": "EMEA Technology Industry Sports Sponsorship Analysis Report 2025-2026: Market is Booming with Doubled Spending, Led by Soccer and F1",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "CSCO"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/29/3303413/0/en/Battery-Energy-Storage-System-Market-198-8-Bn-by-2031-Fueled-by-On-Grid-Utility-Storage-and-North-America-Europe-Investments-Says-Mordor-Intelligence.html",
+      "title": "Battery Energy Storage System Market: $198.8 Bn by 2031, Fueled by On-Grid Utility Storage and North America, Europe Investments | Says Mordor Intelligence",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "ETN"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/28/3302536/0/en/High-End-Lighting-Market-Size-to-Hit-USD-30-5-Billion-by-2035-Report-by-SNS-Insider.html",
+      "title": "High-End Lighting Market Size to Hit USD 30.5 Billion by 2035 | Report by SNS Insider",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "ETN"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/29/klac-stock-investors-need-to-see-this/?source=iedfolrf0000001",
+      "title": "KLAC Stock Investors Need to See This",
+      "publisher": "The Motley Fool",
+      "ticker": "KLAC"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/28/great-news-for-klac-stock-investors/?source=iedfolrf0000001",
+      "title": "Great News for KLAC Stock Investors",
+      "publisher": "The Motley Fool",
+      "ticker": "KLAC"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/31/this-is-the-first-energy-stock-i-plan-to-buy-in-ju/?source=iedfolrf0000001",
+      "title": "This Is the First Energy Stock I Plan to Buy in June (Hint: It's Not ExxonMobil)",
+      "publisher": "The Motley Fool",
+      "ticker": "NEE"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/27/3302179/0/en/HAREHOLDER-ALERT-The-M-A-Class-Action-Firm-Continues-to-Investigate-the-Merger-RAMP-NEE-CNTA-and-HCBN.html",
+      "title": "$HAREHOLDER ALERT: The M&A Class Action Firm Continues to Investigate the Merger—RAMP, NEE, CNTA, and HCBN",
+      "publisher": "GlobeNewswire Inc.",
+      "ticker": "NEE"
+    },
+    {
+      "url": "https://www.benzinga.com/markets/large-cap/26/05/52880329/broadcom-stock-attracts-a-billionaire-buyer-as-ai-momentum-accelerates?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "Broadcom Stock Attracts A Billionaire Buyer As AI Momentum Accelerates",
+      "publisher": "Benzinga",
+      "ticker": "AMAT"
+    },
+    {
+      "url": "https://www.investors.com/market-trend/the-big-picture/stock-market-sp500-nasdaq-us-iran-deal-tesla-tsla-first-solar-fslr/",
+      "title": "S&P 500, Nasdaq Set More Record Highs On Iran Deal Hopes; Tesla, First Solar In Or Near Buy Zones",
+      "publisher": "RSS",
+      "ticker": "FSLR"
+    },
+    {
+      "url": "https://www.fool.com/investing/2026/05/28/ai-trade-entering-second-wave-smh-etf-beneficiary/?source=iedfolrf0000001",
+      "title": "Is the AI Trade Entering Its Second Wave? This ETF Could Be a Major Beneficiary.",
+      "publisher": "The Motley Fool",
+      "ticker": "LRCX"
+    },
+    {
+      "url": "https://www.benzinga.com/pressreleases/26/05/n52805430/u-s-tungsten-supply-chain-tightens-as-a-nevada-past-producer-mobilizes-drone-geophysics-and-proper?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+      "title": "U.S. Tungsten Supply Chain Tightens As A Nevada Past-Producer Mobilizes Drone Geophysics And Property-Wide Soil Geochemistry Toward Drill-Ready Targets",
+      "publisher": "Benzinga",
+      "ticker": "UUUU"
+    }
+  ]
+}

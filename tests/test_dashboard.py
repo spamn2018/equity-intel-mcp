@@ -464,4 +464,179 @@ def test_brief_makes_no_network_calls(client):
         c.get("/api/brief")
 
     # Loopback calls for Flask's test server are fine; no external hosts
-    external = [a for a in calls if a and str(a[0]) not in ("localhost", "127.0.0.1"
+    external = [a for a in calls if a and str(a[0]) not in ("localhost", "127.0.0.1", "::1")]
+    assert external == [], f"Unexpected external DNS lookups: {external}"
+
+
+# ------------------------------------------------------------------ #
+# /api/intelligence/latest                                             #
+# ------------------------------------------------------------------ #
+
+
+def _intel_client(tmp_path):
+    """Return a Flask test client with _intelligence_dir patched to tmp_path."""
+    from equity_intel.dashboard.app import create_app
+    app = create_app()
+    app.config["TESTING"] = True
+    with patch("equity_intel.dashboard.app._intelligence_dir", return_value=tmp_path):
+        with app.test_client() as c:
+            yield c
+
+
+def test_intelligence_no_files(tmp_path):
+    """`available: false` when intelligence/ folder is empty."""
+    for c in _intel_client(tmp_path):
+        resp = c.get("/api/intelligence/latest")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["available"] is False
+    assert "message" in data
+
+
+def test_intelligence_missing_dir(tmp_path):
+    """`available: false` when intelligence/ folder does not exist at all."""
+    missing = tmp_path / "nonexistent"
+    for c in _intel_client(missing):
+        resp = c.get("/api/intelligence/latest")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["available"] is False
+
+
+def test_intelligence_ignores_gemini_news(tmp_path):
+    """gemini_news_*.json must never be returned as the final synthesis."""
+    (tmp_path / "gemini_news_20260525_060000.json").write_text(
+        json.dumps({"generated_at": "2026-05-25T06:00:00", "news": {"NVDA": {}}}),
+        encoding="utf-8",
+    )
+    for c in _intel_client(tmp_path):
+        resp = c.get("/api/intelligence/latest")
+    data = resp.get_json()
+    assert data["available"] is False, (
+        "gemini_news_*.json must not be treated as the final synthesis report"
+    )
+
+
+def test_intelligence_selects_newest_stocks_json(tmp_path):
+    """Selects the most recently modified stocks_*.json, not an older one."""
+    import time
+
+    older = tmp_path / "stocks_20260524_070000.json"
+    newer = tmp_path / "stocks_20260525_080000.json"
+    older.write_text(
+        json.dumps({"generated_at": "2026-05-24T07:00:00", "one_sentence_takeaway": "older"}),
+        encoding="utf-8",
+    )
+    time.sleep(0.05)  # ensure mtime differs
+    newer.write_text(
+        json.dumps({"generated_at": "2026-05-25T08:00:00", "one_sentence_takeaway": "newer"}),
+        encoding="utf-8",
+    )
+    for c in _intel_client(tmp_path):
+        resp = c.get("/api/intelligence/latest")
+    data = resp.get_json()
+    assert data["available"] is True
+    assert data["report"]["one_sentence_takeaway"] == "newer"
+    assert "stocks_20260525" in data["json_file"]
+
+
+def test_intelligence_response_shape(tmp_path):
+    """Response includes all required top-level keys when a report exists."""
+    (tmp_path / "stocks_20260525_090000.json").write_text(
+        json.dumps({
+            "generated_at": "2026-05-25T09:00:00",
+            "one_sentence_takeaway": "NVDA leads",
+            "summary": "Strong earnings season.",
+            "top_signals": [{"asset": "NVDA", "signal": "bullish", "conviction": "high", "why": "Beat estimates"}],
+            "key_risks": [{"risk": "Macro headwinds", "severity": "medium", "frequency": "2x"}],
+            "actionable_intelligence": [{"action": "Watch NVDA", "urgency": "high", "rationale": "Catalyst confirmed"}],
+            "brief_count": 3,
+            "model_used": "qwen/qwen3-14b",
+        }),
+        encoding="utf-8",
+    )
+    for c in _intel_client(tmp_path):
+        data = c.get("/api/intelligence/latest").get_json()
+    assert data["available"] is True
+    assert data["generated_at"] == "2026-05-25T09:00:00"
+    assert "json_file" in data
+    report = data["report"]
+    for key in ["one_sentence_takeaway", "summary", "top_signals", "key_risks",
+                "actionable_intelligence", "brief_count", "model_used"]:
+        assert key in report, f"Missing report key: {key}"
+    assert report["top_signals"][0]["asset"] == "NVDA"
+
+
+def test_intelligence_includes_markdown_when_present(tmp_path):
+    """markdown field is populated when a matching .md file exists."""
+    stem = "stocks_20260525_100000"
+    (tmp_path / f"{stem}.json").write_text(
+        json.dumps({"generated_at": "2026-05-25T10:00:00"}), encoding="utf-8"
+    )
+    (tmp_path / f"{stem}.md").write_text("# Report\nSynthesis content here.", encoding="utf-8")
+    for c in _intel_client(tmp_path):
+        data = c.get("/api/intelligence/latest").get_json()
+    assert data["available"] is True
+    assert "# Report" in data["markdown"]
+    assert data["md_file"] is not None
+
+
+def test_intelligence_no_markdown_when_md_absent(tmp_path):
+    """markdown is empty string when no .md file exists."""
+    (tmp_path / "stocks_20260525_110000.json").write_text(
+        json.dumps({"generated_at": "2026-05-25T11:00:00"}), encoding="utf-8"
+    )
+    for c in _intel_client(tmp_path):
+        data = c.get("/api/intelligence/latest").get_json()
+    assert data["available"] is True
+    assert data["markdown"] == ""
+    assert data["md_file"] is None
+
+
+def test_intelligence_malformed_json_returns_unavailable(tmp_path):
+    """Malformed stocks_*.json returns available: false — no crash or 500."""
+    (tmp_path / "stocks_20260525_120000.json").write_text(
+        "not valid json {{{", encoding="utf-8"
+    )
+    for c in _intel_client(tmp_path):
+        resp = c.get("/api/intelligence/latest")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["available"] is False
+    assert "message" in data
+
+
+def test_intelligence_gemini_plus_stocks_returns_stocks(tmp_path):
+    """When both gemini_news_* and stocks_* exist, only stocks_* is returned."""
+    import time
+    (tmp_path / "gemini_news_20260525_060000.json").write_text(
+        json.dumps({"generated_at": "2026-05-25T06:00:00", "news": {}}), encoding="utf-8"
+    )
+    time.sleep(0.05)
+    (tmp_path / "stocks_20260525_080000.json").write_text(
+        json.dumps({"generated_at": "2026-05-25T08:00:00", "one_sentence_takeaway": "correct"}),
+        encoding="utf-8",
+    )
+    for c in _intel_client(tmp_path):
+        data = c.get("/api/intelligence/latest").get_json()
+    assert data["available"] is True
+    assert data["report"]["one_sentence_takeaway"] == "correct"
+
+
+def test_news_blocks_latest_no_file_uses_db_diagnostic(tmp_path):
+    """My Views endpoint returns a useful diagnostic when no block file exists."""
+    for c in _intel_client(tmp_path):
+        with patch(
+            "equity_intel.dashboard.app._news_blocks_diagnostic",
+            return_value={
+                "recent_article_count": 3,
+                "latest_article_published_at": "2026-05-25T11:58:37",
+                "message": "3 news article(s) found in the last 24 hours.",
+            },
+        ):
+            resp = c.get("/api/news-blocks/latest")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["available"] is False
+    assert data["recent_article_count"] == 3
+    assert "last 24 hours" in data["message"]

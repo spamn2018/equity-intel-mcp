@@ -503,7 +503,24 @@ def build_rebalance_plan(
 
             try:
                 quote = adapter.get_quote(sym)
-                limit_price = quote.get("ask") if order["side"] == "buy" else quote.get("bid")
+                raw_lp = quote.get("ask") if order["side"] == "buy" else quote.get("bid")
+                limit_price = float(raw_lp) if raw_lp else None
+                if not limit_price:
+                    # Fall back to mid, then the pre-planned price
+                    limit_price = (
+                        float(quote.get("mid") or 0)
+                        or float(quote.get("mid_price") or 0)
+                        or float(order.get("price") or 0)
+                        or None
+                    )
+                if not limit_price:
+                    results.append({
+                        "ticker": sym,
+                        "status": "error",
+                        "error": "limit price is 0 or unavailable -- skipping to avoid bad order",
+                    })
+                    log.warning("rebalance_zero_price_skip", ticker=sym, quote=quote)
+                    continue
                 resp = adapter.submit_limit_order(
                     symbol=sym,
                     side=order["side"],

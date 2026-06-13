@@ -1,176 +1,245 @@
 @echo off
 setlocal EnableDelayedExpansion
-title EquityIntel - Full Stack
+title EquityIntel -- Full Stack
 
-:: ─── Paths ────────────────────────────────────────────────────────────────
 set "ROOT=C:\Users\noleg\Desktop\Claude\Projects\Stocks"
+set "PORTFOLIO_DIR=C:\Users\noleg\Desktop\Claude\Projects\AI Portfolio"
+set "SOLO_INTEL=C:\Users\noleg\Desktop\Claude\Projects\SOLO BUILDS\solo-intel"
+set "PODCASTS_ANALYSIS=C:\Users\noleg\Desktop\Claude\Projects\Podcasts Pull\analysis"
 set "PYTHON=C:\Users\noleg\Desktop\.venv\Scripts\python.exe"
 set "PYTHONW=C:\Users\noleg\Desktop\.venv\Scripts\pythonw.exe"
 set "SCRIPTS=C:\Users\noleg\Desktop\.venv\Scripts"
-set "SOLO_INTEL=C:\Users\noleg\Desktop\Claude\Projects\SOLO BUILDS\solo-intel"
-set "PODCASTS_ANALYSIS=C:\Users\noleg\Desktop\Claude\Projects\Podcasts Pull\analysis"
 set "SOLO_DOMAIN=US equity catalyst intelligence from financial podcasts. Focus on which US stocks are getting attention, investment theses forming around specific tickers, risks and warning signals, and actionable signals for a US equities watchlist."
 
 cd /d "%ROOT%"
 
-:: ─── Header ───────────────────────────────────────────────────────────────
 echo.
 echo  ============================================================
-echo   EquityIntel  ^|  Full Stack Runner
-echo   %date%  %time%
+echo   EquityIntel  ^|  Full Stack  ^|  %date%  %time%
 echo  ============================================================
 echo.
 echo   Signal streams:
-echo     1. SEC filings + prices  (steps 1-9)
-echo     2. Podcast intelligence  (step 10 - solo-intel)
-echo     3. Real-time news        (step 11 - Gemini Flash)
-echo     4. LM Studio synthesis   (step 12 - all three combined)
+echo     1. SEC filings + XBRL + prices  (steps 1-8)
+echo     2. Trade signals + rebalance    (step 9)
+echo     3. Podcast intelligence         (step 10)
+echo     4. Local news via OpenAI       (step 11)
+echo     5. o4-mini synthesis            (step 12)
+echo.
+echo   Paper trading: ALPACA_PAPER=true
+echo   To go live: set ALPACA_PAPER=false in .env  (confirm first)
 echo.
 
-:: ─── 0. Dashboard (background, no browser yet) ────────────────────────────
-echo  [0/12] Starting dashboard in background...
+:: Step 0 -- Dashboard (background)
+echo  [0] Starting dashboard in background...
+taskkill /f /im equity-dashboard.exe >nul 2>&1
 taskkill /f /im pythonw.exe >nul 2>&1
-:: Start dashboard, capture PID so we can monitor it and close this window when it stops
-for /f %%P in ('powershell -NoProfile -Command "Start-Process -FilePath ''%PYTHONW%'' -ArgumentList ''-m equity_intel.dashboard.cli --no-open --port 5173'' -PassThru | Select-Object -ExpandProperty Id"') do set DASH_PID=%%P
+for /f "tokens=5" %%P in ('netstat -ano 2^>nul ^| findstr /r ":5173 "') do (
+    taskkill /f /pid %%P >nul 2>&1
+)
 timeout /t 3 /nobreak >nul
-echo         http://localhost:5173  (PID: !DASH_PID!  -- this window closes when dashboard stops)
+"%PYTHON%" -c "import subprocess; p=subprocess.Popen([r'%SCRIPTS%\equity-dashboard.exe','--no-open','--port','5173'],creationflags=0x08000000,close_fds=True); open(r'%TEMP%\dash_pid.txt','w').write(str(p.pid))"
+timeout /t 3 /nobreak >nul
+for /f "usebackq" %%i in ("%TEMP%\dash_pid.txt") do set "DASH_PID=%%i"
+del "%TEMP%\dash_pid.txt" >nul 2>&1
+echo         http://localhost:5173  (PID !DASH_PID!)
 echo.
 
-:: ─── 1. Companies ─────────────────────────────────────────────────────────
-echo  [1/12] Syncing companies (ticker → CIK mapping)...
+:: Step 0b -- Database migrations
+echo  [0b] Running database migrations...
+"%PYTHON%" -m alembic upgrade head
+if errorlevel 1 echo         WARNING: migration step had issues, continuing...
+echo.
+
+:: 12-hour ingestion cache -- uses Python to avoid PowerShell (blocked on this machine)
+:: Delete pipeline_last_run.txt to force a full re-run
+set "SKIP_PIPELINE=0"
+if exist "pipeline_last_run.txt" (
+    "%PYTHON%" -c "import os,time,sys; age=(time.time()-os.path.getmtime('pipeline_last_run.txt'))/3600; sys.exit(0 if age.__lt__(12) else 1)"
+    if not errorlevel 1 set "SKIP_PIPELINE=1"
+)
+
+if "!SKIP_PIPELINE!"=="1" (
+    echo  Pipeline data is fresh ^(under 12 h old^) -- skipping ingestion workers.
+    echo  Delete pipeline_last_run.txt to force a full re-run.
+    echo.
+    goto :POST_PIPELINE
+)
+
+:: Step 1 -- Companies
+echo  [1/8] Syncing companies (ticker to CIK mapping)...
 "%SCRIPTS%\equity-sync-companies.exe"
 if errorlevel 1 echo         WARNING: sync-companies had errors, continuing...
 echo.
 
-:: ─── 2. Filings ───────────────────────────────────────────────────────────
-echo  [2/12] Syncing recent SEC filings...
+:: Step 2 -- Filings
+echo  [2/8] Syncing recent SEC filings...
 "%SCRIPTS%\equity-sync-filings.exe"
 if errorlevel 1 echo         WARNING: sync-filings had errors, continuing...
 echo.
 
-:: ─── 3. Documents ─────────────────────────────────────────────────────────
-echo  [3/12] Downloading and parsing filing documents...
+:: Step 3 -- Filing documents
+echo  [3/8] Downloading and parsing filing documents...
 "%SCRIPTS%\equity-sync-docs.exe"
 if errorlevel 1 echo         WARNING: sync-docs had errors, continuing...
 echo.
 
-:: ─── 4. XBRL Facts ────────────────────────────────────────────────────────
-echo  [4/12] Syncing XBRL company facts...
+:: Step 4 -- XBRL facts
+echo  [4/8] Syncing XBRL company facts...
 "%SCRIPTS%\equity-sync-facts.exe"
 if errorlevel 1 echo         WARNING: sync-facts had errors, continuing...
 echo.
 
-:: ─── 5. News ──────────────────────────────────────────────────────────────
-echo  [5/12] Syncing news articles...
+:: Step 5 -- News
+echo  [5/8] Syncing news articles...
 "%SCRIPTS%\equity-sync-news.exe"
 if errorlevel 1 echo         WARNING: sync-news had errors, continuing...
 echo.
 
-:: ─── 6. Prices ────────────────────────────────────────────────────────────
-echo  [6/12] Syncing price and volume data...
+:: Step 6 -- Prices
+echo  [6/8] Syncing price and volume data...
 "%SCRIPTS%\equity-sync-prices.exe"
 if errorlevel 1 echo         WARNING: sync-prices had errors, continuing...
 echo.
 
-:: ─── 7. Events ────────────────────────────────────────────────────────────
-echo  [7/12] Building catalyst events...
+:: Step 7 -- Events
+echo  [7/8] Building catalyst events...
 "%SCRIPTS%\equity-build-events.exe"
 if errorlevel 1 echo         WARNING: build-events had errors, continuing...
 echo.
 
-:: ─── 8. Clustering ────────────────────────────────────────────────────────
-echo  [8/12] Clustering and deduplicating events...
+:: Step 8 -- Cluster + dedup
+echo  [8/8] Clustering and deduplicating events...
 "%SCRIPTS%\equity-cluster-events.exe"
 if errorlevel 1 echo         WARNING: cluster-events had errors, continuing...
 echo.
 
-:: ─── 9. Daily Brief ───────────────────────────────────────────────────────
-echo  [9/12] Generating daily catalyst brief...
+:: Stamp cache (plain echo -- no PowerShell needed)
+echo %DATE% %TIME% > pipeline_last_run.txt
+echo  Ingestion complete. Cache stamped -- will skip in next 12 h.
+echo  (Delete pipeline_last_run.txt to force a full re-run.)
+echo.
+
+:POST_PIPELINE
+
+:: Step 8b -- News cleanup
+echo  [8b] Cleaning up news older than 60 days...
+"%SCRIPTS%\equity-cleanup-news.exe" --days 60
+if errorlevel 1 echo         NOTE: news-cleanup had errors (non-critical)
+echo.
+
+:: Step 8c -- Daily briefs
+echo  [8c] Generating 7-day catalyst brief...
 "%SCRIPTS%\equity-run-daily-brief.exe"
-if errorlevel 1 (
-  echo.
-  echo         WARNING: run-daily-brief failed.
-  echo         synthesize.py will try the dashboard API fallback.
-  echo         If the dashboard is not running, synthesis will also fail.
-  echo.
-)
+if errorlevel 1 echo         WARNING: run-daily-brief failed (synthesis will use API fallback)
 echo.
 
-:: ─── 9b. Today-only brief (last 24 h) — freshness layer ────────────────────
-echo  [9b] Generating today-only brief (last 24 h)...
+echo  [8d] Generating today-only brief (last 24 h)...
 "%SCRIPTS%\equity-run-daily-brief.exe" --days 1 --output-dir "%ROOT%\briefs\today"
-if errorlevel 1 echo         NOTE: today-only brief had no catalysts (quiet 24 h window is normal)
+if errorlevel 1 echo         NOTE: today-only brief had no catalysts (quiet 24 h is normal)
 echo.
 
-:: ─── 10. Podcast intelligence (solo-intel → Podcasts Pull analysis/) ───────
-echo  [10/12] Running solo-intel against Podcasts Pull...
-"%PYTHON%" "%SOLO_INTEL%\solo.py" ^
+:: Step 9 -- Trade signals + auto-rebalance (paper)
+echo  [9a] Generating trade signals from catalyst brief...
+"%SCRIPTS%\equity-generate-trade-signals.exe"
+if errorlevel 1 echo         WARNING: generate-trade-signals had errors, continuing...
+echo.
+
+echo  [9b] Executing trade signals (paper)...
+"%SCRIPTS%\equity-execute-trade-signals.exe"
+if errorlevel 1 echo         WARNING: execute-trade-signals had errors, continuing...
+echo.
+
+echo  [9c] Auto-rebalancing portfolio (paper -- loss-protected, cash-directed)...
+"%SCRIPTS%\equity-auto-rebalance.exe"
+if errorlevel 1 echo         WARNING: auto-rebalance had errors, continuing...
+echo.
+
+:: Step 10 -- Podcast intelligence
+echo  [10] Running solo-intel against Podcasts Pull...
+set "_PIPELINE_LLM_PROVIDER=%LLM_PROVIDER%"
+set "_PIPELINE_LMSTUDIO_MODEL=%LMSTUDIO_MODEL%"
+set "_PIPELINE_OPENAI_MODEL=%OPENAI_MODEL%"
+set "_PIPELINE_LLM_TIMEOUT=%LLM_TOKEN_IDLE_TIMEOUT_SECONDS%"
+set "_PIPELINE_MAX_OUTPUT=%LLM_MAX_OUTPUT_TOKENS%"
+set "LLM_PROVIDER=openai"
+set "OPENAI_MODEL=gpt-4o-mini"
+set "LLM_TOKEN_IDLE_TIMEOUT_SECONDS=120"
+set "LLM_MAX_OUTPUT_TOKENS=1800"
+set "SOLO_INTEL_MAX_INPUT_CHARS="
+set "PYTHONUNBUFFERED=1"
+"%PYTHON%" -u "%SOLO_INTEL%\solo.py" ^
   --folder "%PODCASTS_ANALYSIS%" ^
   --name "Podcasts Pull - Equity" ^
-  --domain "%SOLO_DOMAIN%"
-if errorlevel 1 echo         WARNING: solo-intel had errors (LM Studio may not be running)
+  --domain "%SOLO_DOMAIN%" ^
+  --days 30
+if errorlevel 1 echo         WARNING: solo-intel had errors (OpenAI synthesis failed)
+set "LLM_PROVIDER=%_PIPELINE_LLM_PROVIDER%"
+set "LMSTUDIO_MODEL=%_PIPELINE_LMSTUDIO_MODEL%"
+set "OPENAI_MODEL=%_PIPELINE_OPENAI_MODEL%"
+set "LLM_TOKEN_IDLE_TIMEOUT_SECONDS=%_PIPELINE_LLM_TIMEOUT%"
+set "LLM_MAX_OUTPUT_TOKENS=%_PIPELINE_MAX_OUTPUT%"
+set "PYTHONUNBUFFERED="
+set "SOLO_INTEL_MAX_INPUT_CHARS="
+set "_PIPELINE_LLM_PROVIDER="
+set "_PIPELINE_LMSTUDIO_MODEL="
+set "_PIPELINE_OPENAI_MODEL="
+set "_PIPELINE_LLM_TIMEOUT="
+set "_PIPELINE_MAX_OUTPUT="
 echo.
 
-:: ─── 11. Real-time news (Gemini Flash + Google Search grounding) ────────────
-echo  [11/12] Fetching real-time news via Gemini Flash...
+:: Step 11 -- Local news summary via OpenAI
+echo  [11] Summarizing local news via OpenAI...
 "%PYTHON%" "%ROOT%\gemini_news.py"
-if errorlevel 1 echo         WARNING: gemini_news had errors (check GEMINI_API_KEY in .env)
+if errorlevel 1 echo         WARNING: local news summary had errors (check OPENAI_API_KEY and news DB)
 echo.
 
-:: ─── 12. Synthesize (LM Studio — all three signal streams) ─────────────────
-echo  [12/12] Running LM Studio synthesis (SEC + podcasts + Gemini)...
+:: Step 11b -- Synthesize 24 h news blocks
+echo  [11b] Synthesizing 24 h news blocks for My Views tab...
+"%SCRIPTS%\equity-synthesize-news-blocks.exe" --hours 24 --blocks 8
+if errorlevel 1 echo         NOTE: news-blocks synthesis failed (My Views will show diagnostic)
+echo.
+
+:: Step 12 -- o4-mini synthesis (SEC + podcasts + local news)
+echo  [12] Running o4-mini synthesis (SEC + podcasts + local news)...
 "%PYTHON%" "%ROOT%\synthesize.py"
 if errorlevel 1 (
-  echo.
-  echo  ERROR: synthesize.py failed.
-  echo  Intelligence output was not generated.
-  echo  Check that LM Studio is running, the local server is enabled, and the expected model is loaded.
-  echo.
-  exit /b 1
+    echo.
+    echo   ERROR: synthesize.py failed.
+    echo   Intelligence output was not generated.
+    echo.
 )
 if not exist "%ROOT%\intelligence" (
-  echo.
-  echo  ERROR: intelligence\ was not created.
-  echo  synthesize.py completed without producing output. Check logs above.
-  echo.
-  exit /b 1
+    echo.
+    echo   WARNING: intelligence\ was not created. Check logs above.
+    echo.
 )
 echo.
 
-:: ─── Done ──────────────────────────────────────────────────────────────
+:: Open UIs
 echo  ============================================================
-echo   Sync complete.  Opening dashboard...
+echo   Pipeline complete. Opening dashboard and portfolio...
 echo  ============================================================
 echo.
 start "" http://localhost:5173
-
-:: ─── MCP Server config block (shown once, then window waits on dashboard) ────
-echo.
-echo  ── MCP Server (one-time Claude Desktop setup) ──────────────────────────
-echo.
-echo  Add this to %%APPDATA%%\Claude\claude_desktop_config.json
-echo  under "mcpServers":
-echo.
-echo    "equity-intelligence": {
-echo      "command": "%SCRIPTS%\equity-mcp.exe",
-echo      "env": { "PYTHONPATH": "%ROOT%\src" }
-echo    }
-echo.
-echo  ────────────────────────────────────────────────────────────
-echo.
-echo  Pipeline window will close automatically when the dashboard stops.
-echo  To stop: close LM Studio, then kill the dashboard (taskkill /f /im pythonw.exe).
+start "" "%PORTFOLIO_DIR%\ai_portfolio.html"
 echo.
 
-:: ─── Monitor dashboard — exit this window when it stops ─────────────────────
+echo  Window stays open while the dashboard runs.
+echo  To stop: close this window or run  taskkill /f /im pythonw.exe
+echo.
+
 :monitor_dashboard
-if not defined DASH_PID goto done
+if not defined DASH_PID (
+    echo  WARNING: Dashboard PID not captured. Open http://localhost:5173 manually.
+    pause
+    goto :done
+)
 tasklist /fi "pid eq !DASH_PID!" /fo csv /nh 2>nul | find /i "!DASH_PID!" >nul 2>&1
-if errorlevel 1 goto done
+if errorlevel 1 goto :done
 timeout /t 5 /nobreak >nul
-goto monitor_dashboard
+goto :monitor_dashboard
 
 :done
 echo.
-echo  Dashboard stopped. Closing pipeline window.
+echo  Dashboard stopped. Closing.
 endlocal

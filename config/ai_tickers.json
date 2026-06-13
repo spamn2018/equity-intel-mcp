@@ -1,6 +1,7 @@
 {
   "_comment": "AI infrastructure ticker universe for the equity intelligence system. Covers major picks-and-shovels plays around the AGI/AI build-out: chips, cloud, data centers, power, networking, memory, critical minerals, and a separate TradHedge durability watch bucket.",
   "_theme": "AGI / AI infrastructure - compute, power, semiconductors, data centers, networking, critical supply chains, and replacement candidates for already-owned 401k mega-cap exposure.",
+  "_401k_top_holding_exclusion_rule": "Do not use tickers that map to the user's listed 401k fund top holdings in active replacement or TradHedge buckets.",
 
   "semiconductors_compute": {
     "_note": "The companies actually building the chips that run AI. NVIDIA is the dominant player — every major AI training workload runs on their GPUs. AMD is the main challenger. AVGO and MRVL make custom AI chips (ASICs) for Google, Microsoft, and Meta. ARM designs the underlying chip architecture used everywhere.",
@@ -323,46 +324,34 @@
   },
 
   "ai_infrastructure_replacements": {
-    "_note": "Project-focus replacement card: 20 AI infrastructure and supply-chain tickers selected to reduce direct duplication with 401k mega-cap holdings while preserving exposure to the AI buildout.",
+    "_note": "Project-focus replacement card: 20 AI infrastructure and supply-chain tickers selected to reduce direct duplication with the user's listed 401k fund top holdings while preserving exposure to the AI buildout.",
     "tickers": [
       { "ticker": "POWL", "name": "Powell Industries Inc", "why": "Domestic electrical switchgear and power-control equipment for data centers, utilities, and industrial power distribution.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "data_centers", "electrification"], "risk_tags": ["small_cap", "cyclical", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "ETN", "name": "Eaton Corporation plc", "why": "Power-management equipment used across data centers: switchgear, UPS systems, PDUs, and electrical distribution.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "electrification", "data_centers"], "risk_tags": ["valuation", "cyclical", "industrial_demand"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "VST", "name": "Vistra Corp", "why": "Power-generation platform with nuclear, gas, solar, and battery assets positioned for rising AI data-center electricity demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "nuclear", "data_centers"], "risk_tags": ["commodity_price", "regulatory", "power_market"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "NEE", "name": "NextEra Energy Inc", "why": "Large-scale power generation and renewables developer with data-center power demand as a major long-term growth vector.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "renewables", "data_centers"], "risk_tags": ["interest_rates", "regulatory", "project_execution"], "source": "manual_research", "added_at": "2026-05-27" },
-      { "ticker": "NRG", "name": "NRG Energy Inc", "why": "Power generation and retail energy exposure with optionality from data-center load growth and grid stress.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "data_centers"], "risk_tags": ["power_market", "commodity_price", "regulatory"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "ANET", "name": "Arista Networks Inc", "why": "High-speed switching and networking infrastructure inside AI data-center clusters.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "networking", "data_centers"], "risk_tags": ["valuation", "customer_concentration", "competition"], "source": "manual_research", "added_at": "2026-05-27" },
-      { "ticker": "CIEN", "name": "Ciena Corporation", "why": "Optical networking and bandwidth infrastructure for AI-era data-center interconnect and carrier capacity demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "optical_networking", "data_centers"], "risk_tags": ["cyclical", "carrier_spending", "competition"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "MRVL", "name": "Marvell Technology Inc", "why": "Custom AI silicon, optical DSP, silicon photonics, and data-infrastructure chips that complement AI accelerator buildouts.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "custom_silicon", "optical_interconnect"], "risk_tags": ["valuation", "execution", "customer_concentration"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "AMAT", "name": "Applied Materials Inc", "why": "Semiconductor manufacturing equipment and materials engineering required for advanced AI chips, DRAM, and packaging.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "advanced_packaging"], "risk_tags": ["semicap_cycle", "china_restrictions", "capex_cycle"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "LRCX", "name": "Lam Research Corporation", "why": "Etch and deposition tools for memory, NAND, DRAM, and advanced chip manufacturing tied to AI memory demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "memory"], "risk_tags": ["semicap_cycle", "memory_cycle", "china_restrictions"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "KLAC", "name": "KLA Corporation", "why": "Process-control and inspection tools that become more critical as AI chips, packaging, and fabs grow more complex.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "semiconductor_equipment", "process_control"], "risk_tags": ["valuation", "semicap_cycle", "china_restrictions"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "MU", "name": "Micron Technology Inc", "why": "HBM, DRAM, and memory exposure for AI accelerators and data-center workloads.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "memory", "ai_compute"], "risk_tags": ["memory_cycle", "commodity_price", "capex_cycle"], "source": "manual_research", "added_at": "2026-05-27" },
-      { "ticker": "WDC", "name": "Western Digital Corporation", "why": "Storage infrastructure for massive AI training and inference datasets.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "storage", "data_centers"], "risk_tags": ["storage_cycle", "competition", "commodity_price"], "source": "manual_research", "added_at": "2026-05-27" },
-      { "ticker": "STX", "name": "Seagate Technology Holdings plc", "why": "Nearline hard-drive storage for hyperscale and AI data-center capacity growth.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "storage", "data_centers"], "risk_tags": ["storage_cycle", "competition", "commodity_price"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "EQIX", "name": "Equinix Inc", "why": "Global colocation and interconnection platform for data-center workloads and network-dense AI infrastructure.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "valuation", "capex_intensity"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "DLR", "name": "Digital Realty Trust Inc", "why": "Hyperscale data-center REIT with direct exposure to AI and cloud infrastructure demand.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "leverage", "capex_intensity"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "IRM", "name": "Iron Mountain Inc", "why": "Storage-to-data-center transition story with expanding digital infrastructure and colocation exposure.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "data_centers", "reit"], "risk_tags": ["interest_rates", "leverage", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "MP", "name": "MP Materials Corp", "why": "Domestic rare earth mining, processing, and magnet supply-chain exposure tied to AI, defense, electrification, and semiconductor resilience.", "stage": "probe", "conviction": "medium", "thesis_tags": ["ai_replacement", "critical_minerals", "rare_earth"], "risk_tags": ["commodity_price", "policy_risk", "execution"], "source": "manual_research", "added_at": "2026-05-27" },
       { "ticker": "USAR", "name": "USA Rare Earth Inc", "why": "Domestic mine-to-magnet rare earth platform supported by U.S. supply-chain reshoring incentives.", "stage": "probe", "conviction": "medium", "thesis_tags": ["ai_replacement", "critical_minerals", "rare_earth"], "risk_tags": ["early_stage", "policy_risk", "execution", "liquidity"], "source": "manual_research", "added_at": "2026-05-27" },
-      { "ticker": "UUUU", "name": "Energy Fuels Inc", "why": "Uranium and rare-earth processing optionality for domestic critical-minerals supply chains.", "stage": "probe", "conviction": "low", "thesis_tags": ["ai_replacement", "critical_minerals", "uranium", "rare_earth"], "risk_tags": ["commodity_price", "execution", "small_cap"], "source": "manual_research", "added_at": "2026-05-27" }
+      { "ticker": "UUUU", "name": "Energy Fuels Inc", "why": "Uranium and rare-earth processing optionality for domestic critical-minerals supply chains.", "stage": "probe", "conviction": "low", "thesis_tags": ["ai_replacement", "critical_minerals", "uranium", "rare_earth"], "risk_tags": ["commodity_price", "execution", "small_cap"], "source": "manual_research", "added_at": "2026-05-27" },
+      { "ticker": "QCOM", "name": "Qualcomm Inc", "why": "Edge AI inference chips for phones, PCs, automotive, and embedded devices; a different AI compute lane than hyperscale GPUs.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "edge_ai", "semiconductors"], "risk_tags": ["mobile_cycle", "competition", "china_exposure"], "source": "manual_research", "added_at": "2026-05-28" },
+      { "ticker": "ON", "name": "ON Semiconductor Corporation", "why": "Power-management and sensing chips for electrification, industrial automation, and data-center power conversion.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power_semiconductors", "electrification"], "risk_tags": ["cyclical", "auto_cycle", "industrial_demand"], "source": "manual_research", "added_at": "2026-05-28" },
+      { "ticker": "CSCO", "name": "Cisco Systems Inc", "why": "Enterprise and data-center networking equipment with AI-cluster networking refresh optionality.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "networking", "data_centers"], "risk_tags": ["competition", "enterprise_spending", "execution"], "source": "manual_research", "added_at": "2026-05-28" },
+      { "ticker": "FSLR", "name": "First Solar Inc", "why": "U.S. solar manufacturing and utility-scale generation exposure for hyperscaler power procurement and grid expansion.", "stage": "watch", "conviction": "medium", "thesis_tags": ["ai_replacement", "power", "renewables"], "risk_tags": ["policy_risk", "project_cycle", "commodity_price"], "source": "manual_research", "added_at": "2026-05-28" }
     ]
   },
 
   "trad_hedge": {
-    "_note": "TradHedge: old-line, tradable U.S. company lineages used as a durability-oriented alternative watch bucket when bond purchases do not fit the portfolio thesis. Dates are founding or predecessor-lineage dates, not always the exact modern corporate entity date.",
+    "_note": "TradHedge: old-line, tradable U.S. company lineages recalculated after excluding the user's listed 401k fund top holdings. Dates are founding or predecessor-lineage dates, not always the exact modern corporate entity date.",
     "tickers": [
-      {
-        "ticker": "BNY",
-        "name": "The Bank of New York Mellon Corporation",
-        "why": "Oldest continuously operating U.S. bank lineage through Bank of New York, founded in 1784 by Alexander Hamilton and other investors. Durability-oriented financial infrastructure exposure.",
-        "stage": "watch",
-        "conviction": "medium",
-        "thesis_tags": ["trad_hedge", "oldest_us_companies", "financial_infrastructure"],
-        "risk_tags": ["interest_rates", "banking_cycle", "regulatory"],
-        "source": "manual_research",
-        "added_at": "2026-05-27",
-        "founded": "1784"
-      },
       {
         "ticker": "BAC",
         "name": "Bank of America Corporation",
@@ -372,7 +361,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "banking"],
         "risk_tags": ["interest_rates", "credit_cycle", "regulatory"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1784"
       },
       {
@@ -384,7 +373,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "industrials"],
         "risk_tags": ["cyclical", "energy_capex", "industrial_demand"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1790"
       },
       {
@@ -396,7 +385,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "healthcare"],
         "risk_tags": ["healthcare_policy", "margin_pressure", "regulatory"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1792"
       },
       {
@@ -408,20 +397,8 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "financial_infrastructure"],
         "risk_tags": ["market_levels", "fee_pressure", "regulatory"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1792"
-      },
-      {
-        "ticker": "JPM",
-        "name": "JPMorgan Chase & Co.",
-        "why": "Traces roots to The Manhattan Company, founded in 1799. Premier large U.S. bank with a long operating lineage and broad financial exposure.",
-        "stage": "watch",
-        "conviction": "medium",
-        "thesis_tags": ["trad_hedge", "oldest_us_companies", "banking"],
-        "risk_tags": ["interest_rates", "credit_cycle", "regulatory"],
-        "source": "manual_research",
-        "added_at": "2026-05-27",
-        "founded": "1799"
       },
       {
         "ticker": "WASH",
@@ -432,7 +409,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "regional_banking"],
         "risk_tags": ["regional_bank_risk", "credit_cycle", "liquidity"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1800"
       },
       {
@@ -444,7 +421,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "agriculture"],
         "risk_tags": ["commodity_cycle", "weather", "regulatory"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1802"
       },
       {
@@ -456,7 +433,7 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "consumer_staples"],
         "risk_tags": ["valuation", "input_costs", "currency"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1806"
       },
       {
@@ -468,8 +445,32 @@
         "thesis_tags": ["trad_hedge", "oldest_us_companies", "publishing"],
         "risk_tags": ["digital_transition", "education_spending", "small_mid_cap"],
         "source": "manual_research",
-        "added_at": "2026-05-27",
+        "added_at": "2026-05-28",
         "founded": "1807"
+      },
+      {
+        "ticker": "HIG",
+        "name": "The Hartford Insurance Group, Inc.",
+        "why": "Insurance lineage dating to 1810. Added as the next-oldest TradHedge candidate after excluding 401k top-holding overlaps.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "insurance"],
+        "risk_tags": ["catastrophe_risk", "interest_rates", "underwriting_cycle"],
+        "source": "manual_research",
+        "added_at": "2026-05-28",
+        "founded": "1810"
+      },
+      {
+        "ticker": "C",
+        "name": "Citigroup Inc.",
+        "why": "Banking lineage dating to 1812. Added as the next-oldest TradHedge candidate after excluding 401k top-holding overlaps.",
+        "stage": "watch",
+        "conviction": "medium",
+        "thesis_tags": ["trad_hedge", "oldest_us_companies", "banking"],
+        "risk_tags": ["credit_cycle", "regulatory", "global_bank_risk"],
+        "source": "manual_research",
+        "added_at": "2026-05-28",
+        "founded": "1812"
       }
     ]
   }

@@ -1,0 +1,47 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MRVL",
+      "category": "Chips",
+      "importance": "high",
+      "headline": "Alphabet's $80B AI infrastructure plan boosts semiconductor stocks like Marvell.",
+      "why_it_matters": "The catalyst is Alphabet's significant investment in AI infrastructure, projected to grow 30% annually. This expansion is likely to increase demand for semiconductor products, benefiting companies like Marvell Technology. As AI continues to drive tech advancements, MRVL could see substantial revenue growth.",
+      "related_tickers": [
+        "NVDA",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Alphabet Is Raising $80 Billion for AI Infrastructure",
+          "url": "https://www.fool.com/investing/2026/06/10/alphabet-is-raising-80-billion-for-ai-infrastructu/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "USAR",
+      "category": "Mining",
+      "importance": "medium",
+      "headline": "Jim Rickards highlights a $2.7 trillion mineral deposit poised for unlocking.",
+      "why_it_matters": "The news centers on a significant mineral deposit in the U.S. that could be accessed due to potential government action. This could lead to increased interest and investment in USAR, as the deposit contains valuable metals critical for defense and technology. The market may react positively to developments surrounding this resource.",
+      "related_tickers": [],
+      "sources": [
+        {
+          "title": "Jim Rickards: One Small Stock. An estimated $2.7 Trillion Deposit.",
+          "url": "https://www.globenewswire.com/news-release/2026/06/09/3309403/0/en/Jim-Rickards-One-Small-Stock-An-estimated-2-7-Trillion-Deposit-And-a-Deadline-That-Could-Make-All-the-Difference.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-10T22:52:20.407369+00:00",
+  "article_count": 2,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 2,
+  "shortfall_note": "Only 2 strong ticker group(s) found in the last 24h; generating 2 real block(s) instead of padding to 8."
+}

@@ -1,0 +1,93 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron may receive government investment similar to Intel under the CHIPS Act.",
+      "why_it_matters": "This potential government investment is a significant catalyst that could bolster Micron's growth in the AI semiconductor market. With increased funding, Micron could enhance its production capabilities and expand its market share, positively impacting its stock price.",
+      "related_tickers": [
+        "INTC",
+        "AVGO"
+      ],
+      "sources": [
+        {
+          "title": "Prediction: After Intel, This Artificial Intelligence (AI) Semiconductor Stock Could be Next to Secure an Investment From the Trump Administration",
+          "url": "https://www.fool.com/investing/2026/06/01/prediction-after-intel-this-artificial-intelligenc/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Are Micron and Sandisk Stocks in a Bubble?",
+          "url": "https://www.fool.com/investing/2026/05/31/are-micron-and-sandisk-stocks-in-a-bubble/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Cisco's innovations in AI storage processing enhance security for agentic AI systems.",
+      "why_it_matters": "Cisco's advancements in AI storage processing could position it as a leader in the growing AI security market. This innovation may attract new clients and partnerships, potentially boosting revenue and stock performance.",
+      "related_tickers": [
+        "NVDA",
+        "QCOM"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA Vera BlueField-4 STX Brings Agentic AI Storage Processing With In-Silicon Security",
+          "url": "https://www.globenewswire.com/news-release/2026/06/01/3303980/0/en/NVIDIA-Vera-BlueField-4-STX-Brings-Agentic-AI-Storage-Processing-With-In-Silicon-Security.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Qualcomm's stock may be influenced by Nvidia's announcements at COMPUTEX 2026.",
+      "why_it_matters": "Nvidia's product announcements at COMPUTEX could impact Qualcomm's competitive positioning in the semiconductor market. Investors will be watching for any developments that could affect Qualcomm's market share and growth prospects.",
+      "related_tickers": [
+        "NVDA",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Will Nvidia Stock Rise During June 1 to June 4 From CEO Jensen Huang's Participation in COMPUTEX 2026?",
+          "url": "https://www.fool.com/investing/2026/05/31/nvda-stock-jensen-huang-keynote-computex/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "NEE",
+      "category": "Other",
+      "importance": "high",
+      "headline": "NextEra Energy's merger with Dominion Energy aims to create the largest regulated electric utility.",
+      "why_it_matters": "The merger is a significant strategic move that could enhance NextEra's market position and operational efficiency. This consolidation in the energy sector may lead to increased investor confidence and a positive impact on stock performance.",
+      "related_tickers": [
+        "D",
+        "XOM"
+      ],
+      "sources": [
+        {
+          "title": "This Is the First Energy Stock I Plan to Buy in June (Hint: It's Not ExxonMobil)",
+          "url": "https://www.fool.com/investing/2026/05/31/this-is-the-first-energy-stock-i-plan-to-buy-in-ju/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-01T11:31:32.716684+00:00",
+  "article_count": 7,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 4,
+  "shortfall_note": "Only 4 strong ticker group(s) found in the last 24h; generating 4 real block(s) instead of padding to 8."
+}

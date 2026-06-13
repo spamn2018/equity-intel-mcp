@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+from equity_intel.config import settings
 from equity_intel.db.models import Company, now_utc
 from equity_intel.logging_config import get_logger
 from equity_intel.sec.client import SECClient, normalize_cik
@@ -86,6 +87,7 @@ def upsert_company(
         for k, v in kwargs.items():
             if v is not None and hasattr(existing, k):
                 setattr(existing, k, v)
+        existing.is_active = True
         existing.updated_at = now
         return existing
 
@@ -106,6 +108,7 @@ async def sync_company_universe(
     session: Session,
     client: SECClient,
     tickers: Optional[List[str]] = None,
+    reconcile_active_universe: bool = False,
 ) -> Dict[str, str]:
     """
     Sync ticker-to-CIK mapping from SEC.
@@ -126,8 +129,30 @@ async def sync_company_universe(
         simple_map = await fetch_ticker_cik_map(client)
         exchange_map = {t: {"cik": c} for t, c in simple_map.items()}
 
+    prohibited = set(settings.prohibited_tickers_list)
+    if prohibited:
+        deactivated = (
+            session.query(Company)
+            .filter(Company.ticker.in_(prohibited), Company.is_active == True)
+            .update({Company.is_active: False, Company.updated_at: now_utc()}, synchronize_session=False)
+        )
+        if deactivated:
+            logger.info("prohibited_companies_deactivated", count=deactivated, tickers=sorted(prohibited))
+
     if tickers:
-        tickers_upper = {t.upper() for t in tickers}
+        tickers_upper = {t.upper() for t in tickers if t.upper() not in prohibited}
+        if reconcile_active_universe:
+            stale = (
+                session.query(Company)
+                .filter(
+                    Company.is_active == True,
+                    Company.ticker.notin_(tickers_upper),
+                )
+                .update({Company.is_active: False, Company.updated_at: now_utc()}, synchronize_session=False)
+            )
+            if stale:
+                logger.info("stale_companies_deactivated", count=stale)
+
         filtered = {t: v for t, v in exchange_map.items() if t in tickers_upper}
         # Also add any tickers not found in map
         for t in tickers_upper:

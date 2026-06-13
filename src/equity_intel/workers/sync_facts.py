@@ -24,14 +24,19 @@ logger = get_logger(__name__)
 
 async def run(tickers: Optional[List[str]] = None) -> None:
     configure_logging(settings.log_level)
+    prohibited = set(settings.prohibited_tickers_list)
 
     async with SECClient() as client:
         with get_session() as session:
             query = session.query(Company).filter(
                 Company.is_active == True, Company.cik.isnot(None)
             )
+            if prohibited:
+                query = query.filter(Company.ticker.notin_(prohibited))
             if tickers:
-                query = query.filter(Company.ticker.in_([t.upper() for t in tickers]))
+                query = query.filter(
+                    Company.ticker.in_([t.upper() for t in tickers if t.upper() not in prohibited])
+                )
             companies = query.all()
 
             total = 0

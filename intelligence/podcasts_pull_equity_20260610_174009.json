@@ -1,0 +1,909 @@
+{
+  "source_project": "Podcasts Pull - Equity",
+  "generated_at": "2026-06-10T17:40:09.744117",
+  "model_used": "gpt-4o-mini",
+  "episode_count": 108,
+  "date_range": {
+    "earliest": "2026-04-27T14:30:00Z",
+    "latest": "2026-06-09"
+  },
+  "episodes": [
+    {
+      "episode_id": "7a8fe292567ee821",
+      "podcast": "Milk Road Macro",
+      "title": "The Housing Crisis Already Started. The Data Just Hasn’t Caught Up w/ Melody Wright",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-06-09_the-housing-crisis-already-started-the-data-just-hasnt-caught-up-w-melody-wright_7a8fe292.analysis.json"
+    },
+    {
+      "episode_id": "9d61da7256c57502",
+      "podcast": "Milk Road Macro",
+      "title": "Markets Are At All-Time Highs… But Liquidity Says Trouble Ahead",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-06-04_markets-are-at-all-time-highs-but-liquidity-says-trouble-ahead_9d61da72.analysis.json"
+    },
+    {
+      "episode_id": "82fca716baca69ae",
+      "podcast": "Milk Road Macro",
+      "title": "“This Is How Every Crisis Starts” w/ Jim Bianco",
+      "date": "2026-06-02",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-06-02_this-is-how-every-crisis-starts-w-jim-bianco_82fca716.analysis.json"
+    },
+    {
+      "episode_id": "2856a28bcfa141f3",
+      "podcast": "Milk Road Macro",
+      "title": "Stocks Keep Hitting New Highs… Even As Macro Gets Worse",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-28_stocks-keep-hitting-new-highs-even-as-macro-gets-worse_2856a28b.analysis.json"
+    },
+    {
+      "episode_id": "ee6a0bce4d9f1b33",
+      "podcast": "Milk Road Macro",
+      "title": "The Two Biggest Macro Forces Driving Markets Over The Next Decade w/ Michael Nicoletos",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-26_the-two-biggest-macro-forces-driving-markets-over-the-next-decade-w-michael-nico_ee6a0bce.analysis.json"
+    },
+    {
+      "episode_id": "2028442736bb40e1",
+      "podcast": "Milk Road Macro",
+      "title": "Why 2026 Could End In A Massive Blow-Off Top w/ Andreas Steno Larsen",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-21_why-2026-could-end-in-a-massive-blow-off-top-w-andreas-steno-larsen_20284427.analysis.json"
+    },
+    {
+      "episode_id": "cf6af633f90c33da",
+      "podcast": "Milk Road Macro",
+      "title": "Why Geopolitical Chaos Is Bullish For the US w/ Eric Wallerstein",
+      "date": "2026-05-19",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-19_why-geopolitical-chaos-is-bullish-for-the-us-w-eric-wallerstein_cf6af633.analysis.json"
+    },
+    {
+      "episode_id": "9c17f8e1ac0b4111",
+      "podcast": "Milk Road Macro",
+      "title": "Matthew Piepenburg: “This Is The End Of Dollar Hegemony”",
+      "date": "2026-05-14",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-14_matthew-piepenburg-this-is-the-end-of-dollar-hegemony_9c17f8e1.analysis.json"
+    },
+    {
+      "episode_id": "1000766244990",
+      "podcast": "Milk Road Macro",
+      "title": "Energy Is About to Become the Most Valuable Asset on Earth w/ Clem Chambers",
+      "date": "2026-05-05T14:15:00Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-macro\\2026-05-05_energy-is-about-to-become-the-most-valuable-asset-on-earth-w-clem-chambers_1000766244990.analysis.json"
+    },
+    {
+      "episode_id": "49e10052959f980b",
+      "podcast": "The Pomp Podcast",
+      "title": "The Biggest Bitcoin Myths — And Why They're Dead Wrong | Chris Kline",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-06-09_the-biggest-bitcoin-myths-and-why-theyre-dead-wrong-chris-kline_49e10052.analysis.json"
+    },
+    {
+      "episode_id": "1592b5259fc0528a",
+      "podcast": "The Pomp Podcast",
+      "title": "Will Bitcoin Keep Crashing?! | Anthony Pompliano",
+      "date": "2026-06-08",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-06-08_will-bitcoin-keep-crashing-anthony-pompliano_1592b525.analysis.json"
+    },
+    {
+      "episode_id": "03f4977320ce7b98",
+      "podcast": "The Pomp Podcast",
+      "title": "Why Is Bitcoin CRASHING?! | Jordi Visser",
+      "date": "2026-06-06",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-06-06_why-is-bitcoin-crashing-jordi-visser_03f49773.analysis.json"
+    },
+    {
+      "episode_id": "6ef054a91d70f374",
+      "podcast": "The Pomp Podcast",
+      "title": "Why Is Bitcoin Digital Credit So Important? | Matt Cole",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-06-04_why-is-bitcoin-digital-credit-so-important-matt-cole_6ef054a9.analysis.json"
+    },
+    {
+      "episode_id": "4e87596f7195a7a1",
+      "podcast": "The Pomp Podcast",
+      "title": "Did Michael Saylor Give Up on Bitcoin? | Anthony Pompliano",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-06-03_did-michael-saylor-give-up-on-bitcoin-anthony-pompliano_4e87596f.analysis.json"
+    },
+    {
+      "episode_id": "defc1228952ec79e",
+      "podcast": "The Pomp Podcast",
+      "title": "How To Grow Your Money In AI Revolution | Jordi Visser",
+      "date": "2026-05-30",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-30_how-to-grow-your-money-in-ai-revolution-jordi-visser_defc1228.analysis.json"
+    },
+    {
+      "episode_id": "a1f1373f808158e4",
+      "podcast": "The Pomp Podcast",
+      "title": "The SpaceX IPO Will Be the Biggest Wealth Creation Event in History | Morgan Brennan",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-29_the-spacex-ipo-will-be-the-biggest-wealth-creation-event-in-history-morgan-brenn_a1f1373f.analysis.json"
+    },
+    {
+      "episode_id": "99d36272aa95d02e",
+      "podcast": "The Pomp Podcast",
+      "title": "Bitcoin Is The Only Asset That Survives What’s Coming | Jan van Eck",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-27_bitcoin-is-the-only-asset-that-survives-whats-coming-jan-van-eck_99d36272.analysis.json"
+    },
+    {
+      "episode_id": "5d99984f91db13f7",
+      "podcast": "The Pomp Podcast",
+      "title": "The End of America in 2029 | Porter Stansberry",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-26_the-end-of-america-in-2029-porter-stansberry_5d99984f.analysis.json"
+    },
+    {
+      "episode_id": "b1dbd7cd152e59e9",
+      "podcast": "The Pomp Podcast",
+      "title": "Bitcoin Will Breakout By Summer If This Happens | Jordi Visser",
+      "date": "2026-05-23",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-23_bitcoin-will-breakout-by-summer-if-this-happens-jordi-visser_b1dbd7cd.analysis.json"
+    },
+    {
+      "episode_id": "8af5c03aea509ec2",
+      "podcast": "The Pomp Podcast",
+      "title": "Is AI Taking Money & Attention Away From Bitcoin? | Dan Ives",
+      "date": "2026-05-20",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-pomp-podcast\\2026-05-20_is-ai-taking-money-attention-away-from-bitcoin-dan-ives_8af5c03a.analysis.json"
+    },
+    {
+      "episode_id": "0e5c12ce7f0d06ff",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "OpenAI Declares the Next Phase of AI",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-09_openai-declares-the-next-phase-of-ai_0e5c12ce.analysis.json"
+    },
+    {
+      "episode_id": "c74986740744fbaa",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "How We Use AI Is Changing",
+      "date": "2026-06-08",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-08_how-we-use-ai-is-changing_c7498674.analysis.json"
+    },
+    {
+      "episode_id": "a40b4fe0d9d4b29d",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "10+ Things You Should Build With AI Instead of Sending Files",
+      "date": "2026-06-07",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-07_10-things-you-should-build-with-ai-instead-of-sending-files_a40b4fe0.analysis.json"
+    },
+    {
+      "episode_id": "cfb3417fd6e7b9a3",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "This Week in AI for Ridiculously Busy People",
+      "date": "2026-06-06",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-06_this-week-in-ai-for-ridiculously-busy-people_cfb3417f.analysis.json"
+    },
+    {
+      "episode_id": "14865c446f40a4a1",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "What OpenAI and Anthropic Think Happens Next With AI",
+      "date": "2026-06-05",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-05_what-openai-and-anthropic-think-happens-next-with-ai_14865c44.analysis.json"
+    },
+    {
+      "episode_id": "6cf64a5c85ef650f",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "How Companies Are Becoming AI Token Efficient",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-04_how-companies-are-becoming-ai-token-efficient_6cf64a5c.analysis.json"
+    },
+    {
+      "episode_id": "1af631475ec1c3dc",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "The Next Wave of Enterprise AI",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-06-03_the-next-wave-of-enterprise-ai_1af63147.analysis.json"
+    },
+    {
+      "episode_id": "d3c529c02c815d95",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "How to Use /Goal to Do More With AI",
+      "date": "2026-05-31",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-31_how-to-use-goal-to-do-more-with-ai_d3c529c0.analysis.json"
+    },
+    {
+      "episode_id": "e635fa8cee4739ec",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "Claude Opus 4.8 First Impressions",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-29_claude-opus-48-first-impressions_e635fa8c.analysis.json"
+    },
+    {
+      "episode_id": "7cde46f3a52484f5",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "The Case for an AI Token Tax",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-28_the-case-for-an-ai-token-tax_7cde46f3.analysis.json"
+    },
+    {
+      "episode_id": "91d393deacc0118c",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "The Annual AI Slowdown Panic is Here",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-27_the-annual-ai-slowdown-panic-is-here_91d393de.analysis.json"
+    },
+    {
+      "episode_id": "746133ab8c3f9906",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "What the Pope Actually Said About AI",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-26_what-the-pope-actually-said-about-ai_746133ab.analysis.json"
+    },
+    {
+      "episode_id": "2fe4d16ff6f3aaac",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "The 4 AI Team Members Execs Should Hire Right Now",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-25_the-4-ai-team-members-execs-should-hire-right-now_2fe4d16f.analysis.json"
+    },
+    {
+      "episode_id": "d7ea2a839b435184",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "Why Agents Still Need Humans",
+      "date": "2026-05-24",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-24_why-agents-still-need-humans_d7ea2a83.analysis.json"
+    },
+    {
+      "episode_id": "884c7b6496921174",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "AI’s New Acceleration Phase",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-22_ais-new-acceleration-phase_884c7b64.analysis.json"
+    },
+    {
+      "episode_id": "1d067286df1c01cf",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "Anthropic Just Reset AI Expectations",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-21_anthropic-just-reset-ai-expectations_1d067286.analysis.json"
+    },
+    {
+      "episode_id": "98111775a01abfd5",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "Why Google Isn't Chasing Claude Code",
+      "date": "2026-05-20",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-20_why-google-isnt-chasing-claude-code_98111775.analysis.json"
+    },
+    {
+      "episode_id": "1000768608115",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "9 Codex Tips From the Codex Team",
+      "date": "2026-05-19T18:44:20Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-19_9-codex-tips-from-the-codex-team_1000768608115.analysis.json"
+    },
+    {
+      "episode_id": "1000768451739",
+      "podcast": "The AI Daily Brief: Artificial Intelligence News and Analysis",
+      "title": "Beating the AI Doom Cycle",
+      "date": "2026-05-18T20:30:55Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-ai-daily-brief\\2026-05-18_beating-the-ai-doom-cycle_1000768451739.analysis.json"
+    },
+    {
+      "episode_id": "61c2b376056d45bc",
+      "podcast": "The Milk Road Show",
+      "title": "Matt Hougan: Crypto Is The Biggest Contrarian Bet In Markets Right Now",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-09_matt-hougan-crypto-is-the-biggest-contrarian-bet-in-markets-right-now_61c2b376.analysis.json"
+    },
+    {
+      "episode_id": "ab6ac09082d8daac",
+      "podcast": "The Milk Road Show",
+      "title": "5 Bitcoin Bear Cases Just Got Destroyed w/ Sam Callahan",
+      "date": "2026-06-08",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-08_5-bitcoin-bear-cases-just-got-destroyed-w-sam-callahan_ab6ac090.analysis.json"
+    },
+    {
+      "episode_id": "6124a6e1c2ab7c36",
+      "podcast": "The Milk Road Show",
+      "title": "The One Thing That Could Save Solana w/ Carl Vogen",
+      "date": "2026-06-05",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-05_the-one-thing-that-could-save-solana-w-carl-vogen_6124a6e1.analysis.json"
+    },
+    {
+      "episode_id": "4fe3257bb23fa5ae",
+      "podcast": "The Milk Road Show",
+      "title": "Did Saylor Just Fake Out the Entire Bitcoin Market?",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-04_did-saylor-just-fake-out-the-entire-bitcoin-market_4fe3257b.analysis.json"
+    },
+    {
+      "episode_id": "b1da8adb271894cb",
+      "podcast": "The Milk Road Show",
+      "title": "Crypto Is In A Bear Market… So Why Aren’t ETF Investors Selling? w/ James Seyffart",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-03_crypto-is-in-a-bear-market-so-why-arent-etf-investors-selling-w-james-seyffart_b1da8adb.analysis.json"
+    },
+    {
+      "episode_id": "bf578f9f23b68fde",
+      "podcast": "The Milk Road Show",
+      "title": "The Best Crypto Bet Is No Longer Bitcoin w/ Jamie Coutts",
+      "date": "2026-06-02",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-02_the-best-crypto-bet-is-no-longer-bitcoin-w-jamie-coutts_bf578f9f.analysis.json"
+    },
+    {
+      "episode_id": "98a42b979422f93a",
+      "podcast": "The Milk Road Show",
+      "title": "The Real Reason Bitcoin Keeps Losing Momentum… And Where It Bottoms Next w/ John Gillen",
+      "date": "2026-06-01",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-06-01_the-real-reason-bitcoin-keeps-losing-momentum-and-where-it-bottoms-next-w-john-g_98a42b97.analysis.json"
+    },
+    {
+      "episode_id": "497fd1b8132ede14",
+      "podcast": "The Milk Road Show",
+      "title": "The Best Investments Look Dead Before They Explode w/ Eric Jackson",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-29_the-best-investments-look-dead-before-they-explode-w-eric-jackson_497fd1b8.analysis.json"
+    },
+    {
+      "episode_id": "3137f9564fbf06a1",
+      "podcast": "The Milk Road Show",
+      "title": "Bitwise: Hyperliquid Could Be Crypto’s Most Mispriced Asset w/ Matt Hougan & Ryan Rasmussen",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-28_bitwise-hyperliquid-could-be-cryptos-most-mispriced-asset-w-matt-hougan-ryan-ras_3137f956.analysis.json"
+    },
+    {
+      "episode_id": "58f4c836f8152808",
+      "podcast": "The Milk Road Show",
+      "title": "Bitcoin Holders Have Been Waiting 15 Years For This",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-27_bitcoin-holders-have-been-waiting-15-years-for-this_58f4c836.analysis.json"
+    },
+    {
+      "episode_id": "84e453c3c89e2650",
+      "podcast": "The Milk Road Show",
+      "title": "Ethereum Is Either Failing… Or Evolving Into Something Much Bigger w/ John Gillen",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-26_ethereum-is-either-failing-or-evolving-into-something-much-bigger-w-john-gillen_84e453c3.analysis.json"
+    },
+    {
+      "episode_id": "b0c20a390a5c65a6",
+      "podcast": "The Milk Road Show",
+      "title": "Haseeb: The Real Reason Ethereum Keeps Losing Momentum",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-25_haseeb-the-real-reason-ethereum-keeps-losing-momentum_b0c20a39.analysis.json"
+    },
+    {
+      "episode_id": "2e4eae681bf9dc1f",
+      "podcast": "The Milk Road Show",
+      "title": "Privacy Could Be The Biggest Crypto Opportunity of 2026 w/ Min Teo",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-22_privacy-could-be-the-biggest-crypto-opportunity-of-2026-w-min-teo_2e4eae68.analysis.json"
+    },
+    {
+      "episode_id": "6cd66c56e0fd6efc",
+      "podcast": "The Milk Road Show",
+      "title": "Hyperliquid, Venice & Zcash: The Next Crypto Leaders?",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-21_hyperliquid-venice-zcash-the-next-crypto-leaders_6cd66c56.analysis.json"
+    },
+    {
+      "episode_id": "7cb7e7830371e873",
+      "podcast": "The Milk Road Show",
+      "title": "The Next Crypto Winners May NOT Be Layer 1s w/ Joshua Frank",
+      "date": "2026-05-20",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-20_the-next-crypto-winners-may-not-be-layer-1s-w-joshua-frank_7cb7e783.analysis.json"
+    },
+    {
+      "episode_id": "1000768609745",
+      "podcast": "The Milk Road Show",
+      "title": "Why Crypto May Be The Bigger Opportunity Than AI w/ Farokh",
+      "date": "2026-05-19T18:45:00Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-19_why-crypto-may-be-the-bigger-opportunity-than-ai-w-farokh_1000768609745.analysis.json"
+    },
+    {
+      "episode_id": "1000768437690",
+      "podcast": "The Milk Road Show",
+      "title": "Is This The Last Big Bitcoin Dip Before New ATHs? w/ John Gillen",
+      "date": "2026-05-18T18:20:18Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-milk-road-show\\2026-05-18_is-this-the-last-big-bitcoin-dip-before-new-aths-w-john-gillen_1000768437690.analysis.json"
+    },
+    {
+      "episode_id": "717c8f9aed4221f9",
+      "podcast": "Bankless",
+      "title": "Is $LIT Cheap? | Will Price and Flip",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-06-09_is-lit-cheap-will-price-and-flip_717c8f9a.analysis.json"
+    },
+    {
+      "episode_id": "10db24a1b5cd9cd5",
+      "podcast": "Bankless",
+      "title": "ROLLUP: Bitcoin’s Confidence Game | Bitmine’s ETH Bet | Token Rotation | U.S. Perps",
+      "date": "2026-06-05",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-06-05_rollup-bitcoins-confidence-game-bitmines-eth-bet-token-rotation-us-perps_10db24a1.analysis.json"
+    },
+    {
+      "episode_id": "48be16975583dbb0",
+      "podcast": "Bankless",
+      "title": "ROLLUP: False Strength? | ETH Crisis | Altcoin ATHs | Satoshi’s Coins",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-29_rollup-false-strength-eth-crisis-altcoin-aths-satoshis-coins_48be1697.analysis.json"
+    },
+    {
+      "episode_id": "7b6ac7ebbc8c6576",
+      "podcast": "Bankless",
+      "title": "NEAR’s AI Money Thesis: Intents, Privacy, and Tokenomics | Sal Ternullo",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-27_nears-ai-money-thesis-intents-privacy-and-tokenomics-sal-ternullo_7b6ac7eb.analysis.json"
+    },
+    {
+      "episode_id": "260e34e6f1e9108d",
+      "podcast": "Bankless",
+      "title": "Cloudflare Needs 100M TPS from Crypto to Fix the Internet | CEO Matthew Prince",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-25_cloudflare-needs-100m-tps-from-crypto-to-fix-the-internet-ceo-matthew-prince_260e34e6.analysis.json"
+    },
+    {
+      "episode_id": "9cae461221bdb432",
+      "podcast": "Bankless",
+      "title": "ROLLUP: David Sold His ETH | EF Exodus | Hyperliquid’s Breakout | Stagflation Fears",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-22_rollup-david-sold-his-eth-ef-exodus-hyperliquids-breakout-stagflation-fears_9cae4612.analysis.json"
+    },
+    {
+      "episode_id": "542c08de1514ce67",
+      "podcast": "Bankless",
+      "title": "Bitcoin’s $300T Credit Market Opportunity | Jeff Walton",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-21_bitcoins-300t-credit-market-opportunity-jeff-walton_542c08de.analysis.json"
+    },
+    {
+      "episode_id": "1000768546135",
+      "podcast": "Bankless",
+      "title": "Crypto Without Privacy Isn't Crypto' - The Zcash Bull Case | Tushar Jain & Mert Mumtaz",
+      "date": "2026-05-19T10:30:00Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\bankless\\2026-05-19_crypto-without-privacy-isnt-crypto-the-zcash-bull-case-tushar-jain-mert-mumtaz_1000768546135.analysis.json"
+    },
+    {
+      "episode_id": "5bd4cc2508361f28",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin BLEEDS $235B As Saylor 'Gaslights' Holders",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-06-09_bitcoin-bleeds-235b-as-saylor-gaslights-holders_5bd4cc25.analysis.json"
+    },
+    {
+      "episode_id": "899e1a9857a9db27",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin WIPES OUT $504M Of Shorts As Korea PLUNGES 9% - Macro Monday",
+      "date": "2026-06-08",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-06-08_bitcoin-wipes-out-504m-of-shorts-as-korea-plunges-9-macro-monday_899e1a98.analysis.json"
+    },
+    {
+      "episode_id": "5f8a4932656f47eb",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Bottom or Bull Trap? Fear Hits 8 #CryptoTownHall",
+      "date": "2026-06-08",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-06-08_bitcoin-bottom-or-bull-trap-fear-hits-8-cryptotownhall_5f8a4932.analysis.json"
+    },
+    {
+      "episode_id": "74b1fa0e6d934557",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Why Bitcoin Is “Preeminent” In The Biggest Macro Trade Ever - Dan Tapiero",
+      "date": "2026-06-07",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-06-07_why-bitcoin-is-preeminent-in-the-biggest-macro-trade-ever-dan-tapiero_74b1fa0e.analysis.json"
+    },
+    {
+      "episode_id": "3fe6d5f4dd0bfc4f",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin PLUMMETS Below $62K As Arthur Hayes DUMPS Zcash",
+      "date": "2026-06-05",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-06-05_bitcoin-plummets-below-62k-as-arthur-hayes-dumps-zcash_3fe6d5f4.analysis.json"
+    },
+    {
+      "episode_id": "4c2a3a28c62b1db8",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin's Hidden Message: Why Satoshi Walked Away From $100B",
+      "date": "2026-05-30",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-30_bitcoins-hidden-message-why-satoshi-walked-away-from-100b_4c2a3a28.analysis.json"
+    },
+    {
+      "episode_id": "8d72c7652901d7ef",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Strategy Moves $30M in BTC. Finally Selling?#CryptoTownHall",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-29_strategy-moves-30m-in-btc-finally-sellingcryptotownhall_8d72c765.analysis.json"
+    },
+    {
+      "episode_id": "a6292f971bc3d4a9",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Bull Saylor To DUMP $30M Today?",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-29_bitcoin-bull-saylor-to-dump-30m-today_a6292f97.analysis.json"
+    },
+    {
+      "episode_id": "6a5f2b47bfe61da3",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin CRASHES To $73K As US Bombs Iran And ETFs Bleed $733M",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-28_bitcoin-crashes-to-73k-as-us-bombs-iran-and-etfs-bleed-733m_6a5f2b47.analysis.json"
+    },
+    {
+      "episode_id": "17bf8b97ae5f86bc",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Just Absorbed A $1.29B BlackRock Dump & Barely Flinched",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-27_bitcoin-just-absorbed-a-129b-blackrock-dump-barely-flinched_17bf8b97.analysis.json"
+    },
+    {
+      "episode_id": "60f4aceb551ffd39",
+      "podcast": "The Wolf Of All Streets",
+      "title": "$1.3B IBIT Dumped in Secret Dark Pool Trade #CryptoTownHall",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-27_13b-ibit-dumped-in-secret-dark-pool-trade-cryptotownhall_60f4aceb.analysis.json"
+    },
+    {
+      "episode_id": "25923ba1da76eb7b",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Is Eerily Quiet As 9 Month Volatility Hits Low! Big Move Coming? - Jeff Park",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-26_bitcoin-is-eerily-quiet-as-9-month-volatility-hits-low-big-move-coming-jeff-park_25923ba1.analysis.json"
+    },
+    {
+      "episode_id": "1fb795560d9f4a76",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Why Bitcoin Is The Only Exit From The Federal Reserve",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-25_why-bitcoin-is-the-only-exit-from-the-federal-reserve_1fb79556.analysis.json"
+    },
+    {
+      "episode_id": "819a3e5bb9be7348",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin's Real Buyers Haven't Arrived Yet - Adam Back",
+      "date": "2026-05-24",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-24_bitcoins-real-buyers-havent-arrived-yet-adam-back_819a3e5b.analysis.json"
+    },
+    {
+      "episode_id": "c9425859057b07a7",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin To $40K? Saylor's Big Bet Is Breaking - Ran Neuner",
+      "date": "2026-05-23",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-23_bitcoin-to-40k-saylors-big-bet-is-breaking-ran-neuner_c9425859.analysis.json"
+    },
+    {
+      "episode_id": "ac761f5d5c85ca69",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Mark Cuban Sells His Bitcoin - Is He Wrong? #CryptoTownHall",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-22_mark-cuban-sells-his-bitcoin-is-he-wrong-cryptotownhall_ac761f5d.analysis.json"
+    },
+    {
+      "episode_id": "9a806a1fce829d46",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin SET For Lower As HyperLiquid Decouples! - Bloomberg's James Seyffart",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-22_bitcoin-set-for-lower-as-hyperliquid-decouples-bloombergs-james-seyffart_9a806a1f.analysis.json"
+    },
+    {
+      "episode_id": "7a120bdcab11cc88",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Just Lost Mark Cuban - Here's Why The Billionaire Sold",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-22_bitcoin-just-lost-mark-cuban-heres-why-the-billionaire-sold_7a120bdc.analysis.json"
+    },
+    {
+      "episode_id": "60788305a3c62bd5",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Fed Access for Crypto Firms? Massive Shift Ahead #CryptoTownHall",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-21_fed-access-for-crypto-firms-massive-shift-ahead-cryptotownhall_60788305.analysis.json"
+    },
+    {
+      "episode_id": "cde283ec7dad5ba7",
+      "podcast": "The Wolf Of All Streets",
+      "title": "Bitcoin Has A 120-Day Fed Countdown - Trump Just Signed The Order | Mike Alfred",
+      "date": "2026-05-20",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\the-wolf-of-all-streets\\2026-05-20_bitcoin-has-a-120-day-fed-countdown-trump-just-signed-the-order-mike-alfred_cde283ec.analysis.json"
+    },
+    {
+      "episode_id": "558ad419788bef3c",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Apple WWDC 2026: Finally Delivering on AI Promises",
+      "date": "2026-06-09",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-06-09_apple-wwdc-2026-finally-delivering-on-ai-promises_558ad419.analysis.json"
+    },
+    {
+      "episode_id": "a442bebcae9f0765",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Hijacking Instagram: Behind The Massive AI Exploit",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-06-04_hijacking-instagram-behind-the-massive-ai-exploit_a442bebc.analysis.json"
+    },
+    {
+      "episode_id": "9082ce84fc08029a",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "SpaceX, OpenAI, and Anthropic IPOs: AI's Reckoning",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-06-03_spacex-openai-and-anthropic-ipos-ais-reckoning_9082ce84.analysis.json"
+    },
+    {
+      "episode_id": "7ca43b35dc67f59c",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Dell's Comeback is the Perfect AI Case Study",
+      "date": "2026-06-02",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-06-02_dells-comeback-is-the-perfect-ai-case-study_7ca43b35.analysis.json"
+    },
+    {
+      "episode_id": "1f0ea5b4c0b9f9e0",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "THIS WEEK IN AI: Pope Approves Anthropic, Comparing AI Plans, Starcloud SpaceX Partnership",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-29_this-week-in-ai-pope-approves-anthropic-comparing-ai-plans-starcloud-spacex-part_1f0ea5b4.analysis.json"
+    },
+    {
+      "episode_id": "7ab0a55af26147ca",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "How Gavin Baker Invests in AI, and Where the Bubble is Going Next",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-28_how-gavin-baker-invests-in-ai-and-where-the-bubble-is-going-next_7ab0a55a.analysis.json"
+    },
+    {
+      "episode_id": "6345661448bb7afc",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Encouraging Athletes to Take Steroids: Bryan Johnson's Enhanced Games",
+      "date": "2026-05-26",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-26_encouraging-athletes-to-take-steroids-bryan-johnsons-enhanced-games_63456614.analysis.json"
+    },
+    {
+      "episode_id": "ab94098a18f1e445",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "The Story of Cursor: The Fastest AI Company and Massive Comeback",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-25_the-story-of-cursor-the-fastest-ai-company-and-massive-comeback_ab94098a.analysis.json"
+    },
+    {
+      "episode_id": "25b9742a95d80fc7",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "ROUNDUP: Anthropic Pays Elon $45B, SpaceX Files $1.75T IPO, Claude Mythos Hacks Apple",
+      "date": "2026-05-22",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-22_roundup-anthropic-pays-elon-45b-spacex-files-175t-ipo-claude-mythos-hacks-apple_25b9742a.analysis.json"
+    },
+    {
+      "episode_id": "92abc9c9f33ffce0",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Google I/O 2026: Their Next Big Thing Is Finally Here",
+      "date": "2026-05-20",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-20_google-io-2026-their-next-big-thing-is-finally-here_92abc9c9.analysis.json"
+    },
+    {
+      "episode_id": "1000768437888",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "Leopold is Back: 13F Filings Reveal a New Bet",
+      "date": "2026-05-18T18:29:13Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-18_leopold-is-back-13f-filings-reveal-a-new-bet_1000768437888.analysis.json"
+    },
+    {
+      "episode_id": "1000767749153",
+      "podcast": "Limitless: An AI Podcast",
+      "title": "THIS WEEK IN AI: Google's AI Laptop, Everyone Goes to China, Thinking Machines",
+      "date": "2026-05-14T11:25:56Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\limitless-an-ai-podcast\\2026-05-14_this-week-in-ai-googles-ai-laptop-everyone-goes-to-china-thinking-machines_1000767749153.analysis.json"
+    },
+    {
+      "episode_id": "1f81583919ce3fe0",
+      "podcast": "Risk and Return with Charlie Gasparino and Bob Sloan",
+      "title": "Market Positioning, the Short Seller on Trial & Media's Power Shift",
+      "date": "2026-06-04",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\risk-and-return\\2026-06-04_market-positioning-the-short-seller-on-trial-medias-power-shift_1f815839.analysis.json"
+    },
+    {
+      "episode_id": "cc0785158da70b36",
+      "podcast": "Risk and Return with Charlie Gasparino and Bob Sloan",
+      "title": "Iran at the Point of No Return, AI's Atomic Moment, and the S3 Earnings Model",
+      "date": "2026-05-28",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\risk-and-return\\2026-05-28_iran-at-the-point-of-no-return-ais-atomic-moment-and-the-s3-earnings-model_cc078515.analysis.json"
+    },
+    {
+      "episode_id": "2b9d62ffa11b8095",
+      "podcast": "Risk and Return with Charlie Gasparino and Bob Sloan",
+      "title": "Semi Shorts Hold the Line, Wendy's Heats Up & Warsh's 'Triple Mandate",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\risk-and-return\\2026-05-21_semi-shorts-hold-the-line-wendys-heats-up-warshs-triple-mandate_2b9d62ff.analysis.json"
+    },
+    {
+      "episode_id": "accb43b602a06b00",
+      "podcast": "Forward Guidance",
+      "title": "Why This Economy Refuses To Break | David Cervantes",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\forward-guidance\\2026-06-03_why-this-economy-refuses-to-break-david-cervantes_accb43b6.analysis.json"
+    },
+    {
+      "episode_id": "0c59eac178dff5b3",
+      "podcast": "Forward Guidance",
+      "title": "How To Trade The AI Productivity Boom | Weekly Roundup",
+      "date": "2026-05-29",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\forward-guidance\\2026-05-29_how-to-trade-the-ai-productivity-boom-weekly-roundup_0c59eac1.analysis.json"
+    },
+    {
+      "episode_id": "5a5b4b284c278896",
+      "podcast": "Forward Guidance",
+      "title": "Can The AI Driven Rally Continue? | Weekly Roundup",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\forward-guidance\\2026-05-21_can-the-ai-driven-rally-continue-weekly-roundup_5a5b4b28.analysis.json"
+    },
+    {
+      "episode_id": "7f6a2ab71188e868",
+      "podcast": "Milk Road AI",
+      "title": "Companies Are Hoarding Compute Like Gold",
+      "date": "2026-06-03",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-06-03_companies-are-hoarding-compute-like-gold_7f6a2ab7.analysis.json"
+    },
+    {
+      "episode_id": "538996aa2861fa10",
+      "podcast": "Milk Road AI",
+      "title": "The AI Model With An Unfair Advantage Over ChatGPT",
+      "date": "2026-06-01",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-06-01_the-ai-model-with-an-unfair-advantage-over-chatgpt_538996aa.analysis.json"
+    },
+    {
+      "episode_id": "049cd8c20913bf26",
+      "podcast": "Milk Road AI",
+      "title": "Why NeoClouds Could Become The Biggest AI Winners",
+      "date": "2026-05-27",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-05-27_why-neoclouds-could-become-the-biggest-ai-winners_049cd8c2.analysis.json"
+    },
+    {
+      "episode_id": "169686bc7fdbf5b1",
+      "podcast": "Milk Road AI",
+      "title": "What The Economy Looks Like When Machines Can Pay Each Other",
+      "date": "2026-05-25",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-05-25_what-the-economy-looks-like-when-machines-can-pay-each-other_169686bc.analysis.json"
+    },
+    {
+      "episode_id": "1586da4b431fa2d0",
+      "podcast": "Milk Road AI",
+      "title": "AI’s Next Trillion-Dollar Opportunity Is Hiding In Plain Sight",
+      "date": "2026-05-21",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-05-21_ais-next-trillion-dollar-opportunity-is-hiding-in-plain-sight_1586da4b.analysis.json"
+    },
+    {
+      "episode_id": "1000763822004",
+      "podcast": "Milk Road AI",
+      "title": "By 2035, Most Grand Challenges Facing Humanity Will Be Solved w/ Dr. Alex Wissner-Gross",
+      "date": "2026-04-27T14:30:00Z",
+      "source_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Podcasts Pull\\analysis\\milk-road-ai\\2026-04-27_by-2035-most-grand-challenges-facing-humanity-will-be-solved-w-dr-alex-wissner-g_1000763822004.analysis.json"
+    }
+  ],
+  "one_sentence_takeaway": "Bitcoin remains a focal point of investment discussions, with mixed sentiment reflecting both its potential as a long-term asset and the risks of short-term volatility.",
+  "summary": "The analysis of 108 podcast episodes reveals a strong focus on Bitcoin and its role in the evolving financial landscape, with discussions highlighting its potential as a hedge against inflation and a viable alternative to traditional monetary systems. Ethereum and other cryptocurrencies also received attention, particularly in the context of market projections and institutional interest. The semiconductor sector is noted for its volatility, with some experts warning of a potential bubble, while gold is positioned as a safe haven amidst economic uncertainty. Key risks include geopolitical tensions, potential recession, and the volatility of cryptocurrencies, which could impact market stability and investor confidence.",
+  "dominant_themes": [
+    {
+      "theme": "Bitcoin as a long-term investment",
+      "strength": "high",
+      "evidence": "The Pomp Podcast, Milk Road Macro"
+    },
+    {
+      "theme": "Volatility in the cryptocurrency market",
+      "strength": "high",
+      "evidence": "The Pomp Podcast, Milk Road Show"
+    },
+    {
+      "theme": "Geopolitical tensions impacting markets",
+      "strength": "medium",
+      "evidence": "Milk Road Macro"
+    },
+    {
+      "theme": "Investment in AI and technology stocks",
+      "strength": "medium",
+      "evidence": "Limitless: An AI Podcast, Milk Road AI"
+    },
+    {
+      "theme": "Gold as a hedge against inflation",
+      "strength": "medium",
+      "evidence": "Milk Road Macro, The Pomp Podcast"
+    }
+  ],
+  "top_signals": [
+    {
+      "asset": "Bitcoin [BTC]",
+      "signal": "mixed",
+      "conviction": "high",
+      "mention_pattern": "14 mentions across various podcasts, discussed in multiple contexts including investment strategies and market performance",
+      "why": "Bitcoin's fixed supply and potential for long-term appreciation are countered by its volatility and market sentiment."
+    },
+    {
+      "asset": "Ethereum [ETH]",
+      "signal": "mixed",
+      "conviction": "medium",
+      "mention_pattern": "11 mentions, primarily in discussions about market projections and institutional investment",
+      "why": "Ethereum's role in the crypto ecosystem is significant, but it faces challenges that affect investor confidence."
+    },
+    {
+      "asset": "Gold [GLD]",
+      "signal": "bullish",
+      "conviction": "medium",
+      "mention_pattern": "2 mentions, discussed as a hedge against inflation and economic instability",
+      "why": "Gold's historical performance as a safe haven asset positions it well amidst current market volatility."
+    }
+  ],
+  "converging_theses": [
+    {
+      "thesis": "Bitcoin is a viable alternative to the Federal Reserve's monetary system.",
+      "sources": "The Wolf Of All Streets",
+      "bull_case": "Bitcoin's fixed supply and resistance to manipulation.",
+      "bear_case": "Its volatility and youth as an asset class."
+    },
+    {
+      "thesis": "Investing in AI stocks remains a strong opportunity despite high risks.",
+      "sources": "Milk Road Macro",
+      "bull_case": "AI's transformative potential.",
+      "bear_case": "Unsustainable valuations if AI fails to deliver."
+    },
+    {
+      "thesis": "Gold remains a strong investment amidst market volatility.",
+      "sources": "Milk Road Macro",
+      "bull_case": "Gold's reliability as a store of value.",
+      "bear_case": "Market focus may shift away from gold."
+    }
+  ],
+  "diverging_views": [
+    {
+      "topic": "Bitcoin's future value",
+      "view_a": "Bitcoin will reach $50 million in 15 years.",
+      "view_b": "Bitcoin could go to zero.",
+      "sources": "The Milk Road Show, The Pomp Podcast"
+    },
+    {
+      "topic": "Investment in AI stocks",
+      "view_a": "AI stocks are a strong investment opportunity.",
+      "view_b": "AI stocks may be overvalued and face a bubble.",
+      "sources": "Milk Road Macro, Limitless: An AI Podcast"
+    }
+  ],
+  "key_risks": [
+    {
+      "risk": "Geopolitical tensions impacting oil prices and market stability.",
+      "severity": "high",
+      "frequency": "3"
+    },
+    {
+      "risk": "Potential recession if the Fed raises rates.",
+      "severity": "high",
+      "frequency": "3"
+    },
+    {
+      "risk": "Bitcoin may remain in a bear market.",
+      "severity": "high",
+      "frequency": "3"
+    }
+  ],
+  "actionable_intelligence": [
+    {
+      "action": "Monitor Bitcoin's price movements closely.",
+      "urgency": "high",
+      "rationale": "Given its volatility and potential for significant appreciation or decline, staying informed is crucial."
+    },
+    {
+      "action": "Evaluate investments in AI and semiconductor stocks.",
+      "urgency": "medium",
+      "rationale": "The potential for growth in AI is significant, but risks of overvaluation must be considered."
+    },
+    {
+      "action": "Consider gold as a hedge in current market conditions.",
+      "urgency": "medium",
+      "rationale": "Gold's historical performance as a safe haven makes it a viable option amidst economic uncertainty."
+    }
+  ],
+  "notable_quotes": [
+    {
+      "quote": "Bitcoin's scarcity and the persistent government spending will likely drive its value up over time.",
+      "speaker": "The Pomp Podcast",
+      "source": "The Pomp Podcast | 2026-06-09",
+      "why_it_matters": "Highlights the long-term investment thesis for Bitcoin amidst current economic conditions."
+    },
+    {
+      "quote": "Investors should prepare for a turbulence regime in the market.",
+      "speaker": "Milk Road Macro",
+      "source": "Milk Road Macro | 2026-06-04",
+      "why_it_matters": "Signals the need for caution and strategic positioning in investments."
+    }
+  ],
+  "tags": [
+    "bitcoin",
+    "gold",
+    "ai",
+    "investment",
+    "risks"
+  ]
+}

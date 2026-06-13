@@ -1,0 +1,165 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron stock surges on AI-driven demand for memory chips, raising future price targets.",
+      "why_it_matters": "Micron's stock has seen significant gains due to strong AI-driven demand for memory chips, with analysts speculating on future price targets reaching as high as $2,000 by 2027. This reflects the growing reliance on memory solutions in AI applications, which could lead to sustained revenue growth for the company.",
+      "related_tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "sources": [
+        {
+          "title": "Will Micron Stock Reach $2,000 in 2027?",
+          "url": "https://www.fool.com/investing/2026/05/28/will-micron-stock-reach-2000-in-2027/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "The Roundhill Memory ETF (DRAM) Packages Micron, Sandisk, Samsung, and SK Hynix",
+          "url": "https://www.fool.com/investing/2026/05/28/roundhill-memory-etf-dram-micron-sandisk-dram/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ON",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "ON Semiconductor benefits from rising tech stock momentum amid AI enthusiasm.",
+      "why_it_matters": "As the tech sector rallies, ON Semiconductor is positioned to gain from increased demand for its products in AI applications. The overall market momentum could enhance investor sentiment towards ON, potentially leading to higher stock valuations.",
+      "related_tickers": [
+        "NVDA",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Stock Market News for May 28, 2026",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-may-28-132100771.html",
+          "publisher": "Yahoo Finance"
+        },
+        {
+          "title": "Stock market today: S&P 500 and Nasdaq rise",
+          "url": "https://finance.yahoo.com/economy/live/stock-market-today-sp-500-and-nasdaq-rise-oil-pares-gains-on-report-of-us-iran-breakthrough-231358550.html",
+          "publisher": "Yahoo Finance"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Marvell's Q1 earnings beat estimates, driven by booming data center revenue.",
+      "why_it_matters": "Marvell Technology reported strong Q1 results with revenue driven by a record $1.83 billion from its data center segment. The company raised its revenue outlook, indicating robust demand in the data center market, which is crucial for its growth strategy.",
+      "related_tickers": [
+        "AVGO",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "Marvell Shares Climb After Q1 Results Beat Estimates",
+          "url": "https://www.benzinga.com/markets/earnings/26/05/52824993/marvell-shares-climb-after-q1-results-beat-estimates-details?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        },
+        {
+          "title": "Marvell CEO Says Data Center Business Is 'On Fire'",
+          "url": "https://www.benzinga.com/trading-ideas/movers/26/05/52833213/marvell-ceo-says-data-center-business-is-on-fire?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MP",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Redwire and Kratos stocks surge on potential U.S. drone manufacturing subsidies.",
+      "why_it_matters": "Both Redwire and Kratos Defense stocks jumped following reports of potential U.S. government subsidies for drone manufacturers. This could signal increased government spending in defense technology, but the impact on MP is indirect and less significant.",
+      "related_tickers": [
+        "KRNT",
+        "RDW"
+      ],
+      "sources": [
+        {
+          "title": "Why Redwire Stock Popped This Morning",
+          "url": "https://www.fool.com/investing/2026/05/28/why-redwire-stock-popped-this-morning/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Why Kratos Defense Stock Popped Today",
+          "url": "https://www.fool.com/investing/2026/05/28/why-kratos-defense-stock-popped-today/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "LRCX",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Lam Research poised for growth as AI market expands towards $2 trillion.",
+      "why_it_matters": "The semiconductor sector, including Lam Research, is expected to benefit from the AI market's projected growth. As AI applications proliferate, demand for semiconductor manufacturing equipment is likely to rise, positioning LRCX favorably for future revenue increases.",
+      "related_tickers": [
+        "NVDA",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Is the AI Trade Entering Its Second Wave?",
+          "url": "https://www.fool.com/investing/2026/05/28/ai-trade-entering-second-wave-smh-etf-beneficiary/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Cisco's market presence bolstered by rising tech sponsorship spending in EMEA.",
+      "why_it_matters": "Cisco stands to benefit from the overall increase in technology sponsorship spending, particularly in the EMEA region. However, the direct impact on Cisco's stock remains limited as this trend is more about market sentiment than immediate financial performance.",
+      "related_tickers": [
+        "NTCT",
+        "MSI"
+      ],
+      "sources": [
+        {
+          "title": "EMEA Technology Industry Sports Sponsorship Analysis Report 2025-2026",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302579/28124/en/EMEA-Technology-Industry-Sports-Sponsorship-Analysis-Report-2025-2026-Market-is-Booming-with-Doubled-Spending-Led-by-Soccer-and-F1.html",
+          "publisher": "GlobeNewswire"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ETN",
+      "category": "Other",
+      "importance": "low",
+      "headline": "High-end lighting market projected to grow, benefiting Eaton's product lines.",
+      "why_it_matters": "The high-end lighting market is expected to expand significantly, which could provide opportunities for Eaton's lighting solutions. However, the growth is projected over a long-term horizon, making immediate impacts on Eaton's stock less pronounced.",
+      "related_tickers": [
+        "PH",
+        "ABB"
+      ],
+      "sources": [
+        {
+          "title": "High-End Lighting Market Size to Hit USD 30.5 Billion by 2035",
+          "url": "https://www.globenewswire.com/news-release/2026/05/28/3302536/0/en/High-End-Lighting-Market-Size-to-Hit-USD-30-5-Billion-by-2035-Report-by-SNS-Insider.html",
+          "publisher": "GlobeNewswire"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-28T17:21:14.829528+00:00",
+  "article_count": 19,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 7,
+  "shortfall_note": "Only 7 strong ticker group(s) found in the last 24h; generating 7 real block(s) instead of padding to 8."
+}

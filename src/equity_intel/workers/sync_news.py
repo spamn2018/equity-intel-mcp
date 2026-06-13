@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+import os
+import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import click
@@ -20,6 +23,26 @@ from equity_intel.logging_config import configure_logging, get_logger
 from equity_intel.news.source_filter import filter_articles
 
 logger = get_logger(__name__)
+
+# Stamp file at project root -- skips re-fetch within TTL
+# parents[3] = Stocks/ (src/equity_intel/workers -> src/equity_intel -> src -> Stocks)
+_STAMP_FILE = Path(__file__).resolve().parents[3] / "news_sync_last_run.txt"
+_SYNC_TTL_HOURS = 24
+
+
+def _is_fresh() -> bool:
+    """Return True if news was synced within the last _SYNC_TTL_HOURS hours."""
+    if not _STAMP_FILE.exists():
+        return False
+    age_hours = (time.time() - _STAMP_FILE.stat().st_mtime) / 3600
+    return age_hours < _SYNC_TTL_HOURS
+
+
+def _write_stamp() -> None:
+    try:
+        _STAMP_FILE.write_text(datetime.datetime.utcnow().isoformat(), encoding="utf-8")
+    except Exception:
+        pass
 
 
 def _get_news_provider():
@@ -52,10 +75,14 @@ def upsert_news_article(session, article: Dict[str, Any], company: Optional[Comp
         if existing:
             return False
 
-    # Also check by URL to catch duplicates across providers
     url = article.get("url", "")
+    article_ticker = article.get("ticker", "").upper() or None
     if url:
-        existing = session.query(NewsArticle).filter(NewsArticle.url == url).first()
+        existing = (
+            session.query(NewsArticle)
+            .filter(NewsArticle.url == url, NewsArticle.ticker == article_ticker)
+            .first()
+        )
         if existing:
             return False
 
@@ -88,8 +115,18 @@ def upsert_news_article(session, article: Dict[str, Any], company: Optional[Comp
 async def run(
     tickers: Optional[List[str]] = None,
     days: int = 1,
+    force: bool = False,
 ) -> None:
     configure_logging(settings.log_level)
+
+    if not force and _is_fresh():
+        logger.info(
+            "news_sync_skipped_fresh",
+            reason="Last sync under " + str(_SYNC_TTL_HOURS) + "h ago -- delete news_sync_last_run.txt to force",
+        )
+        return
+
+    prohibited = set(settings.prohibited_tickers_list)
 
     provider = _get_news_provider()
     if provider is None:
@@ -98,8 +135,12 @@ async def run(
 
     with get_session() as session:
         query = session.query(Company).filter(Company.is_active == True)
+        if prohibited:
+            query = query.filter(Company.ticker.notin_(prohibited))
         if tickers:
-            query = query.filter(Company.ticker.in_([t.upper() for t in tickers]))
+            query = query.filter(
+                Company.ticker.in_([t.upper() for t in tickers if t.upper() not in prohibited])
+            )
         companies = query.all()
 
         if not companies:
@@ -115,18 +156,29 @@ async def run(
             articles = await provider.fetch_news_multi(
                 tickers=ticker_list,
                 days=days,
-                limit_per_ticker=10,  # max 10 actionable stories per ticker (24h window)
+                limit_per_ticker=10,
             )
 
-        # Apply source filter — drop blocked publishers before touching the DB
+        rss_feeds = [
+            url.strip()
+            for url in settings.rss_news_feeds.split(",")
+            if url.strip()
+        ]
+        if rss_feeds:
+            from equity_intel.news.rss import fetch_rss_articles
+
+            articles.extend(
+                await fetch_rss_articles(
+                    feed_urls=rss_feeds,
+                    companies=companies,
+                    days=days,
+                )
+            )
+
         articles = filter_articles(articles)
 
         inserted = 0
         for article in articles:
-            # The provider already guarantees the ticker appears in the title.
-            # Use only the article's own ticker field — no fallback iteration
-            # over the full tickers list, which was the source of cross-
-            # contamination (e.g. 13F articles filing under every holding).
             ticker = article.get("ticker", "").upper()
             company = ticker_to_company.get(ticker)
             was_inserted = upsert_news_article(session, article, company)
@@ -135,14 +187,17 @@ async def run(
 
         logger.info("news_sync_complete", fetched=len(articles), inserted=inserted)
 
+    _write_stamp()
+
 
 @click.command()
 @click.option("--tickers", default=None, help="Comma-separated tickers")
-@click.option("--days", default=1, show_default=True, help="Look-back window in days (default 1 = last 24 hours)")
-def main(tickers: Optional[str], days: int) -> None:
+@click.option("--days", default=1, show_default=True, help="Look-back window in days")
+@click.option("--force", is_flag=True, default=False, help="Force re-fetch even if synced recently")
+def main(tickers: Optional[str], days: int, force: bool) -> None:
     """Sync news articles from the configured provider."""
     ticker_list = [t.strip().upper() for t in tickers.split(",")] if tickers else None
-    asyncio.run(run(ticker_list, days=days))
+    asyncio.run(run(ticker_list, days=days, force=force))
 
 
 if __name__ == "__main__":

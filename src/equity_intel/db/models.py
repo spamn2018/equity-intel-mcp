@@ -319,6 +319,144 @@ class Event(Base):
         return f"<Event {self.event_type} {self.ticker} {self.occurred_at}>"
 
 
+# ── Trading models ────────────────────────────────────────────────────────────
+
+
+class TradeSignal(Base):
+    """
+    A generated trade signal derived from one pipeline catalyst/cluster.
+
+    Status lifecycle:
+        generated -> approved  (manual approval or auto when REQUIRE_APPROVAL=False)
+                  -> rejected  (manual rejection)
+                  -> expired   (TTL exceeded before execution)
+                  -> blocked   (risk policy blocked execution)
+                  -> executed  (broker order submitted successfully)
+                  -> failed    (broker submission raised an exception)
+
+    Signal side values: buy | sell | reduce | monitor | avoid
+    """
+    __tablename__ = "trade_signals"
+    __table_args__ = (
+        UniqueConstraint(
+            "ticker", "source_cluster_id", "source_event_id", "signal_side",
+            name="uq_trade_signal_source",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    signal_side: Mapped[str] = mapped_column(String(20), nullable=False)   # buy/sell/reduce/monitor/avoid
+    signal_strength: Mapped[Optional[float]] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="generated", index=True)
+
+    # Source linkage
+    source: Mapped[Optional[str]] = mapped_column(String(50))          # "cluster" | "event" | "brief"
+    source_catalyst_id: Mapped[Optional[str]] = mapped_column(String(128))  # cluster_key or similar
+    source_cluster_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("event_clusters.id"), nullable=True, index=True)
+    source_event_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("events.id"), nullable=True, index=True)
+
+    # Signal timing
+    generated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    expires_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+
+    # Scores from pipeline
+    materiality_score: Mapped[Optional[float]] = mapped_column(Float)
+    confidence_score: Mapped[Optional[float]] = mapped_column(Float)
+    novelty_score: Mapped[Optional[float]] = mapped_column(Float)
+
+    # Catalyst metadata
+    event_type: Mapped[Optional[str]] = mapped_column(String(50))
+    event_subtype: Mapped[Optional[str]] = mapped_column(String(100))
+    title: Mapped[Optional[str]] = mapped_column(Text)
+    rationale: Mapped[Optional[str]] = mapped_column(Text)
+    reason_codes_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)  # list of code strings
+    risk_flags_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+    evidence_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+    price_context_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+
+    # Research stage of the ticker at signal time
+    research_stage: Mapped[Optional[str]] = mapped_column(String(30))
+
+    # Position sizing constraint from ticker metadata
+    max_position_pct: Mapped[Optional[float]] = mapped_column(Float)
+
+    # Approval workflow
+    approved_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    approved_by: Mapped[Optional[str]] = mapped_column(String(256))
+    rejected_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    rejection_reason: Mapped[Optional[str]] = mapped_column(Text)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+
+    orders: Mapped[list["TradeOrder"]] = relationship("TradeOrder", back_populates="signal")
+    decision_logs: Mapped[list["TradingDecisionLog"]] = relationship("TradingDecisionLog", back_populates="signal")
+
+    def __repr__(self) -> str:
+        return f"<TradeSignal {self.signal_side.upper()} {self.ticker} strength={self.signal_strength} status={self.status}>"
+
+
+class TradeOrder(Base):
+    """A broker order attempt/result linked to a TradeSignal."""
+    __tablename__ = "trade_orders"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trade_signal_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("trade_signals.id"), nullable=True, index=True)
+
+    ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    side: Mapped[Optional[str]] = mapped_column(String(10))        # buy | sell
+    qty: Mapped[Optional[float]] = mapped_column(Float)
+    notional: Mapped[Optional[float]] = mapped_column(Float)
+    order_type: Mapped[Optional[str]] = mapped_column(String(20))  # market | limit
+    time_in_force: Mapped[Optional[str]] = mapped_column(String(10))
+
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    broker: Mapped[Optional[str]] = mapped_column(String(50))      # "alpaca"
+    broker_order_id: Mapped[Optional[str]] = mapped_column(String(256))
+
+    submitted_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    filled_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    filled_avg_price: Mapped[Optional[float]] = mapped_column(Float)
+
+    raw_request_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+    raw_response_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+    failure_reason: Mapped[Optional[str]] = mapped_column(Text)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+
+    signal: Mapped[Optional["TradeSignal"]] = relationship("TradeSignal", back_populates="orders")
+
+    def __repr__(self) -> str:
+        return f"<TradeOrder {self.side} {self.ticker} qty={self.qty} status={self.status}>"
+
+
+class TradingDecisionLog(Base):
+    """
+    Records every policy decision made about a signal — allowed, blocked, skipped, etc.
+    Provides a full audit trail for execution decisions.
+    """
+    __tablename__ = "trading_decision_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trade_signal_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("trade_signals.id"), nullable=True, index=True)
+    ticker: Mapped[Optional[str]] = mapped_column(String(20), index=True)
+
+    # decision values: allowed | blocked | skipped | executed | failed
+    decision: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    reason: Mapped[Optional[str]] = mapped_column(Text)
+    details_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+    signal: Mapped[Optional["TradeSignal"]] = relationship("TradeSignal", back_populates="decision_logs")
+
+    def __repr__(self) -> str:
+        return f"<TradingDecisionLog {self.decision} {self.ticker} signal_id={self.trade_signal_id}>"
+
+
 class InstitutionalHolding(Base):
     """
     One row per position held by an institutional manager in a single 13F-HR filing.
@@ -387,3 +525,110 @@ class InstitutionalHolding(Base):
             f"cusip={self.cusip} shares={self.shares}>"
         )
 
+
+# ---------------------------------------------------------------------------
+# Ticker Discovery Radar
+# ---------------------------------------------------------------------------
+
+
+class TickerMention(Base):
+    """
+    One raw mention of a ticker found while scanning ingested data.
+
+    A mention links a *mentioned_ticker* (the one we spotted) to a
+    *source_ticker* (the monitored company whose data contained it) plus
+    provenance: source_type, source_id, context snippet, and URL.
+    """
+    __tablename__ = "ticker_mentions"
+    __table_args__ = (
+        UniqueConstraint(
+            "mentioned_ticker", "source_type", "source_id",
+            name="uq_ticker_mention_source",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    mentioned_ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    source_ticker: Mapped[Optional[str]] = mapped_column(String(20), index=True)
+    source_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    # e.g. "news", "filing_document", "event", "event_cluster",
+    #      "podcast_intelligence", "gemini_news_block", "lm_synthesis"
+    source_id: Mapped[str] = mapped_column(String(256), nullable=False)
+    occurred_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime(timezone=True), index=True
+    )
+    week_key: Mapped[Optional[str]] = mapped_column(String(8), index=True)
+    # ISO week string "YYYY-WNN"
+    context: Mapped[Optional[str]] = mapped_column(Text)
+    url: Mapped[Optional[str]] = mapped_column(Text)
+    confidence: Mapped[float] = mapped_column(Float, default=1.0)
+    exclusion_flag: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), default=now_utc
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<TickerMention {self.mentioned_ticker} via {self.source_type}/"
+            f"{self.source_id} excl={self.exclusion_flag}>"
+        )
+
+
+class TickerDiscoveryScore(Base):
+    """
+    Weekly rolled-up discovery score for a candidate ticker.
+
+    Rows are recomputed (upserted) each time the discovery worker runs;
+    one row per (ticker, week_key).
+    """
+    __tablename__ = "ticker_discovery_scores"
+    __table_args__ = (
+        UniqueConstraint("ticker", "week_key", name="uq_discovery_score_ticker_week"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    week_key: Mapped[str] = mapped_column(String(8), nullable=False, index=True)
+    # ISO week "YYYY-WNN"
+
+    # Raw aggregation counts
+    mention_count: Mapped[int] = mapped_column(Integer, default=0)
+    unique_source_count: Mapped[int] = mapped_column(Integer, default=0)
+    unique_source_ticker_count: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Historical comparison
+    prior_week_count: Mapped[int] = mapped_column(Integer, default=0)
+    four_week_avg: Mapped[float] = mapped_column(Float, default=0.0)
+
+    # Score components [0, 1]
+    acceleration_score: Mapped[float] = mapped_column(Float, default=0.0)
+    mention_volume_score: Mapped[float] = mapped_column(Float, default=0.0)
+    source_quality_score: Mapped[float] = mapped_column(Float, default=0.0)
+    breadth_score: Mapped[float] = mapped_column(Float, default=0.0)
+    novelty_score: Mapped[float] = mapped_column(Float, default=0.0)
+
+    # Composite
+    total_score: Mapped[float] = mapped_column(Float, default=0.0)
+
+    # Promotion outcome
+    recommendation: Mapped[str] = mapped_column(
+        String(30), default="watch"
+    )
+    # "watch" | "probe_candidate" | "excluded"
+    exclusion_flag: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    # Top evidence snippets (list of dicts)
+    evidence_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), default=now_utc
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), default=now_utc, onupdate=now_utc
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<TickerDiscoveryScore {self.ticker} {self.week_key} "
+            f"score={self.total_score:.3f} rec={self.recommendation}>"
+        )

@@ -1,0 +1,150 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron's stock surged 84% in May, marking its best month since 1985 amid an AI-driven market rally.",
+      "why_it_matters": "Micron's significant price increase is driven by a fundamental shift towards AI applications in semiconductors. This momentum is likely to attract further investment and interest in the semiconductor sector, potentially benefiting related companies.",
+      "related_tickers": [
+        "AMD",
+        "KLAC"
+      ],
+      "sources": [
+        {
+          "title": "Micron's Best Month Since 1985 Powers A 9-Week S&P 500 Rally",
+          "url": "https://www.benzinga.com/markets/market-summary/26/05/52887979/micron-technology-best-month-since-1985-spx-sp-500-9-straight-week-rally?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        },
+        {
+          "title": "3 Stocks Rallying on Micron’s Price Boost: Substance or Hype?",
+          "url": "https://www.investing.com/analysis/3-stocks-rallying-on-microns-price-boost-substance-or-hype-200681172",
+          "publisher": "Investing.com"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "KLAC",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "KLA Corporation's stock insights highlight critical investor considerations amid semiconductor growth.",
+      "why_it_matters": "As semiconductor demand surges, KLA's insights may guide investors in navigating market volatility and identifying growth opportunities. The company's performance is closely tied to the broader semiconductor industry's trajectory.",
+      "related_tickers": [
+        "MU",
+        "AMAT"
+      ],
+      "sources": [
+        {
+          "title": "KLAC Stock Investors Need to See This",
+          "url": "https://www.fool.com/investing/2026/05/29/klac-stock-investors-need-to-see-this/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Qualcomm poised to benefit as ByteDance deploys millions of its custom AI processors.",
+      "why_it_matters": "Qualcomm's expansion into AI chips positions it as a key player in the growing AI market. This development could lead to increased revenue streams and market share, enhancing investor confidence in the company's future prospects.",
+      "related_tickers": [
+        "NVDA",
+        "AMD"
+      ],
+      "sources": [
+        {
+          "title": "This Sleeping Semiconductor Giant Will Be the Biggest Winner of the AI Inference Era",
+          "url": "https://www.fool.com/investing/2026/05/29/this-sleeping-semiconductor-giant-will-be-the-bigg/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "AMAT",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Applied Materials benefits from AI momentum as hedge funds increase positions in semiconductor stocks.",
+      "why_it_matters": "The growing interest in AI technologies is driving demand for semiconductor manufacturing equipment, which is a core business for Applied Materials. Increased investments from hedge funds signal confidence in the sector's growth potential.",
+      "related_tickers": [
+        "MU",
+        "KLAC"
+      ],
+      "sources": [
+        {
+          "title": "Broadcom Stock Attracts A Billionaire Buyer As AI Momentum Accelerates",
+          "url": "https://www.benzinga.com/markets/large-cap/26/05/52880329/broadcom-stock-attracts-a-billionaire-buyer-as-ai-momentum-accelerates?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MRVL",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Marvell Technology's stock pullback may present a buying opportunity amid strong AI positioning.",
+      "why_it_matters": "Despite recent pullbacks, Marvell's strong fundamentals and positioning in the AI ecosystem suggest potential for recovery and growth. Analysts remain optimistic, indicating that current prices may be attractive for long-term investors.",
+      "related_tickers": [
+        "MU",
+        "QCOM"
+      ],
+      "sources": [
+        {
+          "title": "Marvell’s Pullback May Be the Setup Bulls Were Waiting For",
+          "url": "https://www.investing.com/analysis/marvells-pullback-may-be-the-setup-bulls-were-waiting-for-200681186",
+          "publisher": "Investing.com"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "MP",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Critical minerals supply security gains attention with a $68 billion deposit in Greenland.",
+      "why_it_matters": "The focus on critical minerals is increasing as governments seek to secure supply chains for technology and energy transitions. While this may not directly impact MP's stock immediately, it highlights the growing importance of the sector.",
+      "related_tickers": [
+        "ETN",
+        "NEM"
+      ],
+      "sources": [
+        {
+          "title": "Inside The North Atlantic Critical Minerals Push: A $68 Billion Greenland Deposit Lands At The EU Raw Materials Summit",
+          "url": "https://www.benzinga.com/pressreleases/26/05/n52869454/inside-the-north-atlantic-critical-minerals-push-a-68-billion-greenland-deposit-lands-at-the-eu-ra?utm_source=benzinga_taxonomy&utm_medium=rss_feed_free&utm_content=taxonomy_rss&utm_campaign=channel",
+          "publisher": "Benzinga"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "ETN",
+      "category": "Other",
+      "importance": "low",
+      "headline": "Battery energy storage market projected to reach $198.8 billion by 2031, driven by utility investments.",
+      "why_it_matters": "The anticipated growth in the battery energy storage market reflects increasing investments in renewable energy and grid stability. While ETN may benefit from this trend, the impact on its stock may be gradual as the market evolves.",
+      "related_tickers": [
+        "MP",
+        "NEE"
+      ],
+      "sources": [
+        {
+          "title": "Battery Energy Storage System Market: $198.8 Bn by 2031",
+          "url": "https://www.globenewswire.com/news-release/2026/05/29/3303413/0/en/Battery-Energy-Storage-System-Market-198-8-Bn-by-2031-Fueled-by-On-Grid-Utility-Storage-and-North-America-Europe-Investments-Says-Mordor-Intelligence.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-05-30T01:44:44.212689+00:00",
+  "article_count": 10,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 7,
+  "shortfall_note": "Only 7 strong ticker group(s) found in the last 24h; generating 7 real block(s) instead of padding to 8."
+}

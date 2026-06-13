@@ -7,6 +7,7 @@ API endpoints (all return JSON):
     GET /api/event_types            - return the known event type list
     GET /api/bias                   - return the personal market-bias layer (if configured)
     GET /api/intelligence/latest    - return the newest LM Studio synthesis report
+    GET /api/discovery/tickers      - ticker discovery radar results
     GET /                           - serve the single-page dashboard HTML
 
 Query parameters for /api/brief:
@@ -34,6 +35,59 @@ from equity_intel.db.session import SessionLocal
 from equity_intel.logging_config import get_logger
 
 logger = get_logger(__name__)
+
+
+def _news_blocks_diagnostic() -> Dict[str, Any]:
+    """Return a small DB-backed diagnostic for the My Views news panel."""
+    try:
+        import datetime as _dt
+
+        from equity_intel.db.models import NewsArticle
+
+        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=24)
+        with SessionLocal() as session:
+            recent_count = (
+                session.query(NewsArticle)
+                .filter(NewsArticle.published_at >= cutoff)
+                .count()
+            )
+            latest = (
+                session.query(NewsArticle)
+                .filter(NewsArticle.published_at.isnot(None))
+                .order_by(NewsArticle.published_at.desc())
+                .first()
+            )
+
+        latest_ts = (
+            latest.published_at.isoformat()
+            if latest is not None and latest.published_at is not None
+            else None
+        )
+        if recent_count == 0:
+            message = (
+                "No 24-hour news found for the current watchlist. "
+                f"Last news article in database: {latest_ts or 'none'}. "
+                "Run the news ingestion step, then refresh."
+            )
+        else:
+            message = (
+                f"{recent_count} news article(s) found in the last 24 hours, "
+                "but no My Views news-block synthesis file exists yet. "
+                "Rerun the AI Portfolio launcher or run equity-synthesize-news-blocks manually."
+            )
+        return {
+            "recent_article_count": recent_count,
+            "latest_article_published_at": latest_ts,
+            "message": message,
+        }
+    except Exception as exc:
+        logger.warning("news_blocks_diagnostic_error", error=str(exc))
+        return {
+            "message": (
+                "No news-blocks synthesis found. Run run.bat (step 11b) "
+                "or equity-synthesize-news-blocks manually."
+            )
+        }
 
 # ------------------------------------------------------------------ #
 # Known event types                                                    #
@@ -120,13 +174,26 @@ _SUGGEST_SYSTEM = (
     "Min allocation 1%, max 30%. Reasoning must cite a catalyst or price signal."
 )
 
-_CAT_MAP: Dict[str, str] = {
-    "NVDA": "Chips", "AMD": "Chips", "AVGO": "Chips",
-    "MSFT": "Hyperscalers", "GOOGL": "Hyperscalers", "AMZN": "Hyperscalers",
-    "TSLA": "Robotics", "ISRG": "Robotics", "SYM": "Robotics",
-    "META": "Software", "PLTR": "Software", "AI": "Software",
-    "BOTZ": "ETFs", "ROBO": "ETFs",
-}
+def _load_cat_map() -> Dict[str, str]:
+    """
+    Load the ticker → category label map from config/ai_tickers.json via the
+    research_universe module.
+
+    Falls back to an empty dict so the dashboard continues to work even if the
+    config file is missing or unreadable.  Unknown tickers will render as '?'
+    in the AI suggestion context (unchanged from prior behaviour).
+    """
+    try:
+        from equity_intel.research_universe import get_ticker_category_map
+        return get_ticker_category_map()
+    except Exception as exc:
+        logger.warning("cat_map_load_failed", error=str(exc))
+        return {}
+
+
+# Populated at module load from config/ai_tickers.json; refreshed via
+# _load_cat_map() if callers need a fresh copy.  Unknown tickers → '?'.
+_CAT_MAP: Dict[str, str] = _load_cat_map()
 
 
 def _build_suggest_context(
@@ -395,6 +462,15 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
     def api_event_types():  # type: ignore[return]
         return jsonify({"event_types": KNOWN_EVENT_TYPES})
 
+    @app.route("/open-portfolio")
+    def open_portfolio():  # type: ignore[return]
+        """Open ai_portfolio.html in the default browser via OS shell."""
+        portfolio_path = Path(r"C:\Users\noleg\Desktop\Claude\Projects\AI Portfolio\ai_portfolio.html")
+        if portfolio_path.exists():
+            os.startfile(str(portfolio_path))
+            return jsonify({"status": "ok"})
+        return jsonify({"status": "error", "detail": "Portfolio file not found"}), 404
+
     @app.route("/api/bias")
     def api_bias():  # type: ignore[return]
         """
@@ -417,6 +493,429 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
                 ),
             }
         )
+
+
+    @app.route("/api/research_universe")
+    def api_research_universe():  # type: ignore[return]
+        """
+        Return the full research universe loaded from config/ai_tickers.json.
+
+        Read-only.  Includes every category, its tickers, and all available
+        ticker metadata (stage, conviction, thesis_tags, risk_tags, etc.).
+
+        Response shape::
+
+            {
+              "categories": {
+                "semiconductors_compute": {
+                  "note": "...",
+                  "label": "Semiconductors Compute",
+                  "tickers": [...]
+                },
+                ...
+              },
+              "ticker_metadata": {
+                "NVDA": {
+                  "ticker": "NVDA",
+                  "name": "...",
+                  "category": "semiconductors_compute",
+                  "category_label": "Semiconductors Compute",
+                  "stage": "core",
+                  ...
+                },
+                ...
+              },
+              "total_tickers": 42,
+              "note": "..."
+            }
+        """
+        try:
+            from equity_intel.research_universe import load_research_universe
+            universe = load_research_universe()
+            total = len(universe["ticker_metadata"])
+            return jsonify({
+                **universe,
+                "total_tickers": total,
+                "note": (
+                    "Research universe loaded from config/ai_tickers.json. "
+                    "This is the broad thesis-driven universe — it is NOT the active watchlist. "
+                    "The active watchlist is controlled by DEFAULT_TICKERS / DAILY_BRIEF_WATCHLIST in .env."
+                ),
+            })
+        except FileNotFoundError:
+            return jsonify({
+                "error": "config/ai_tickers.json not found.",
+                "categories": {},
+                "ticker_metadata": {},
+                "total_tickers": 0,
+            }), 404
+        except Exception as exc:
+            logger.error("research_universe_api_error", error=str(exc))
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/portfolio/config")
+    def api_portfolio_config():  # type: ignore[return]
+        """
+        Return the research universe filtered for AI Portfolio consumption.
+
+        Strips prohibited tickers and the bitcoin-miners category (crypto-adjacent).
+        Maps category keys to short display labels and assigns weights by conviction stage.
+
+        Response shape:
+            {
+              "tickers": [
+                {"ticker": "AMD", "name": "...", "category": "Chips", "category_key": "...",
+                 "stage": "core", "weight": 15},
+                ...
+              ],
+              "categories": ["Chips", "Chip Equip", ...],
+              "total": 28
+            }
+        """
+        _CAT_LABELS: dict = {
+            "semiconductors_compute":           "Chips",
+            "semiconductor_equipment":          "Chip Equip",
+            "cloud_hyperscalers":               "Hyperscalers",
+            "ai_software_platforms":            "AI Software",
+            "data_centers_reits":               "Data Centers",
+            "power_and_energy":                 "Power & Energy",
+            "networking_and_interconnect":      "Networking",
+            "memory_and_storage":               "Memory",
+            "critical_minerals_rare_earth":     "Critical Minerals",
+            "ai_infrastructure_replacements":   "AI Infra Replacements",
+            "trad_hedge":                       "Trad Hedge",
+        }
+        _SKIP_CATEGORIES: set = {"bitcoin_miners_data_center_angle"}
+        # "watch" stage = same weight as probe; normalization handles final %
+        _STAGE_WEIGHT: dict = {"core": 15, "established": 10, "probe": 5, "watch": 5}
+
+        # Market cap designation shown on portfolio cards next to category label
+        _CAP_MAP: dict = {
+            # Large Cap (>$10B)
+            "NVDA": "Large", "AMD": "Large", "AVGO": "Large", "INTC": "Large",
+            "QCOM": "Large", "MRVL": "Large", "ARM": "Large", "SMCI": "Large",
+            "MU": "Large", "ASML": "Large", "AMAT": "Large", "LRCX": "Large",
+            "KLAC": "Large", "ON": "Large", "MSFT": "Large", "GOOGL": "Large",
+            "AMZN": "Large", "META": "Large", "ORCL": "Large", "PLTR": "Large",
+            "SNOW": "Large", "DDOG": "Large", "NET": "Large", "MDB": "Large",
+            "PATH": "Large", "EQIX": "Large", "DLR": "Large", "IRM": "Large",
+            "CEG": "Large", "VRT": "Large", "VST": "Large", "NEE": "Large",
+            "NRG": "Large", "ETN": "Large", "FSLR": "Large", "ANET": "Large",
+            "CSCO": "Large", "WDC": "Large", "STX": "Large", "BAC": "Large",
+            "CI": "Large", "STT": "Large", "CTVA": "Large", "CL": "Large",
+            "HIG": "Large", "C": "Large",
+            # Mid Cap ($2B-$10B)
+            "POWL": "Mid", "CIEN": "Mid", "CORZ": "Mid", "MARA": "Mid",
+            "FLS": "Mid", "WLY": "Mid",
+            # Small Cap ($300M-$2B)
+            "INFN": "Small", "CLSK": "Small", "RIOT": "Small", "HUT": "Small",
+            "MP": "Small", "USAR": "Small", "UUUU": "Small", "WASH": "Small",
+            # Micro Cap (<$300M)
+            "AREC": "Micro", "UAMY": "Micro",
+        }
+
+        prohibited = set(settings.prohibited_tickers_list)
+
+        try:
+            from equity_intel.research_universe import load_research_universe
+            universe = load_research_universe()
+        except Exception as exc:
+            logger.error("portfolio_config_universe_error", error=str(exc))
+            # Fall back to default_tickers with no category metadata
+            fallback = [
+                {"ticker": t, "name": t, "category": "Tracked", "category_key": "tracked",
+                 "stage": "established", "weight": 10}
+                for t in settings.tickers_list if t not in prohibited
+            ]
+            return jsonify({"tickers": fallback, "categories": ["Tracked"], "total": len(fallback)})
+
+        result = []
+        seen_cats: list = []
+
+        for cat_key, cat_data in universe.get("categories", {}).items():
+            if cat_key in _SKIP_CATEGORIES:
+                continue
+            label = _CAT_LABELS.get(cat_key, cat_key.replace("_", " ").title())
+            for ticker_obj in cat_data.get("tickers", []):
+                if isinstance(ticker_obj, str):
+                    ticker, name, stage = ticker_obj, ticker_obj, "probe"
+                else:
+                    ticker = ticker_obj.get("ticker", "")
+                    name  = ticker_obj.get("name", ticker)
+                    stage = ticker_obj.get("stage", "probe")
+                if not ticker or ticker.upper() in prohibited:
+                    continue
+                if label not in seen_cats:
+                    seen_cats.append(label)
+                result.append({
+                    "ticker":       ticker.upper(),
+                    "name":         name,
+                    "category":     label,
+                    "category_key": cat_key,
+                    "stage":        stage,
+                    "weight":       _STAGE_WEIGHT.get(stage, 5),
+                    "cap":          _CAP_MAP.get(ticker.upper(), ""),
+                })
+
+        return jsonify({"tickers": result, "categories": seen_cats, "total": len(result)})
+
+    # ── Rebalancing ────────────────────────────────────────────────────────────
+
+    def _build_alpaca_adapter():
+        """Instantiate AlpacaBrokerAdapter from env settings. Raises on missing keys."""
+        from equity_intel.trading.alpaca_adapter import AlpacaBrokerAdapter
+        api_key    = getattr(settings, "alpaca_api_key", None) or ""
+        secret_key = getattr(settings, "alpaca_secret_key", None) or ""
+        paper      = getattr(settings, "alpaca_paper", True)
+        if not api_key or not secret_key:
+            raise ValueError("ALPACA_API_KEY / ALPACA_SECRET_KEY not set in .env")
+        return AlpacaBrokerAdapter(api_key=api_key, secret_key=secret_key, paper=paper)
+
+    def _normalize_cat_weights(portfolio_tickers):
+        """
+        Replicate the JS catWeights() logic server-side.
+        Trad Hedge pinned to 5%; remainder distributed proportionally.
+        """
+        raw: dict = {}
+        for t in portfolio_tickers:
+            cat = t.get("category", "")
+            raw[cat] = raw.get(cat, 0) + t.get("weight", 5)
+
+        trad_key = next(
+            (k for k in raw if "trad" in k.lower() and "hedge" in k.lower()), None
+        )
+        if not trad_key or len(raw) <= 1:
+            total = sum(raw.values()) or 1
+            return {k: round(v / total * 100, 2) for k, v in raw.items()}
+
+        TRAD_PCT = 5.0
+        others = {k: v for k, v in raw.items() if k != trad_key}
+        others_sum = sum(others.values()) or 1
+        remaining = 100.0 - TRAD_PCT
+        result = {trad_key: TRAD_PCT}
+        for k, v in others.items():
+            result[k] = round(v / others_sum * remaining, 2)
+        return result
+
+    @app.route("/api/rebalance/preview")
+    def api_rebalance_preview():  # type: ignore[return]
+        """
+        Compute a rebalance plan without executing any orders.
+
+        Query params:
+            buy_threshold_pct   float  (default 5.0)  — min underweight gap to queue a buy
+            sell_threshold_pct  float  (default 10.0) — min overweight gap to trigger a trim
+            account_value       float  (optional override of live equity)
+
+        Returns the full rebalance plan dict.
+        This endpoint is always safe — it NEVER submits orders to Alpaca.
+        """
+        try:
+            adapter = _build_alpaca_adapter()
+        except ValueError as exc:
+            return jsonify({"error": str(exc), "dry_run": True}), 400
+        except Exception as exc:
+            logger.error("rebalance_adapter_error", error=str(exc))
+            return jsonify({"error": f"Alpaca adapter init failed: {exc}", "dry_run": True}), 500
+
+        try:
+            from equity_intel.research_universe import load_research_universe
+            universe = load_research_universe()
+        except Exception as exc:
+            logger.error("rebalance_universe_error", error=str(exc))
+            return jsonify({"error": f"Research universe load failed: {exc}", "dry_run": True}), 500
+
+        # Build the same filtered ticker list as /api/portfolio/config
+        _CAT_LABELS: dict = {
+            "semiconductors_compute":           "Chips",
+            "semiconductor_equipment":          "Chip Equip",
+            "cloud_hyperscalers":               "Hyperscalers",
+            "ai_software_platforms":            "AI Software",
+            "data_centers_reits":               "Data Centers",
+            "power_and_energy":                 "Power & Energy",
+            "networking_and_interconnect":      "Networking",
+            "memory_and_storage":               "Memory",
+            "critical_minerals_rare_earth":     "Critical Minerals",
+            "ai_infrastructure_replacements":   "AI Infra Replacements",
+            "trad_hedge":                       "Trad Hedge",
+        }
+        _SKIP = {"bitcoin_miners_data_center_angle"}
+        _STAGE_W = {"core": 15, "established": 10, "probe": 5, "watch": 5}
+        prohibited = set(settings.prohibited_tickers_list)
+
+        portfolio_tickers = []
+        for cat_key, cat_data in universe.get("categories", {}).items():
+            if cat_key in _SKIP:
+                continue
+            label = _CAT_LABELS.get(cat_key, cat_key.replace("_", " ").title())
+            for entry in cat_data.get("tickers", []):
+                if not isinstance(entry, dict):
+                    continue
+                ticker = (entry.get("ticker") or "").strip().upper()
+                if not ticker or ticker in prohibited:
+                    continue
+                portfolio_tickers.append({
+                    "ticker":   ticker,
+                    "name":     entry.get("name", ticker),
+                    "category": label,
+                    "stage":    entry.get("stage", "probe"),
+                    "weight":   _STAGE_W.get(entry.get("stage", "probe"), 5),
+                })
+
+        cat_weights = _normalize_cat_weights(portfolio_tickers)
+
+        buy_threshold  = float(request.args.get("buy_threshold_pct", 5.0))
+        sell_threshold = float(request.args.get("sell_threshold_pct", 10.0))
+        pause_sells    = request.args.get("pause_sell_side", "").lower() in ("1", "true", "yes")
+        acct_val       = request.args.get("account_value")
+        acct_val       = float(acct_val) if acct_val else None
+
+        from equity_intel.trading.rebalance import build_rebalance_plan
+        plan = build_rebalance_plan(
+            portfolio_tickers=portfolio_tickers,
+            category_weights_pct=cat_weights,
+            adapter=adapter,
+            account_value=acct_val,
+            buy_threshold_pct=buy_threshold,
+            sell_threshold_pct=sell_threshold,
+            pause_sell_side=pause_sells,
+            dry_run=True,
+        )
+        return jsonify(plan)
+
+    @app.route("/api/rebalance/execute", methods=["POST"])
+    def api_rebalance_execute():  # type: ignore[return]
+        """
+        Execute a rebalance plan. Requires TRADING_EXECUTION_ENABLED=True.
+
+        Body (JSON): { "buy_threshold_pct": 5.0, "sell_threshold_pct": 10.0, "pause_sell_side": false, "account_value": null }
+
+        This endpoint submits real orders to Alpaca.
+        TRADING_EXECUTION_ENABLED must be True in .env or the request is rejected.
+        """
+        if not getattr(settings, "trading_execution_enabled", False):
+            return jsonify({
+                "error": "TRADING_EXECUTION_ENABLED is False. Set it to True in .env to allow order execution.",
+                "dry_run": False,
+            }), 403
+
+        try:
+            adapter = _build_alpaca_adapter()
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        except Exception as exc:
+            return jsonify({"error": f"Alpaca adapter init failed: {exc}"}), 500
+
+        body = request.get_json(silent=True) or {}
+        buy_threshold  = float(body.get("buy_threshold_pct", 5.0))
+        sell_threshold = float(body.get("sell_threshold_pct", 10.0))
+        pause_sells    = bool(body.get("pause_sell_side", False))
+        acct_val       = body.get("account_value")
+        acct_val       = float(acct_val) if acct_val else None
+
+        try:
+            from equity_intel.research_universe import load_research_universe
+            universe = load_research_universe()
+        except Exception as exc:
+            return jsonify({"error": f"Research universe load failed: {exc}"}), 500
+
+        _CAT_LABELS: dict = {
+            "semiconductors_compute":           "Chips",
+            "semiconductor_equipment":          "Chip Equip",
+            "cloud_hyperscalers":               "Hyperscalers",
+            "ai_software_platforms":            "AI Software",
+            "data_centers_reits":               "Data Centers",
+            "power_and_energy":                 "Power & Energy",
+            "networking_and_interconnect":      "Networking",
+            "memory_and_storage":               "Memory",
+            "critical_minerals_rare_earth":     "Critical Minerals",
+            "ai_infrastructure_replacements":   "AI Infra Replacements",
+            "trad_hedge":                       "Trad Hedge",
+        }
+        _SKIP = {"bitcoin_miners_data_center_angle"}
+        _STAGE_W = {"core": 15, "established": 10, "probe": 5, "watch": 5}
+        prohibited = set(settings.prohibited_tickers_list)
+
+        portfolio_tickers = []
+        for cat_key, cat_data in universe.get("categories", {}).items():
+            if cat_key in _SKIP:
+                continue
+            label = _CAT_LABELS.get(cat_key, cat_key.replace("_", " ").title())
+            for entry in cat_data.get("tickers", []):
+                if not isinstance(entry, dict):
+                    continue
+                ticker = (entry.get("ticker") or "").strip().upper()
+                if not ticker or ticker in prohibited:
+                    continue
+                portfolio_tickers.append({
+                    "ticker":   ticker,
+                    "name":     entry.get("name", ticker),
+                    "category": label,
+                    "stage":    entry.get("stage", "probe"),
+                    "weight":   _STAGE_W.get(entry.get("stage", "probe"), 5),
+                })
+
+        cat_weights = _normalize_cat_weights(portfolio_tickers)
+
+        from equity_intel.trading.rebalance import build_rebalance_plan
+        plan = build_rebalance_plan(
+            portfolio_tickers=portfolio_tickers,
+            category_weights_pct=cat_weights,
+            adapter=adapter,
+            account_value=acct_val,
+            buy_threshold_pct=buy_threshold,
+            sell_threshold_pct=sell_threshold,
+            pause_sell_side=pause_sells,
+            dry_run=False,
+        )
+        return jsonify(plan)
+
+    @app.route("/api/news-blocks/latest")
+    def api_news_blocks_latest():  # type: ignore[return]
+        """
+        Return the newest 24h news-blocks synthesis from intelligence/.
+
+        Only selects ``news_blocks_*.json`` files produced by
+        equity-synthesize-news-blocks.  Returns a diagnostic payload when
+        no file exists so the My Views tab can render a useful message.
+
+        This endpoint returns AI-generated analysis for research purposes only.
+        It is NOT an execution instruction and must not be connected to any
+        trading or order-management system.
+        """
+        intel_dir = _intelligence_dir()
+
+        if not intel_dir.exists():
+            diag = _news_blocks_diagnostic()
+            return jsonify({
+                "available": False,
+                **diag,
+            })
+
+        candidates = sorted(
+            intel_dir.glob("news_blocks_*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+
+        if not candidates:
+            diag = _news_blocks_diagnostic()
+            return jsonify({
+                "available": False,
+                **diag,
+            })
+
+        json_path = candidates[0]
+        try:
+            data = json.loads(json_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.error("news_blocks_parse_error", path=str(json_path), error=str(exc))
+            return jsonify({
+                "available": False,
+                "message": f"news_blocks file exists but could not be parsed: {exc}",
+            })
+
+        return jsonify(data)
 
     @app.route("/api/intelligence/latest")
     def api_intelligence_latest():  # type: ignore[return]
@@ -729,4 +1228,204 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
 
         openai_key = os.environ.get("OPENAI_API_KEY") or getattr(settings, "openai_api_key", None)
         if not openai_key:
-            return jsonify({"error": "OPENAI_API_KEY not configured. Add it to your .env file."}), 5
+            return jsonify({"error": "OPENAI_API_KEY not configured. Add it to your .env file."}), 503
+
+        raw_tickers = request.args.get("tickers", "").strip()
+        ticker_list = (
+            [t.strip().upper() for t in raw_tickers.split(",") if t.strip()]
+            if raw_tickers
+            else settings.tickers_list
+        )
+        try:
+            days = int(request.args.get("days", 3))
+        except (ValueError, TypeError):
+            days = 3
+
+        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=days)
+
+        session = SessionLocal()
+        try:
+            articles = (
+                session.query(NewsArticle)
+                .filter(
+                    NewsArticle.ticker.in_(ticker_list),
+                    NewsArticle.published_at >= cutoff,
+                )
+                .order_by(NewsArticle.published_at.desc())
+                .limit(300)
+                .all()
+            )
+        except Exception as exc:
+            logger.error("news_brief_db_error", error=str(exc))
+            return jsonify({"error": str(exc)}), 500
+        finally:
+            session.close()
+
+        # Group by ticker — top 5 headlines each
+        by_ticker: dict = {}
+        for a in articles:
+            t = a.ticker or ""
+            if t not in by_ticker:
+                by_ticker[t] = []
+            if len(by_ticker[t]) < 5:
+                by_ticker[t].append(
+                    f"[{a.publisher or 'news'}] {a.title or ''}"
+                    + (f" — {(a.summary or '')[:120]}" if a.summary else "")
+                )
+
+        if not by_ticker:
+            return jsonify({
+                "signals": {
+                    t: "No recent news in database — run sync_news to pull latest."
+                    for t in ticker_list
+                },
+                "model": "none",
+                "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+            })
+
+        news_block = ""
+        for ticker, headlines in by_ticker.items():
+            news_block += f"\n{ticker}:\n" + "\n".join(f"  • {h}" for h in headlines) + "\n"
+
+        system_prompt = (
+            "You are a financial news analyst. For each stock ticker below, write exactly one "
+            "concise sentence (max 110 chars) summarizing the most market-relevant signal from "
+            "the recent headlines. Focus on earnings, guidance, M&A, products, regulatory, or "
+            "management events. If no significant news, say 'No major catalysts in this window.' "
+            'Output ONLY valid JSON: {"TICKER": "signal sentence", ...} — no markdown, no extra keys.'
+        )
+
+        try:
+            import openai as _openai
+            client = _openai.OpenAI(api_key=openai_key)
+            resp = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Recent news headlines:{news_block}"},
+                ],
+                temperature=0.2,
+                max_tokens=600,
+                timeout=30,
+            )
+            raw_json = (resp.choices[0].message.content or "{}").strip()
+            if raw_json.startswith("```"):
+                raw_json = raw_json.split("\n", 1)[-1].rsplit("```", 1)[0]
+            signals = _json.loads(raw_json)
+        except Exception as exc:
+            logger.error("news_brief_openai_error", error=str(exc))
+            return jsonify({"error": f"OpenAI error: {exc}"}), 500
+
+        for t in ticker_list:
+            if t not in signals:
+                signals[t] = "No recent news in database for this ticker."
+
+        return jsonify({
+            "signals": signals,
+            "model": "gpt-4o-mini",
+            "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        })
+
+
+    # ---------------------------------------------------------------- #
+    # Discovery Radar API                                               #
+    # ---------------------------------------------------------------- #
+
+    @app.route("/api/discovery/tickers")
+    def api_discovery_tickers():
+        """
+        Return weekly discovery scores for candidate tickers.
+
+        Query params: week, min_score, rec, limit
+        """
+        import datetime as _dt
+        from equity_intel.db.models import TickerDiscoveryScore
+
+        now = _dt.datetime.now(_dt.timezone.utc)
+        iso = now.isocalendar()
+        default_week = f"{iso[0]}-W{iso[1]:02d}"
+        week_key = request.args.get("week", default_week)
+
+        try:
+            min_score = float(request.args.get("min_score", 0.0))
+        except ValueError:
+            min_score = 0.0
+        try:
+            limit = min(200, max(1, int(request.args.get("limit", 50))))
+        except ValueError:
+            limit = 50
+        rec_filter = request.args.get("rec", None)
+
+        prohibited_set = {
+            t.strip().upper()
+            for t in settings.prohibited_tickers.split(",") if t.strip()
+        }
+        trad_hedge_set = {
+            t.strip().upper()
+            for t in settings.trad_hedge_tickers.split(",") if t.strip()
+        }
+
+        try:
+            with SessionLocal() as session:
+                q = (
+                    session.query(TickerDiscoveryScore)
+                    .filter(
+                        TickerDiscoveryScore.week_key == week_key,
+                        TickerDiscoveryScore.total_score >= min_score,
+                    )
+                )
+                if rec_filter:
+                    q = q.filter(TickerDiscoveryScore.recommendation == rec_filter)
+                rows = (
+                    q.order_by(TickerDiscoveryScore.total_score.desc())
+                    .limit(limit)
+                    .all()
+                )
+
+                items = []
+                for row in rows:
+                    items.append({
+                        "ticker": row.ticker,
+                        "week_key": row.week_key,
+                        "total_score": round(row.total_score, 4),
+                        "mention_count": row.mention_count,
+                        "unique_source_count": row.unique_source_count,
+                        "unique_source_ticker_count": row.unique_source_ticker_count,
+                        "prior_week_count": row.prior_week_count,
+                        "four_week_avg": round(row.four_week_avg, 2),
+                        "acceleration_score": round(row.acceleration_score, 4),
+                        "mention_volume_score": round(row.mention_volume_score, 4),
+                        "source_quality_score": round(row.source_quality_score, 4),
+                        "breadth_score": round(row.breadth_score, 4),
+                        "novelty_score": round(row.novelty_score, 4),
+                        "recommendation": row.recommendation,
+                        "exclusion_flag": row.exclusion_flag,
+                        "is_prohibited": row.ticker in prohibited_set,
+                        "is_trad_hedge": row.ticker in trad_hedge_set,
+                        "evidence": row.evidence_json or [],
+                    })
+
+                return jsonify({
+                    "week_key": week_key,
+                    "total_candidates": len(items),
+                    "probe_candidates": sum(
+                        1 for i in items if i["recommendation"] == "probe_candidate"
+                    ),
+                    "tickers": items,
+                })
+        except Exception as exc:
+            logger.error("discovery_api_error", error=str(exc))
+            return jsonify({"error": str(exc), "tickers": []}), 500
+
+    # ---------------------------------------------------------------- #
+    # CORS — allow ai_portfolio.html (file:// or any local origin)     #
+    # ---------------------------------------------------------------- #
+
+    @app.after_request
+    def add_cors_headers(response):  # type: ignore[return]
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        return response
+
+    return app

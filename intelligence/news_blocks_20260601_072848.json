@@ -1,0 +1,93 @@
+{
+  "available": true,
+  "blocks": [
+    {
+      "ticker": "MU",
+      "category": "Other",
+      "importance": "high",
+      "headline": "Micron Technology could secure government investment similar to Intel's CHIPS Act funding.",
+      "why_it_matters": "This potential government investment represents a significant catalyst for Micron, enhancing its financial stability and growth prospects in the AI semiconductor market. Such backing could lead to increased production capabilities and market share, especially amid rising demand for memory chips.",
+      "related_tickers": [
+        "INTC",
+        "AVGO"
+      ],
+      "sources": [
+        {
+          "title": "Prediction: After Intel, This Artificial Intelligence (AI) Semiconductor Stock Could be Next to Secure an Investment From the Trump Administration",
+          "url": "https://www.fool.com/investing/2026/06/01/prediction-after-intel-this-artificial-intelligenc/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        },
+        {
+          "title": "Are Micron and Sandisk Stocks in a Bubble?",
+          "url": "https://www.fool.com/investing/2026/05/31/are-micron-and-sandisk-stocks-in-a-bubble/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "CSCO",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Cisco's innovations in AI storage processing enhance security for agentic AI systems.",
+      "why_it_matters": "Cisco's advancements in AI storage processing could strengthen its competitive position in the tech sector, particularly in security solutions for AI applications. This innovation may attract new clients and partnerships, boosting revenue potential in a rapidly evolving market.",
+      "related_tickers": [
+        "NVDA",
+        "QCOM"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA Vera BlueField-4 STX Brings Agentic AI Storage Processing With In-Silicon Security",
+          "url": "https://www.globenewswire.com/news-release/2026/06/01/3303980/0/en/NVIDIA-Vera-BlueField-4-STX-Brings-Agentic-AI-Storage-Processing-With-In-Silicon-Security.html",
+          "publisher": "GlobeNewswire Inc."
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "QCOM",
+      "category": "Other",
+      "importance": "medium",
+      "headline": "Qualcomm's stock may be influenced by Nvidia's announcements at COMPUTEX 2026.",
+      "why_it_matters": "Nvidia's keynote at COMPUTEX could set the tone for the semiconductor industry, impacting Qualcomm's market sentiment and stock performance. Innovations announced by Nvidia may lead to increased competition or collaboration opportunities, affecting Qualcomm's strategic positioning.",
+      "related_tickers": [
+        "NVDA",
+        "MU"
+      ],
+      "sources": [
+        {
+          "title": "Will Nvidia Stock Rise During June 1 to June 4 From CEO Jensen Huang's Participation in COMPUTEX 2026?",
+          "url": "https://www.fool.com/investing/2026/05/31/nvda-stock-jensen-huang-keynote-computex/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    },
+    {
+      "ticker": "NEE",
+      "category": "Other",
+      "importance": "high",
+      "headline": "NextEra Energy's merger with Dominion Energy aims to create the largest regulated electric utility.",
+      "why_it_matters": "The merger between NextEra and Dominion Energy is a significant catalyst that could reshape the energy sector, enhancing NextEra's market dominance and operational efficiencies. This strategic move is expected to drive growth and improve service offerings, appealing to investors focused on sustainable energy.",
+      "related_tickers": [
+        "D",
+        "XOM"
+      ],
+      "sources": [
+        {
+          "title": "This Is the First Energy Stock I Plan to Buy in June (Hint: It's Not ExxonMobil)",
+          "url": "https://www.fool.com/investing/2026/05/31/this-is-the-first-energy-stock-i-plan-to-buy-in-ju/?source=iedfolrf0000001",
+          "publisher": "The Motley Fool"
+        }
+      ],
+      "window_hours": 24
+    }
+  ],
+  "generated_at": "2026-06-01T11:28:48.766304+00:00",
+  "article_count": 7,
+  "window_hours": 24,
+  "model_used": "gpt-4o-mini",
+  "requested_blocks": 8,
+  "target_blocks": 4,
+  "shortfall_note": "Only 4 strong ticker group(s) found in the last 24h; generating 4 real block(s) instead of padding to 8."
+}
