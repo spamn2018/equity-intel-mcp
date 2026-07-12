@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "cloudflare-pages-site/**"
+      - "docs/**"
       - ".github/workflows/deploy-github-pages.yml"
   workflow_dispatch:
 
@@ -31,11 +32,13 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./cloudflare-pages-site
+          path: ./docs
 
       - name: Deploy to GitHub Pages
         id: deployment
