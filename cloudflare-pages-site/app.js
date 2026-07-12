@@ -23,7 +23,8 @@
     swingChart: document.getElementById("swingChart"),
     benchmarkStats: document.getElementById("benchmarkStats"),
     benchmarkMeta: document.getElementById("benchmarkMeta"),
-    reportLog: document.getElementById("reportLog"),
+    reportSummary: document.getElementById("reportSummary"),
+    reportExamples: document.getElementById("reportExamples"),
     liveBadges: document.getElementById("liveBadges"),
     liveMeta: document.getElementById("liveMeta"),
     openOrders: document.getElementById("openOrders"),
@@ -110,14 +111,95 @@
       .join("");
   }
 
-  function setLog(target, lines, emptyText) {
-    if (!lines || !lines.length) {
-      target.className = "log-box empty-state";
-      target.textContent = emptyText;
+  function formatDateTimeET(value) {
+    if (!value) return "n/a";
+    const normalized = /z$/i.test(value) || /[+-]\d\d:\d\d$/.test(value)
+      ? value
+      : value + "Z";
+    const date = new Date(normalized);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date) + " ET";
+  }
+
+  function renderReport(targetSummary, targetExamples, report) {
+    const buy = (report.sides || {}).buy || {};
+    const sell = (report.sides || {}).sell || {};
+    const benchmark = report.benchmark || {};
+    const summaryCards = [
+      {
+        title: "Configured Strategy",
+        stat: report.modeLabel || "swing",
+        tone: "neutral",
+        copy: report.modeCopy || "This comes from the backend config, not a page toggle."
+      },
+      {
+        title: "Buy Outcomes",
+        stat: formatPct(buy.avg_net_return_pct),
+        tone: toneClass(buy.avg_net_return_pct),
+        copy: `${buy.count || 0} rows · ${formatPct(buy.win_rate_pct, 1)} win rate · median ${formatPct(buy.median_net_return_pct)}`
+      },
+      {
+        title: "Sell Outcomes",
+        stat: formatPct(sell.avg_net_return_pct),
+        tone: toneClass(sell.avg_net_return_pct),
+        copy: `${sell.count || 0} rows · ${formatPct(sell.win_rate_pct, 1)} win rate · median ${formatPct(sell.median_net_return_pct)}`
+      },
+      {
+        title: "Benchmark Read",
+        stat: benchmark.available ? formatPct(benchmark.alpha_per_trade_pct) : "n/a",
+        tone: toneClass(benchmark.alpha_per_trade_pct),
+        copy: benchmark.available
+          ? `SPY ${formatPct(benchmark.return_pct)} over ${benchmark.start_date} to ${benchmark.end_date}`
+          : (benchmark.message || "Benchmark unavailable.")
+      }
+    ];
+
+    targetSummary.className = "report-grid";
+    targetSummary.innerHTML = summaryCards.map((item) => `
+      <div class="report-card">
+        <div class="report-card-head">
+          <div class="report-card-title">${esc(item.title)}</div>
+          <div class="report-card-stat ${item.tone}">${esc(item.stat)}</div>
+        </div>
+        <div class="report-card-copy">${esc(item.copy)}</div>
+      </div>
+    `).join("");
+
+    const examples = [
+      ...(buy.example_rows || []).slice(0, 3).map((item) => ({ ...item, group: "Buy" })),
+      ...(sell.example_rows || []).slice(0, 3).map((item) => ({ ...item, group: "Sell" }))
+    ];
+
+    if (!examples.length) {
+      targetExamples.className = "report-examples empty-state";
+      targetExamples.textContent = "No example trades yet.";
       return;
     }
-    target.className = "log-box";
-    target.textContent = lines.join("\n");
+
+    targetExamples.className = "report-examples";
+    targetExamples.innerHTML = examples.map((item) => `
+      <article class="trade-card">
+        <div class="trade-card-head">
+          <div class="trade-card-title">${esc(item.ticker || "?")} ${esc((item.signal_side || "").toUpperCase())}</div>
+          <div class="trade-card-return ${toneClass(item.net_return_pct)}">${esc(formatPct(item.net_return_pct))}</div>
+        </div>
+        <div class="trade-card-meta">
+          <div><span class="trade-card-badge">${esc(item.group)} example</span></div>
+          <div>Session: ${esc(item.session_date || "n/a")}</div>
+          <div>Entry: ${esc(formatDateTimeET(item.entry_timestamp))} at ${esc(formatMoney(item.entry_price))}</div>
+          <div>Exit: ${esc(formatDateTimeET(item.exit_timestamp))} at ${esc(formatMoney(item.exit_price))}</div>
+          <div>Outcome: ${esc(item.win_loss || "n/a")}${item.flag ? ` · ${esc(item.flag)}` : ""}</div>
+        </div>
+      </article>
+    `).join("");
   }
 
   function renderChart(target, points, color) {
@@ -192,7 +274,9 @@
     elements.lastRefreshLabel.textContent = data.generated_at
       ? new Date(data.generated_at).toLocaleString()
       : new Date().toLocaleString();
-    elements.modeLabel.textContent = mode.holding_style_label || "Unknown";
+    elements.modeLabel.textContent = mode.holding_style_label
+      ? `${mode.holding_style_label} (configured)`
+      : "Unknown";
 
     elements.brokerEquity.textContent = formatMoney(live.account_equity);
     elements.brokerEquityNote.textContent = broker.available
@@ -299,7 +383,7 @@
     elements.scoreSwingNote.textContent = `${formatPct(swing5.win_rate_pct, 1)} win rate · latest ${swing5.latest_computed_at || "n/a"}`;
 
     setMetaRow(elements.backtestMeta, [
-      `primary lens ${mode.primary_backtest === "same_day" ? "same-day" : "swing"}`,
+      `configured lens ${mode.primary_backtest === "same_day" ? "same-day" : "swing"}`,
       `holding style ${mode.holding_style_label || "n/a"}`,
       `${(data.signal_generation || {}).directional_signal_count || 0} directional signals`,
       `gross avg ${formatPct(sameDay.avg_gross_return_pct)}`
@@ -348,11 +432,13 @@
       ]);
     }
 
-    setLog(
-      elements.reportLog,
-      sameDayReport.log_lines || [],
-      "No same-day report log yet."
-    );
+    renderReport(elements.reportSummary, elements.reportExamples, {
+      ...sameDayReport,
+      modeLabel: mode.holding_style_label || "swing",
+      modeCopy: mode.day_trade_mode
+        ? "Backend is configured for day-trade execution, so same-day is the primary operating lens."
+        : "Backend is configured for swing execution, so the page shows swing as the current operating mode while still keeping same-day results visible."
+    });
 
     setList(
       elements.signals,

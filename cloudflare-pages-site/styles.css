@@ -336,6 +336,90 @@ h1 {
   line-height: 1.45;
 }
 
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.report-card {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(17, 34, 53, 0.58);
+  border: 1px solid rgba(158, 188, 218, 0.08);
+}
+
+.report-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.report-card-title {
+  font-size: 0.96rem;
+}
+
+.report-card-stat {
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+}
+
+.report-card-copy {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.report-examples {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.trade-card {
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(21, 43, 67, 0.42), rgba(9, 17, 28, 0.72));
+  border: 1px solid rgba(158, 188, 218, 0.08);
+}
+
+.trade-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.trade-card-title {
+  font-size: 0.95rem;
+}
+
+.trade-card-return {
+  font-size: 1rem;
+}
+
+.trade-card-meta {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.trade-card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.72rem;
+  border: 1px solid var(--border);
+  background: rgba(17, 34, 53, 0.8);
+}
+
 .list-wrap {
   display: flex;
   flex-direction: column;
@@ -424,20 +508,6 @@ code {
   font-size: 0.9em;
 }
 
-.log-box {
-  min-height: 220px;
-  margin: 0;
-  border-radius: 18px;
-  padding: 14px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: Consolas, monospace;
-  font-size: 0.84rem;
-  line-height: 1.6;
-  background: linear-gradient(180deg, rgba(21, 43, 67, 0.3), rgba(9, 17, 28, 0.56));
-  border: 1px solid rgba(158, 188, 218, 0.08);
-}
-
 @media (max-width: 1080px) {
   .stats-grid,
   .chart-grid,
@@ -448,6 +518,11 @@ code {
   }
 
   .benchmark-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-grid,
+  .report-examples {
     grid-template-columns: 1fr;
   }
 
