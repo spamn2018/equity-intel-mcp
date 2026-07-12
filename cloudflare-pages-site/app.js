@@ -205,12 +205,6 @@
     const sellLabels = describeSignalSide("sell");
     const summaryCards = [
       {
-        title: "Configured Strategy",
-        stat: report.modeLabel || "swing",
-        tone: "neutral",
-        copy: report.modeCopy || "This comes from the backend config, not a page toggle."
-      },
-      {
         title: buyLabels.summaryTitle,
         stat: formatPct(buy.avg_net_return_pct),
         tone: toneClass(buy.avg_net_return_pct),
@@ -343,10 +337,10 @@
 
     elements.apiBaseLabel.textContent = sourceLabel || "Bundled snapshot";
     elements.lastRefreshLabel.textContent = data.generated_at
-      ? new Date(data.generated_at).toLocaleString()
-      : new Date().toLocaleString();
+      ? formatDateTimeET(data.generated_at)
+      : formatDateTimeET(new Date().toISOString());
     elements.modeLabel.textContent = mode.holding_style_label
-      ? `${mode.holding_style_label} (configured)`
+      ? mode.holding_style_label
       : "Unknown";
 
     elements.brokerEquity.textContent = formatMoney(live.account_equity);
