@@ -23,8 +23,22 @@ It is designed for a free Cloudflare Pages deployment and reads live data from a
 
 You can also prefill the URL by editing `config.js` before deploy.
 
-## Notes
+## Automatic updates from GitHub
 
+Use Cloudflare Pages Git integration instead of a GitHub Actions deploy.
+
+Recommended setup:
+
+1. In Cloudflare Pages, choose `Connect to Git`.
+2. Select the repository `spamn2018/equity-intel-mcp`.
+3. Set the production branch to `main`.
+4. Set the root directory to `cloudflare-pages-site`.
+5. Leave the build command blank.
+6. Set the output directory to `.`.
+
+After that, every push to `main` that changes files under `cloudflare-pages-site/` will redeploy the site automatically.
+
+## Notes
 
 - The backend must be reachable from the public internet.
 - The backend must allow CORS for the Pages domain. Your current Flask app already sends `Access-Control-Allow-Origin: *`.
@@ -34,8 +48,3 @@ You can also prefill the URL by editing `config.js` before deploy.
 
 - Static HTML: https://developers.cloudflare.com/pages/framework-guides/deploy-anything/
 - Direct Upload: https://developers.cloudflare.com/pages/get-started/direct-upload/
-
-
-## Automatic updates
-
-To make the site redeploy automatically, connect this repository to Cloudflare Pages Git integration or add a GitHub Actions deploy workflow using a token that includes the `workflow` scope.

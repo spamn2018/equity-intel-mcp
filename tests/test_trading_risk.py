@@ -5,6 +5,8 @@ All broker interactions are mocked. No real Alpaca calls are made.
 """
 from __future__ import annotations
 
+import datetime
+
 import pytest
 from unittest.mock import MagicMock, patch
 from sqlalchemy import create_engine
@@ -31,7 +33,10 @@ class _Cfg:
     trading_min_signal_strength = 0.70
     trading_max_position_pct = 5.0
     trading_max_order_notional = 500.0
-    trading_max_spread_pct = 1.0
+    trading_allow_shorts = False
+    trading_regular_hours_only = False
+    trading_regular_hours_open_et = "09:30"
+    trading_regular_hours_close_et = "15:55"
     # orders are always limit+day+notional (fractional enabled by default)
 
 
@@ -99,6 +104,30 @@ def test_execution_disabled_blocks(db_session):
     assert any("TRADING_EXECUTION_ENABLED" in r for r in result["reasons"])
 
 
+def test_regular_hours_gate_blocks_weekend_or_after_hours(db_session):
+    cfg = _Cfg()
+    cfg.trading_regular_hours_only = True
+    sig = _make_signal(status="approved")
+    db_session.add(sig); db_session.flush()
+    broker = _make_broker()
+    saturday_utc = datetime.datetime(2026, 7, 4, 15, 0, tzinfo=datetime.timezone.utc)
+    result = evaluate_signal_for_execution(db_session, sig, broker, cfg, now_utc=saturday_utc)
+    assert not result["allowed"]
+    assert result["retriable"] is True
+    assert any("regular-hours gate" in r for r in result["reasons"])
+
+
+def test_regular_hours_gate_can_be_disabled(db_session):
+    cfg = _Cfg()
+    cfg.trading_regular_hours_only = False
+    sig = _make_signal(status="approved", strength=0.80)
+    db_session.add(sig); db_session.flush()
+    broker = _make_broker()
+    saturday_utc = datetime.datetime(2026, 7, 4, 15, 0, tzinfo=datetime.timezone.utc)
+    result = evaluate_signal_for_execution(db_session, sig, broker, cfg, now_utc=saturday_utc)
+    assert result["allowed"]
+
+
 # ── Test 2: TRADING_REQUIRE_APPROVAL=True blocks unapproved signals ───────────
 
 def test_require_approval_blocks_generated(db_session):
@@ -132,16 +161,17 @@ def test_monitor_side_not_executable(db_session):
     assert any("not executable" in r for r in result["reasons"])
 
 
-# ── Test 4: Wide spread blocks execution ──────────────────────────────────────
+# ── Test 4: Wide spread does NOT block ──────────────────────────────────────
 
-def test_wide_spread_blocks(db_session):
+def test_wide_spread_does_not_block(db_session):
+    """Spread is irrelevant for limit orders -- the old spread gate is gone."""
     cfg = _Cfg()
     sig = _make_signal()
     db_session.add(sig); db_session.flush()
-    broker = _make_broker(spread_pct=2.5)   # > 1.0 limit
+    broker = _make_broker(spread_pct=2.5)   # would have tripped the old 1.0 gate
     result = evaluate_signal_for_execution(db_session, sig, broker, cfg)
-    assert not result["allowed"]
-    assert any("spread" in r for r in result["reasons"])
+    assert result["allowed"]
+    assert not any("spread" in r for r in result["reasons"])
 
 
 # ── Test 5: Existing open order blocks ────────────────────────────────────────
@@ -178,7 +208,7 @@ def test_sell_without_position_blocks(db_session):
     broker = _make_broker(position=None)
     result = evaluate_signal_for_execution(db_session, sig, broker, cfg)
     assert not result["allowed"]
-    assert any("No existing position" in r for r in result["reasons"])
+    assert any("TRADING_ALLOW_SHORTS=False" in r for r in result["reasons"])
 
 
 # ── Test 8: Buy order uses notional (fractional) ─────────────────────────────

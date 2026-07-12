@@ -69,3 +69,13 @@ bias_layer.json
 pip_out.txt
 pipeline_last_run.txt
 .pipeline_last_run
+.etrade_token.json
+.fuse_hidden*
+*.pid
+*_tmp.py
+alpaca_venv/
+briefs/
+debug/
+intelligence/
+strategy_review_artifacts/
+*.db.bak*

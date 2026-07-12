@@ -16,7 +16,8 @@ Safety guarantees
 from __future__ import annotations
 
 import datetime
-from typing import Any, List, Optional
+from collections import Counter
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -24,7 +25,7 @@ from sqlalchemy.orm import Session
 from equity_intel.config import settings as _default_settings
 from equity_intel.db.models import TradingDecisionLog, TradeOrder, TradeSignal
 from equity_intel.logging_config import get_logger
-from equity_intel.trading.alpaca_adapter import AlpacaBrokerAdapter
+from equity_intel.trading.broker_factory import get_broker_adapter
 from equity_intel.trading.risk import evaluate_signal_for_execution
 
 logger = get_logger(__name__)
@@ -47,16 +48,12 @@ _OPEN_ORDER_STATUSES = {
 }
 
 
-def _build_broker(cfg) -> Optional[AlpacaBrokerAdapter]:
-    """Construct an AlpacaBrokerAdapter from settings. Returns None if keys are missing."""
-    if not cfg.alpaca_api_key or not cfg.alpaca_secret_key:
-        logger.warning("alpaca_credentials_missing -- execution disabled")
-        return None
-    return AlpacaBrokerAdapter(
-        api_key=cfg.alpaca_api_key,
-        secret_key=cfg.alpaca_secret_key,
-        paper=cfg.alpaca_paper,
-    )
+def _build_broker(cfg) -> Optional[Any]:
+    """Construct the configured broker adapter. Returns None if keys/config are missing."""
+    broker = get_broker_adapter(cfg)
+    if broker is None:
+        logger.warning("broker_unavailable -- execution disabled", provider=getattr(cfg, "broker_provider", "alpaca"))
+    return broker
 
 
 def execute_approved_signals(
@@ -88,7 +85,7 @@ def execute_approved_signals(
 
     broker = _build_broker(cfg) if not dry_run else None
     if not dry_run and broker is None:
-        logger.warning("execution_aborted", reason="Alpaca credentials not configured")
+        logger.warning("execution_aborted", reason="broker credentials/config not set for " + str(getattr(cfg, "broker_provider", "alpaca")))
         return []
 
     q = session.query(TradeSignal).filter(
@@ -136,6 +133,12 @@ def execute_approved_signals(
             signal.status = retry_status
             signal.updated_at = _utc_now()
             logger.info("signal_retry_reset", ticker=signal.ticker, status=retry_status)
+
+            if cfg.trading_require_approval and retry_status != "approved":
+                # Needs human re-approval: leave it "generated" for review
+                # instead of letting the approval gate mark it "blocked".
+                logger.info("signal_awaiting_reapproval", ticker=signal.ticker)
+                continue
 
         if signal.status in {"pending_fill", "executed"}:
             reconcile_result = _reconcile_submitted_signal(session, signal, broker, cfg)
@@ -189,22 +192,33 @@ def execute_approved_signals(
             notional=order_spec["notional"],
             order_type=order_spec["order_type"],
             time_in_force=order_spec["time_in_force"],
-            broker="alpaca",
+            broker=getattr(cfg, "broker_provider", "alpaca"),
             status="pending",
+            expected_price=order_spec.get("expected_price"),
             raw_request_json=order_spec,
         )
         session.add(order)
-        session.flush()
+        # flush deferred until after broker call -- keeps SQLite write lock
+        # out of the network I/O window
 
         try:
             now = _utc_now()
-            response = broker.submit_limit_order(
-                symbol=order_spec["symbol"],
-                side=order_spec["side"],
-                limit_price=order_spec["limit_price"],
-                notional=order_spec.get("notional"),
-                qty=order_spec.get("qty"),
-            )
+            _otype = order_spec.get("order_type", "limit")
+            if _otype == "market":
+                response = broker.submit_market_order(
+                    symbol=order_spec["symbol"],
+                    side=order_spec["side"],
+                    notional=order_spec.get("notional"),
+                    qty=order_spec.get("qty"),
+                )
+            else:
+                response = broker.submit_limit_order(
+                    symbol=order_spec["symbol"],
+                    side=order_spec["side"],
+                    limit_price=order_spec["limit_price"],
+                    notional=order_spec.get("notional"),
+                    qty=order_spec.get("qty"),
+                )
             order.broker_order_id = response.get("broker_order_id")
             order.status = _normalize_status(response.get("status")) or "submitted"
             order.submitted_at = now
@@ -254,10 +268,83 @@ def execute_approved_signals(
     return orders_created
 
 
+def build_execution_health_summary(
+    session: Session,
+    cfg=None,
+    *,
+    now: Optional[datetime.datetime] = None,
+) -> Dict[str, Any]:
+    """
+    Build an operator-facing execution health snapshot from persisted DB state.
+    """
+    cfg = cfg or _default_settings
+    now = now or _utc_now()
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=datetime.timezone.utc)
+    stale_cutoff = now - datetime.timedelta(
+        minutes=getattr(cfg, "trading_reconcile_stale_minutes", 30)
+    )
+    lookback_cutoff = now - datetime.timedelta(
+        hours=getattr(cfg, "trading_health_lookback_hours", 48)
+    )
+
+    def _as_utc(value: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+        if value is None:
+            return None
+        return value if value.tzinfo is not None else value.replace(tzinfo=datetime.timezone.utc)
+
+    pending_fill_signals = session.query(TradeSignal).filter(TradeSignal.status == "pending_fill").all()
+    failed_signals = session.query(TradeSignal).filter(TradeSignal.status == "failed").all()
+    recent_signals = session.query(TradeSignal).filter(TradeSignal.updated_at >= lookback_cutoff).all()
+    recent_orders = session.query(TradeOrder).filter(TradeOrder.created_at >= lookback_cutoff).all()
+    recent_logs = session.query(TradingDecisionLog).filter(TradingDecisionLog.created_at >= lookback_cutoff).all()
+    open_orders = [
+        order for order in session.query(TradeOrder).all()
+        if _normalize_status(order.status) in _OPEN_ORDER_STATUSES
+    ]
+
+    stale_pending_fill = [
+        signal for signal in pending_fill_signals
+        if (_as_utc(signal.updated_at) or _as_utc(signal.created_at) or now) <= stale_cutoff
+    ]
+    stale_open_orders = [
+        order for order in open_orders
+        if (_as_utc(order.updated_at) or _as_utc(order.submitted_at) or _as_utc(order.created_at) or now) <= stale_cutoff
+    ]
+
+    recent_status_counts = Counter(signal.status for signal in recent_signals if signal.status)
+    recent_decision_counts = Counter(log.decision for log in recent_logs if log.decision)
+    recent_block_reason_counts = Counter(
+        log.reason for log in recent_logs if log.decision == "blocked" and log.reason
+    )
+    recent_failed_order_count = sum(
+        1 for order in recent_orders if _normalize_status(order.status) == "failed"
+    )
+
+    return {
+        "as_of_utc": now.isoformat(),
+        "lookback_hours": getattr(cfg, "trading_health_lookback_hours", 48),
+        "stale_after_minutes": getattr(cfg, "trading_reconcile_stale_minutes", 30),
+        "pending_fill_count": len(pending_fill_signals),
+        "stale_pending_fill_count": len(stale_pending_fill),
+        "open_order_count": len(open_orders),
+        "stale_open_order_count": len(stale_open_orders),
+        "failed_signal_count": len(failed_signals),
+        "recent_failed_order_count": recent_failed_order_count,
+        "recent_signal_status_counts": dict(recent_status_counts),
+        "recent_decision_counts": dict(recent_decision_counts),
+        "top_block_reasons": [
+            {"reason": reason, "count": count}
+            for reason, count in recent_block_reason_counts.most_common(5)
+        ],
+        "attention_required": bool(stale_pending_fill or stale_open_orders or failed_signals),
+    }
+
+
 def _reconcile_submitted_signal(
     session: Session,
     signal: TradeSignal,
-    broker: AlpacaBrokerAdapter,
+    broker: Any,
     cfg,
 ) -> str:
     """
@@ -302,7 +389,13 @@ def _reconcile_submitted_signal(
 
     if broker_status == "filled":
         latest_order.filled_at = _parse_dt(broker_order.get("filled_at")) or now
-        latest_order.filled_avg_price = _to_float(broker_order.get("filled_avg_price"))
+        fill_price = _to_float(broker_order.get("filled_avg_price"))
+        latest_order.filled_avg_price = fill_price
+        # Slippage: (fill - expected) / expected * 100
+        # Positive = paid more (buy) or received less (sell) than the mid at submission.
+        expected = latest_order.expected_price
+        if fill_price and expected and expected != 0:
+            latest_order.slippage_pct = round((fill_price - expected) / expected * 100, 4)
         signal.status = "executed"
         signal.updated_at = now
         _add_decision_log(
@@ -310,9 +403,21 @@ def _reconcile_submitted_signal(
             signal,
             "executed",
             "order filled broker_id=" + str(latest_order.broker_order_id),
-            {"broker_order_id": latest_order.broker_order_id},
+            {
+                "broker_order_id": latest_order.broker_order_id,
+                "fill_price": fill_price,
+                "expected_price": expected,
+                "slippage_pct": latest_order.slippage_pct,
+            },
         )
-        logger.info("order_filled", ticker=signal.ticker, broker_order_id=latest_order.broker_order_id)
+        logger.info(
+            "order_filled",
+            ticker=signal.ticker,
+            broker_order_id=latest_order.broker_order_id,
+            fill_price=fill_price,
+            expected_price=expected,
+            slippage_pct=latest_order.slippage_pct,
+        )
         return "filled"
 
     if broker_status in _OPEN_ORDER_STATUSES:
@@ -362,9 +467,18 @@ def _latest_order_for_signal(session: Session, signal: TradeSignal) -> Optional[
 
 
 def _retry_status(signal: TradeSignal, cfg) -> str:
-    if signal.approved_at or signal.approved_by or cfg.trading_require_approval:
-        return "approved"
-    return "generated"
+    """Status a signal returns to when reset for retry.
+
+    Only signals with actual evidence of prior approval (explicit approval
+    fields, or a current status that is only reachable after passing the
+    approval gate) go back to "approved". Everything else returns to
+    "generated" and must be approved again -- a bare status="failed" is
+    never auto-promoted past the approval gate.
+    """
+    was_approved = bool(signal.approved_at or signal.approved_by)
+    if signal.status in ("approved", "pending_fill", "executed"):
+        was_approved = True
+    return "approved" if was_approved else "generated"
 
 
 def _age_hours(signal: TradeSignal, now: Optional[datetime.datetime] = None) -> float:

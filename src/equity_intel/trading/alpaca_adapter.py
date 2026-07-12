@@ -11,6 +11,7 @@ Design notes
 """
 from __future__ import annotations
 
+import functools
 from typing import Any, Dict, List, Optional
 
 
@@ -41,6 +42,10 @@ class AlpacaBrokerAdapter:
         self._paper = paper
         self._trading = TradingClient(api_key, secret_key, paper=paper)
         self._data = StockHistoricalDataClient(api_key, secret_key)
+        # Prevent network calls from hanging indefinitely.
+        # Alpaca uses requests.Session internally; wrap request() with a 30-second timeout.
+        _orig = self._trading._session.request
+        self._trading._session.request = functools.partial(_orig, timeout=30)
 
     def get_account(self) -> Dict[str, Any]:
         """Return account info dict with cash, buying_power, equity, etc."""
@@ -195,6 +200,49 @@ class AlpacaBrokerAdapter:
             "order_type": "limit",
             "time_in_force": "day",
             "limit_price": str(order.limit_price),
+            "status": str(order.status.value) if order.status else "pending_new",
+            "submitted_at": order.submitted_at.isoformat() if order.submitted_at else None,
+        }
+
+    def submit_market_order(
+        self,
+        symbol: str,
+        side: str,
+        notional: Optional[float] = None,
+        qty: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        Submit a market DAY order and return the broker response as a dict.
+
+        Buys use notional for fractional support; sells use qty.
+        Market orders fill immediately at the prevailing price --
+        expected_price (mid at submission time) is recorded by the caller
+        for slippage tracking, not passed to the broker.
+        """
+        from alpaca.trading.requests import MarketOrderRequest
+        from alpaca.trading.enums import OrderSide, TimeInForce
+
+        if notional is None and qty is None:
+            raise ValueError("Either notional or qty must be provided")
+
+        side_enum = OrderSide.BUY if side.lower() == "buy" else OrderSide.SELL
+
+        req = MarketOrderRequest(
+            symbol=symbol,
+            side=side_enum,
+            time_in_force=TimeInForce.DAY,
+            notional=round(notional, 2) if notional is not None else None,
+            qty=round(qty, 9) if qty is not None else None,
+        )
+        order = self._trading.submit_order(req)
+        return {
+            "broker_order_id": str(order.id),
+            "symbol": order.symbol,
+            "side": str(order.side.value) if order.side else side,
+            "qty": str(order.qty),
+            "notional": str(order.notional),
+            "order_type": "market",
+            "time_in_force": "day",
             "status": str(order.status.value) if order.status else "pending_new",
             "submitted_at": order.submitted_at.isoformat() if order.submitted_at else None,
         }

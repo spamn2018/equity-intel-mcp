@@ -21,7 +21,12 @@ load_dotenv()
 
 API_KEY    = os.getenv("ALPACA_API_KEY")
 SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
-ALLOW_ORDERS = os.getenv("ALPACA_ALLOW_LIVE_ORDERS", "0") == "1"
+# Project rule: never submit orders when TRADING_EXECUTION_ENABLED=false,
+# even in test code paths. Both flags must be on.
+ALLOW_ORDERS = (
+    os.getenv("ALPACA_ALLOW_LIVE_ORDERS", "0") == "1"
+    and os.getenv("TRADING_EXECUTION_ENABLED", "false").lower() in ("1", "true", "yes")
+)
 TEST_SYMBOL  = "SPY"
 
 GREEN  = "\033[92m"
@@ -155,15 +160,20 @@ for fn in [test_get_all_assets, test_get_asset]:
 # =============================================================================
 section("4. Orders")
 
-def test_submit_market_order():
+def test_submit_marketable_limit_order():
+    """Project rules: never market orders -- use a marketable limit instead."""
     global _created_order_id
     if not ALLOW_ORDERS:
-        skip("submit_order (market buy)", "live orders disabled — set ALPACA_ALLOW_LIVE_ORDERS=1")
+        skip("submit_order (marketable limit buy)",
+             "live orders disabled -- set ALPACA_ALLOW_LIVE_ORDERS=1 and TRADING_EXECUTION_ENABLED=true")
         return
-    req   = MarketOrderRequest(symbol=TEST_SYMBOL, qty=1, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
+    quotes = data.get_stock_latest_quote(StockLatestQuoteRequest(symbol_or_symbols=TEST_SYMBOL))
+    ask = float(quotes[TEST_SYMBOL].ask_price)
+    req   = LimitOrderRequest(symbol=TEST_SYMBOL, qty=1, side=OrderSide.BUY,
+                              time_in_force=TimeInForce.DAY, limit_price=round(ask * 1.01, 2))
     order = trading.submit_order(req)
     _created_order_id = str(order.id)
-    ok("submit_order (market buy)", f"id={order.id}  status={order.status}")
+    ok("submit_order (marketable limit buy)", f"id={order.id}  status={order.status}")
 
 def test_submit_limit_order():
     """Low limit so it stays open for replace/cancel tests."""
@@ -245,7 +255,7 @@ def test_cancel_all_orders():
     ok("cancel_orders (all)", f"attempted {len(res)} cancellations")
 
 for fn in [
-    test_submit_market_order, test_submit_limit_order,
+    test_submit_marketable_limit_order, test_submit_limit_order,
     test_submit_stop_order, test_submit_trailing_stop_order,
     test_get_orders, test_get_orders_filtered,
     test_get_order_by_id, test_replace_order_by_id,

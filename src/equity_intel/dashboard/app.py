@@ -24,6 +24,7 @@ import json
 import os
 import threading
 import time
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -401,12 +402,426 @@ def _load_latest_intelligence() -> Dict[str, Any]:
     }
 
 
+def _safe_iso(value: Any) -> Any:
+    """Return an ISO string when available, otherwise pass through None."""
+    return value.isoformat() if value is not None else None
+
+
+def _resolve_project_path(raw_path: str) -> Path:
+    """Resolve a project-relative path against likely project roots."""
+    path = Path(raw_path)
+    if path.is_absolute():
+        return path
+
+    here = Path(__file__).resolve().parent
+    for parent in [here, here.parent, here.parent.parent, here.parent.parent.parent]:
+        candidate = parent / path
+        if candidate.exists():
+            return candidate
+        if (parent / "pyproject.toml").exists():
+            return candidate
+    return here.parent.parent.parent / path
+
+
+def _latest_strategy_review_artifact(cfg=None) -> Dict[str, Any]:
+    """Return the newest saved strategy review artifact, if any."""
+    cfg = cfg or settings
+    artifact_dir = _resolve_project_path(
+        getattr(cfg, "strategy_review_artifact_output_dir", "strategy_review_artifacts")
+    )
+    if not artifact_dir.exists():
+        return {"available": False, "path": str(artifact_dir), "message": "No strategy review artifacts found yet."}
+
+    candidates = sorted(
+        artifact_dir.glob("*.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not candidates:
+        return {"available": False, "path": str(artifact_dir), "message": "No strategy review artifacts found yet."}
+
+    artifact_path = candidates[0]
+    try:
+        data = json.loads(artifact_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        logger.warning("strategy_review_artifact_parse_error", path=str(artifact_path), error=str(exc))
+        return {
+            "available": False,
+            "path": str(artifact_dir),
+            "message": f"Latest strategy review artifact could not be parsed: {exc}",
+        }
+
+    review = data.get("review_result", data) if isinstance(data, dict) else {}
+    survived = review.get("survived", []) if isinstance(review, dict) else []
+    rejected = review.get("rejected", []) if isinstance(review, dict) else []
+    auto_apply_result = review.get("auto_apply_result") if isinstance(review, dict) else None
+
+    return {
+        "available": True,
+        "path": str(artifact_path),
+        "generated_at": data.get("generated_at") or review.get("generated_at"),
+        "status": review.get("status") or data.get("status"),
+        "window_sessions": data.get("window_sessions") or review.get("window_sessions"),
+        "survived_count": len(survived) if isinstance(survived, list) else 0,
+        "rejected_count": len(rejected) if isinstance(rejected, list) else 0,
+        "auto_apply_result": auto_apply_result,
+        "survived_preview": survived[:3] if isinstance(survived, list) else [],
+    }
+
+
+def _build_trading_workflow_snapshot(cfg=None) -> Dict[str, Any]:
+    """Assemble workflow state for the trading overview UI."""
+    cfg = cfg or settings
+
+    from equity_intel.db.models import (
+        SameDaySignalOutcome,
+        SignalOutcome,
+        TickerDiscoveryScore,
+        TradeOrder,
+        TradeSignal,
+        TradingDecisionLog,
+    )
+
+    import datetime as _dt
+
+    directional_signal_count = 0
+    signal_status_counts: Dict[str, int] = {}
+    signal_side_counts: Dict[str, int] = {}
+    recent_signals: List[Dict[str, Any]] = []
+
+    order_status_counts: Dict[str, int] = {}
+    decision_counts: Dict[str, int] = {}
+    recent_orders: List[Dict[str, Any]] = []
+
+    swing_summary: Dict[str, Dict[str, Any]] = {}
+    same_day_summary: Dict[str, Any] = {}
+    discovery_summary: Dict[str, Any] = {}
+    performance_summary: Dict[str, Any] = {}
+
+    def _coerce_float(value: Any) -> float | None:
+        if value in (None, ""):
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _build_compound_curve(
+        values: List[tuple[str, float]],
+        *,
+        start_value: float = 10000.0,
+        max_points: int = 40,
+    ) -> List[Dict[str, Any]]:
+        equity = start_value
+        grouped: Dict[str, float] = {}
+        for label, pct_return in sorted(values, key=lambda item: item[0]):
+            equity *= 1.0 + (pct_return / 100.0)
+            grouped[label] = round(equity, 2)
+        points = [
+            {"label": label, "equity": equity_value}
+            for label, equity_value in grouped.items()
+        ]
+        if len(points) > max_points:
+            points = points[-max_points:]
+        return points
+
+    with SessionLocal() as session:
+        signal_rows = (
+            session.query(TradeSignal)
+            .order_by(TradeSignal.generated_at.desc())
+            .limit(12)
+            .all()
+        )
+        recent_signals = [
+            {
+                "id": row.id,
+                "ticker": row.ticker,
+                "signal_side": row.signal_side,
+                "status": row.status,
+                "signal_strength": row.signal_strength,
+                "materiality_score": row.materiality_score,
+                "confidence_score": row.confidence_score,
+                "event_type": row.event_type,
+                "title": row.title,
+                "generated_at": _safe_iso(row.generated_at),
+            }
+            for row in signal_rows
+        ]
+
+        signal_status_counts = dict(
+            Counter(getattr(row, "status", row[0]) for row in session.query(TradeSignal.status).all())
+        )
+        signal_side_counts = dict(
+            Counter(getattr(row, "signal_side", row[0]) for row in session.query(TradeSignal.signal_side).all())
+        )
+        directional_signal_count = (
+            session.query(TradeSignal)
+            .filter(TradeSignal.signal_side.in_(("buy", "sell")))
+            .count()
+        )
+
+        order_status_counts = dict(
+            Counter(getattr(row, "status", row[0]) for row in session.query(TradeOrder.status).all())
+        )
+        decision_counts = dict(
+            Counter(getattr(row, "decision", row[0]) for row in session.query(TradingDecisionLog.decision).all())
+        )
+        order_rows = (
+            session.query(TradeOrder)
+            .order_by(TradeOrder.created_at.desc())
+            .limit(12)
+            .all()
+        )
+        recent_orders = [
+            {
+                "id": row.id,
+                "ticker": row.ticker,
+                "side": row.side,
+                "status": row.status,
+                "broker": row.broker,
+                "qty": row.qty,
+                "notional": row.notional,
+                "submitted_at": _safe_iso(row.submitted_at),
+                "filled_at": _safe_iso(row.filled_at),
+                "filled_avg_price": row.filled_avg_price,
+                "failure_reason": row.failure_reason,
+            }
+            for row in order_rows
+        ]
+
+        swing_rows = (
+            session.query(SignalOutcome)
+            .filter(
+                SignalOutcome.horizon_days.in_((1, 5, 10)),
+                SignalOutcome.forward_return_pct.isnot(None),
+            )
+            .all()
+        )
+        swing_bucket: Dict[int, List[Any]] = {1: [], 5: [], 10: []}
+        for row in swing_rows:
+            swing_bucket.setdefault(row.horizon_days, []).append(row)
+        for horizon in (1, 5, 10):
+            rows = swing_bucket.get(horizon, [])
+            returns = [row.forward_return_pct for row in rows if row.forward_return_pct is not None]
+            wins = [row for row in rows if row.forward_return_pct is not None and row.forward_return_pct > 0]
+            swing_summary[str(horizon)] = {
+                "count": len(rows),
+                "avg_return_pct": round(sum(returns) / len(returns), 3) if returns else None,
+                "win_rate_pct": round((len(wins) / len(rows)) * 100.0, 1) if rows else None,
+                "latest_computed_at": _safe_iso(max((row.computed_at for row in rows), default=None)),
+            }
+
+        same_day_rows = session.query(SameDaySignalOutcome).all()
+        same_day_status_counts = dict(Counter(row.outcome_status for row in same_day_rows))
+        same_day_ok_rows = [row for row in same_day_rows if row.gross_return_pct is not None]
+        same_day_returns = [row.gross_return_pct for row in same_day_ok_rows if row.gross_return_pct is not None]
+        same_day_wins = [row for row in same_day_ok_rows if row.gross_return_pct is not None and row.gross_return_pct > 0]
+        same_day_summary = {
+            "count": len(same_day_rows),
+            "ok_count": len(same_day_ok_rows),
+            "avg_gross_return_pct": round(sum(same_day_returns) / len(same_day_returns), 3) if same_day_returns else None,
+            "win_rate_pct": round((len(same_day_wins) / len(same_day_ok_rows)) * 100.0, 1) if same_day_ok_rows else None,
+            "latest_session_date": max((row.session_date for row in same_day_rows if row.session_date), default=None),
+            "latest_computed_at": _safe_iso(max((row.computed_at for row in same_day_rows), default=None)),
+            "outcome_status_counts": same_day_status_counts,
+        }
+
+        now = _dt.datetime.now(_dt.timezone.utc)
+        iso = now.isocalendar()
+        week_key = f"{iso[0]}-W{iso[1]:02d}"
+        discovery_rows = (
+            session.query(TickerDiscoveryScore)
+            .filter(TickerDiscoveryScore.week_key == week_key)
+            .order_by(TickerDiscoveryScore.total_score.desc())
+            .limit(8)
+            .all()
+        )
+        discovery_summary = {
+            "week_key": week_key,
+            "count": len(discovery_rows),
+            "probe_candidate_count": sum(1 for row in discovery_rows if row.recommendation == "probe_candidate"),
+            "top_candidates": [
+                {
+                    "ticker": row.ticker,
+                    "recommendation": row.recommendation,
+                    "total_score": round(row.total_score, 4),
+                    "mention_count": row.mention_count,
+                    "unique_source_count": row.unique_source_count,
+                }
+                for row in discovery_rows
+            ],
+        }
+
+        same_day_curve = _build_compound_curve(
+            [
+                (row.session_date, row.net_return_pct)
+                for row in same_day_rows
+                if row.session_date and row.net_return_pct is not None and row.outcome_status == "ok"
+            ]
+        )
+        swing_curve_5d = _build_compound_curve(
+            [
+                (_safe_iso(row.t_horizon_date)[:10], row.forward_return_pct)
+                for row in swing_bucket.get(5, [])
+                if row.t_horizon_date is not None and row.forward_return_pct is not None
+            ]
+        )
+
+        same_day_by_signal = {
+            row.trade_signal_id: row
+            for row in same_day_rows
+            if row.trade_signal_id is not None
+        }
+        swing_5d_by_signal = {
+            row.trade_signal_id: row
+            for row in swing_bucket.get(5, [])
+            if row.trade_signal_id is not None
+        }
+        filled_orders = (
+            session.query(TradeOrder)
+            .filter(TradeOrder.filled_at.isnot(None))
+            .order_by(TradeOrder.filled_at.desc(), TradeOrder.id.desc())
+            .all()
+        )
+        closed_results_preview = []
+        estimated_same_day_results = []
+        estimated_swing_results = []
+        for order in filled_orders:
+            same_day_row = same_day_by_signal.get(order.trade_signal_id) if order.trade_signal_id else None
+            swing_5d_row = swing_5d_by_signal.get(order.trade_signal_id) if order.trade_signal_id else None
+            same_day_estimate = (
+                round(same_day_row.net_return_pct, 3)
+                if same_day_row is not None and same_day_row.net_return_pct is not None
+                else None
+            )
+            swing_5d_estimate = (
+                round(swing_5d_row.forward_return_pct, 3)
+                if swing_5d_row is not None and swing_5d_row.forward_return_pct is not None
+                else None
+            )
+            if same_day_estimate is not None:
+                estimated_same_day_results.append(same_day_estimate)
+            if swing_5d_estimate is not None:
+                estimated_swing_results.append(swing_5d_estimate)
+            if len(closed_results_preview) < 8:
+                closed_results_preview.append(
+                    {
+                        "id": order.id,
+                        "ticker": order.ticker,
+                        "side": order.side,
+                        "filled_at": _safe_iso(order.filled_at),
+                        "filled_avg_price": order.filled_avg_price,
+                        "qty": order.qty,
+                        "notional": order.notional,
+                        "estimated_same_day_return_pct": same_day_estimate,
+                        "estimated_swing_5d_return_pct": swing_5d_estimate,
+                    }
+                )
+
+        broker_snapshot: Dict[str, Any] = {
+            "provider": cfg.broker_provider,
+            "available": False,
+            "message": "Broker snapshot unavailable.",
+            "account": None,
+            "positions": [],
+            "open_orders": [],
+        }
+        try:
+            from equity_intel.trading.broker_factory import get_broker_adapter
+
+            adapter = get_broker_adapter(cfg)
+            if adapter is None:
+                broker_snapshot["message"] = "Broker credentials are not configured for the active provider."
+            else:
+                broker_snapshot["account"] = adapter.get_account()
+                broker_snapshot["positions"] = adapter.get_positions()
+                broker_snapshot["open_orders"] = adapter.get_open_orders()
+                broker_snapshot["available"] = True
+                broker_snapshot["message"] = None
+        except Exception as exc:
+            broker_snapshot["message"] = str(exc)
+
+        positions = broker_snapshot.get("positions") or []
+        open_orders = broker_snapshot.get("open_orders") or []
+        position_market_value = sum(_coerce_float(pos.get("market_value")) or 0.0 for pos in positions)
+        unrealized_pl = sum(_coerce_float(pos.get("unrealized_pl")) or 0.0 for pos in positions)
+        account = broker_snapshot.get("account") or {}
+        account_equity = _coerce_float(account.get("equity"))
+
+        performance_summary = {
+            "broker": broker_snapshot,
+            "live": {
+                "account_equity": account_equity,
+                "cash": _coerce_float(account.get("cash")),
+                "buying_power": _coerce_float(account.get("buying_power")),
+                "position_market_value": round(position_market_value, 2) if positions else None,
+                "unrealized_pl": round(unrealized_pl, 2) if positions else None,
+                "open_position_count": len(positions),
+                "open_order_count": len(open_orders),
+                "filled_order_count": len(filled_orders),
+                "estimated_same_day_avg_return_pct": (
+                    round(sum(estimated_same_day_results) / len(estimated_same_day_results), 3)
+                    if estimated_same_day_results else None
+                ),
+                "estimated_swing_5d_avg_return_pct": (
+                    round(sum(estimated_swing_results) / len(estimated_swing_results), 3)
+                    if estimated_swing_results else None
+                ),
+                "closed_results_preview": closed_results_preview,
+            },
+            "curves": {
+                "same_day": same_day_curve,
+                "swing_5d": swing_curve_5d,
+            },
+        }
+
+    policy_path = _resolve_project_path(getattr(cfg, "strategy_review_policy_file", ".cache/strategy_review/auto_applied_policy.json"))
+
+    return {
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "mode": {
+            "day_trade_mode": cfg.trading_day_trade_mode,
+            "holding_style_label": "day trade" if cfg.trading_day_trade_mode else "swing",
+            "primary_backtest": "same_day" if cfg.trading_day_trade_mode else "swing",
+            "execution_enabled": cfg.trading_execution_enabled,
+            "require_approval": cfg.trading_require_approval,
+            "broker_provider": cfg.broker_provider,
+            "close_time_et": cfg.trading_day_trade_close_time_et,
+            "close_window_minutes": cfg.trading_day_trade_close_window_minutes,
+        },
+        "signal_generation": {
+            "directional_signal_count": directional_signal_count,
+            "status_counts": signal_status_counts,
+            "side_counts": signal_side_counts,
+            "recent_signals": recent_signals,
+        },
+        "execution": {
+            "order_status_counts": order_status_counts,
+            "decision_counts": decision_counts,
+            "recent_orders": recent_orders,
+        },
+        "backtests": {
+            "swing": swing_summary,
+            "same_day": same_day_summary,
+        },
+        "performance": performance_summary,
+        "strategy_review": {
+            "auto_apply_enabled": cfg.strategy_review_auto_apply_enabled,
+            "run_before_signal_generation_enabled": cfg.strategy_review_run_before_signal_generation_enabled,
+            "policy_file": str(policy_path),
+            "policy_file_exists": policy_path.exists(),
+            "latest_artifact": _latest_strategy_review_artifact(cfg),
+        },
+        "discovery": discovery_summary,
+    }
+
+
 # ------------------------------------------------------------------ #
 # Application factory                                                  #
 # ------------------------------------------------------------------ #
 
 
-def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
+def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 3600) -> Flask:
     """Create and configure the Flask dashboard application.
 
     Args:
@@ -661,15 +1076,17 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
 
     # ── Rebalancing ────────────────────────────────────────────────────────────
 
-    def _build_alpaca_adapter():
-        """Instantiate AlpacaBrokerAdapter from env settings. Raises on missing keys."""
-        from equity_intel.trading.alpaca_adapter import AlpacaBrokerAdapter
-        api_key    = getattr(settings, "alpaca_api_key", None) or ""
-        secret_key = getattr(settings, "alpaca_secret_key", None) or ""
-        paper      = getattr(settings, "alpaca_paper", True)
-        if not api_key or not secret_key:
-            raise ValueError("ALPACA_API_KEY / ALPACA_SECRET_KEY not set in .env")
-        return AlpacaBrokerAdapter(api_key=api_key, secret_key=secret_key, paper=paper)
+    def _build_broker_adapter():
+        """Instantiate the configured broker adapter (Alpaca or E*TRADE). Raises on missing keys/config."""
+        from equity_intel.trading.broker_factory import get_broker_adapter
+        adapter = get_broker_adapter(settings)
+        if adapter is None:
+            provider = getattr(settings, "broker_provider", "alpaca")
+            raise ValueError(
+                f"Broker credentials/config not set for provider={provider} "
+                "(check ALPACA_API_KEY/ALPACA_SECRET_KEY or ETRADE_TOKEN_FILE/ETRADE_ACCOUNT_ID in .env)"
+            )
+        return adapter
 
     def _normalize_cat_weights(portfolio_tickers):
         """
@@ -711,7 +1128,7 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
         This endpoint is always safe — it NEVER submits orders to Alpaca.
         """
         try:
-            adapter = _build_alpaca_adapter()
+            adapter = _build_broker_adapter()
         except ValueError as exc:
             return jsonify({"error": str(exc), "dry_run": True}), 400
         except Exception as exc:
@@ -800,7 +1217,7 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
             }), 403
 
         try:
-            adapter = _build_alpaca_adapter()
+            adapter = _build_broker_adapter()
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
         except Exception as exc:
@@ -916,6 +1333,21 @@ def create_app(shutdown_on_idle: bool = False, idle_timeout: int = 25) -> Flask:
             })
 
         return jsonify(data)
+
+    @app.route("/api/trading/workflow")
+    def api_trading_workflow():  # type: ignore[return]
+        """
+        Return a workflow-oriented snapshot of the trading pipeline.
+
+        This is a read-only summary for the dashboard UI. It explains the
+        signal -> execution -> backtest -> review -> discovery chain using
+        live project data where available.
+        """
+        try:
+            return jsonify(_build_trading_workflow_snapshot(settings))
+        except Exception as exc:
+            logger.error("trading_workflow_api_error", error=str(exc))
+            return jsonify({"error": str(exc)}), 500
 
     @app.route("/api/intelligence/latest")
     def api_intelligence_latest():  # type: ignore[return]

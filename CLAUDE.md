@@ -105,14 +105,15 @@ The system executes orders autonomously based on internal signals. Follow these 
 - Use the Alpaca SDK (`alpaca-py`). Paper vs live is controlled by `ALPACA_PAPER` in `.env`.
 - Paper keys: `Alpaca Creds/API.txt` (start with PK). Live keys also in same file (start with AK).
 - All order submission goes through `TradingClient(paper=cfg.alpaca_paper)` -- never hardcode paper=False.
-- Order type is ALWAYS limit + time_in_force=day. Never submit market orders.
+- Order type is controlled by `TRADING_ORDER_TYPE` in `.env` ("limit" or "market"). Default is "limit". When set to "market", AlpacaBrokerAdapter.submit_market_order() is used; E*TRADE always forces limit regardless of this setting. Expected fill price (mid at submission) is always captured for slippage tracking.
 - Buys use `notional` (dollar amount) for fractional share support. Never use qty for buys.
 - Sells use `qty` (share count from existing position). Never use notional for sells.
-- Never hardcode order sizes -- size is derived from signal confidence and available buying power.
+- Never hardcode order sizes -- buys are sized as TRADING_MAX_ORDER_NOTIONAL (currently $100) scaled by signal strength (floor 0.5x), then capped by remaining position capacity and buying power. Sells always close the existing position qty and are exempt from the notional cap.
 - Every submitted order must be logged with its signal source, symbol, side, qty/notional, order type, and timestamp.
 - Always check `account.buying_power` before submitting a buy order.
 - Always check existing positions before submitting a sell order.
 - Kill switch: `TRADING_EXECUTION_ENABLED=true` must be set in `.env` for any order to be submitted. Default false.
+- Short gate: `TRADING_ALLOW_SHORTS=false` (default). Sell/reduce signals are generated, scored by the backtest, and logged, but never submitted to the broker until this is set to true. Do not change this default without explicit instruction.
 - Approval gate: `TRADING_REQUIRE_APPROVAL=true` means only signals with status=approved to execute.
 - Never submit orders when `TRADING_EXECUTION_ENABLED=false`, even in test code paths.
 
@@ -120,22 +121,24 @@ The system executes orders autonomously based on internal signals. Follow these 
 
 1. Event builder scores incoming filings, news, and price moves.
 2. Signal generator reads high-materiality events -> BUY/SELL signals with confidence scores.
-3. Risk layer checks account state, spread, open orders, position limits before approving.
+3. Risk layer checks account state, open orders, position limits before approving. Spread is NOT gated -- all orders are limit orders, so spread is irrelevant. If the broker has no quote, risk.py falls back to a DeepSeek-quoted price (DEEPSEEK_API_KEY / DEEPSEEK_MODEL).
 4. Execution layer submits limit+day orders via Alpaca and records results.
 5. Position tracker monitors open positions and P&L.
 6. Exit logic closes positions based on target, stop-loss, or time-based rules.
 
+Note: buy signals for tickers with NO existing position bypass TRADING_MIN_SIGNAL_STRENGTH -- the strength threshold only gates adding to existing positions.
+
 Key files:
-- `trading/alpaca_adapter.py` -- AlpacaBrokerAdapter (get_account, get_quote, submit_limit_order, etc.)
-- `trading/risk.py` -- evaluate_signal_for_execution() pre-flight checks
-- `trading/execution.py` -- execute_approved_signals() main loop
-- `trading/signals.py` -- generate_trade_signals_from_brief()
-- `workers/generate_trade_signals.py` -- CLI worker
-- `workers/execute_trade_signals.py` -- CLI worker
+- `src/equity_intel/trading/alpaca_adapter.py` -- AlpacaBrokerAdapter (get_account, get_quote, submit_limit_order, etc.)
+- `src/equity_intel/trading/risk.py` -- evaluate_signal_for_execution() pre-flight checks
+- `src/equity_intel/trading/execution.py` -- execute_approved_signals() main loop
+- `src/equity_intel/trading/signals.py` -- generate_trade_signals_from_brief()
+- `src/equity_intel/workers/generate_trade_signals.py` -- CLI worker
+- `src/equity_intel/workers/execute_trade_signals.py` -- CLI worker
 
 ## Brief Cache
 
-`get_watchlist_brief()` in `briefs/watchlist.py` caches its output to `.cache/brief/` as JSON.
+`get_watchlist_brief()` in `src/equity_intel/briefs/watchlist.py` caches its output to `.cache/brief/` as JSON.
 TTL is controlled by `DAILY_BRIEF_CACHE_TTL_SECONDS` in `.env` (0 = disabled, 86400 = 24h).
 On cache hit the entire article-pull and LLM synthesis pipeline is skipped.
 Cache key = SHA1 of sorted(tickers) + days + min_materiality.
@@ -151,10 +154,10 @@ ALPACA_SECRET_KEY=<paper secret>
 ALPACA_PAPER=true
 TRADING_EXECUTION_ENABLED=true
 TRADING_REQUIRE_APPROVAL=false
-TRADING_REQUIRE_PRIMARY_SOURCE=false
-TRADING_MAX_SPREAD_PCT=1.0
 TRADING_MAX_POSITION_PCT=5.0
-TRADING_MAX_ORDER_NOTIONAL=5000.0
+TRADING_MAX_ORDER_NOTIONAL=100.0
+DEEPSEEK_API_KEY=<key>
+DEEPSEEK_MODEL=deepseek-v4-flash
 DAILY_BRIEF_CACHE_TTL_SECONDS=86400
 LLM_PROVIDER=openai
 LMSTUDIO_MODEL=o4-mini

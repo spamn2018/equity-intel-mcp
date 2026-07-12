@@ -9,34 +9,67 @@ No broker orders are submitted here.
 """
 from __future__ import annotations
 
+import datetime
 from typing import Any, Dict, List, Optional
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
 
 from equity_intel.db.models import TradingDecisionLog, TradeSignal
 from equity_intel.logging_config import get_logger
-from equity_intel.trading.alpaca_adapter import AlpacaBrokerAdapter
+from equity_intel.trading.strategy_policy import get_signal_policy_block
 
 logger = get_logger(__name__)
 
 
-def _get_price_via_gemini(ticker: str, api_key: str):
+def _parse_hh_mm(value: str, default_hh: int, default_mm: int) -> tuple[int, int]:
+    try:
+        hh, mm = (int(part) for part in str(value).split(":", 1))
+        return hh, mm
+    except Exception:
+        return default_hh, default_mm
+
+
+def _is_within_regular_hours(now_utc: datetime.datetime, cfg) -> bool:
+    if now_utc.tzinfo is None:
+        now_utc = now_utc.replace(tzinfo=datetime.timezone.utc)
+    now_et = now_utc.astimezone(ZoneInfo("America/New_York"))
+    if now_et.weekday() >= 5:
+        return False
+    open_hh, open_mm = _parse_hh_mm(getattr(cfg, "trading_regular_hours_open_et", "09:30"), 9, 30)
+    close_hh, close_mm = _parse_hh_mm(getattr(cfg, "trading_regular_hours_close_et", "15:55"), 15, 55)
+    current_minutes = now_et.hour * 60 + now_et.minute
+    open_minutes = open_hh * 60 + open_mm
+    close_minutes = close_hh * 60 + close_mm
+    return open_minutes <= current_minutes <= close_minutes
+
+
+def _get_price_via_deepseek(ticker: str, api_key: str, model: str = "deepseek-v4-flash"):
+    """Last-resort price fallback via the DeepSeek chat-completions API.
+
+    Only used when the broker has no quote (after-hours, etc.). Returns a
+    float price or None; never raises. Model comes from DEEPSEEK_MODEL.
+    """
     import json, urllib.request
     if not api_key:
         return None
-    url = ("https://generativelanguage.googleapis.com/v1beta/models/"
-           "gemini-2.0-flash-latest:generateContent")
-    body = json.dumps({"contents": [{"parts": [{"text":
-        f"What is the current stock price of {ticker}? Reply with only the number in USD, no symbol or text."
-    }]}]}).encode()
+    url = "https://api.deepseek.com/chat/completions"
+    body = json.dumps({
+        "model": model,
+        "stream": False,
+        "messages": [{"role": "user", "content":
+            f"What is the current stock price of {ticker}? Reply with only the number in USD, no symbol or text."
+        }],
+    }).encode()
     req = urllib.request.Request(url, data=body, method="POST",
-        headers={"Content-Type": "application/json", "X-goog-api-key": api_key})
+        headers={"Content-Type": "application/json",
+                 "Authorization": "Bearer " + api_key})
     try:
-        with urllib.request.urlopen(req, timeout=10) as r:
+        with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
-        text = (data.get("candidates",[{}])[0].get("content",{})
-                .get("parts",[{}])[0].get("text","").strip()
-                .replace("$","").replace(",",""))
+        text = (data.get("choices", [{}])[0].get("message", {})
+                .get("content", "").strip()
+                .replace("$", "").replace(",", ""))
         return float(text)
     except Exception:
         return None
@@ -62,8 +95,9 @@ def _log_decision(
 def evaluate_signal_for_execution(
     session: Session,
     signal: TradeSignal,
-    broker: AlpacaBrokerAdapter,
+    broker: Any,
     cfg,
+    now_utc: Optional[datetime.datetime] = None,
 ) -> Dict[str, Any]:
     """
     Evaluate a TradeSignal against all risk and execution policy rules.
@@ -100,6 +134,36 @@ def evaluate_signal_for_execution(
         block("TRADING_EXECUTION_ENABLED=False -- broker submission disabled")
         return blocked_response()
 
+    if getattr(cfg, "trading_regular_hours_only", False):
+        effective_now = now_utc or datetime.datetime.now(datetime.timezone.utc)
+        if not _is_within_regular_hours(effective_now, cfg):
+            block(
+                "regular-hours gate closed -- autonomous execution only runs during the configured ET session",
+                {
+                    "now_utc": effective_now.isoformat(),
+                    "open_et": getattr(cfg, "trading_regular_hours_open_et", "09:30"),
+                    "close_et": getattr(cfg, "trading_regular_hours_close_et", "15:55"),
+                },
+            )
+            return blocked_response(retriable=True)
+
+    # 1b. Buy cutoff -- buys are blocked after trading_buy_cutoff_et even if
+    #     the regular session is still open.  Sells remain allowed until the
+    #     regular-hours close.
+    buy_cutoff_str = getattr(cfg, "trading_buy_cutoff_et", "")
+    if buy_cutoff_str and signal.signal_side == "buy":
+        effective_now = now_utc or datetime.datetime.now(datetime.timezone.utc)
+        if effective_now.tzinfo is None:
+            effective_now = effective_now.replace(tzinfo=datetime.timezone.utc)
+        now_et = effective_now.astimezone(ZoneInfo("America/New_York"))
+        cut_hh, cut_mm = _parse_hh_mm(buy_cutoff_str, 15, 0)
+        if now_et.hour * 60 + now_et.minute > cut_hh * 60 + cut_mm:
+            block(
+                f"buy cutoff -- buys blocked after {buy_cutoff_str} ET",
+                {"now_et": now_et.strftime("%H:%M"), "buy_cutoff_et": buy_cutoff_str},
+            )
+            return blocked_response(retriable=False)
+
     # 2. Approval gate
     if cfg.trading_require_approval and signal.status != "approved":
         block(
@@ -115,6 +179,26 @@ def evaluate_signal_for_execution(
             f"signal_side '{signal.signal_side}' is not executable (allowed: buy/sell/reduce)",
             {"signal_side": signal.signal_side},
         )
+        return blocked_response()
+
+    # 3b. Short / exit gate -- sell and reduce signals are logged and scored
+    # by the backtest but not submitted to the broker until TRADING_ALLOW_SHORTS=true.
+    # This lets us accumulate outcome data on sell signals before enabling execution.
+    if signal.signal_side in ("sell", "reduce") and not getattr(cfg, "trading_allow_shorts", False):
+        block(
+            "TRADING_ALLOW_SHORTS=False -- sell/reduce signals are tracked but not executed",
+            {"signal_side": signal.signal_side},
+        )
+        return blocked_response()
+
+    policy_block = get_signal_policy_block(
+        signal.ticker,
+        getattr(signal, "event_type", None),
+        now_utc,
+        cfg,
+    )
+    if policy_block:
+        block(policy_block["reason"], {"reason_code": policy_block["reason_code"]})
         return blocked_response()
 
     # 4. Signal strength
@@ -157,7 +241,7 @@ def evaluate_signal_for_execution(
 
     # 5. Account must not be trading blocked
     if account.get("trading_blocked"):
-        block("Alpaca account is trading_blocked")
+        block("broker account is trading_blocked")
         return blocked_response()
 
     # 6. Buying power / portfolio value
@@ -165,7 +249,7 @@ def evaluate_signal_for_execution(
     portfolio_value = account.get("portfolio_value") or account.get("equity") or 0.0
 
     # 7. Get price for order sizing. Spread is irrelevant for limit orders.
-    # Fall back to Gemini if Alpaca has no quote (after-hours, etc).
+    # Fall back to DeepSeek if the broker has no quote (after-hours, etc).
     symbol = signal.ticker
     mid_price = 0.0
     quote = {}
@@ -173,16 +257,30 @@ def evaluate_signal_for_execution(
         quote = broker.get_quote(symbol)
         mid_price = quote.get("mid") or quote.get("ask") or quote.get("bid") or 0.0
     except Exception as exc:
-        logger.warning("alpaca_quote_failed", ticker=symbol, error=str(exc))
+        logger.warning("broker_quote_failed", ticker=symbol, error=str(exc))
+
+    # Spread is deliberately NOT gated: every order is a limit order, so a
+    # wide spread cannot produce a worse-than-limit fill. (Spread gate and
+    # TRADING_MAX_SPREAD_PCT retired 2026-07-07.)
 
     if not mid_price:
-        mid_price = _get_price_via_gemini(symbol, getattr(cfg, "gemini_api_key", "")) or 0.0
+        mid_price = _get_price_via_deepseek(
+            symbol,
+            getattr(cfg, "deepseek_api_key", ""),
+            getattr(cfg, "deepseek_model", "deepseek-v4-flash"),
+        ) or 0.0
         if mid_price:
-            logger.info("gemini_price_used", ticker=symbol, price=mid_price)
+            logger.info("deepseek_price_used", ticker=symbol, price=mid_price)
         else:
             # Truly no price available - retry next hourly run
-            reasons.append(f"price unavailable for {symbol} via Alpaca and Gemini")
-            _log_decision(session, signal, "blocked", f"price unavailable for {symbol} -- will retry", {"quote": quote})
+            reasons.append(f"broker quote unavailable for {symbol}; DeepSeek fallback also unavailable")
+            _log_decision(
+                session,
+                signal,
+                "blocked",
+                f"broker quote unavailable for {symbol} and DeepSeek fallback failed -- will retry",
+                {"quote": quote},
+            )
             return blocked_response(retriable=True)
 
     # 8. Duplicate open order check
@@ -246,9 +344,13 @@ def evaluate_signal_for_execution(
             )
             return blocked_response()
 
-        # 10. Check buying power
+        # 10. Size the order: confidence-scaled, then capped.
+        # Dollar size = TRADING_MAX_ORDER_NOTIONAL scaled by signal strength
+        # (floored at 0.5 so a valid signal never sizes below half the cap),
+        # bounded by remaining position capacity and available buying power.
+        strength_scale = max(0.5, min(1.0, strength or 0.0))
         order_notional = min(
-            cfg.trading_max_order_notional,
+            cfg.trading_max_order_notional * strength_scale,
             allowed_capacity,
             buying_power,
         )
@@ -266,7 +368,7 @@ def evaluate_signal_for_execution(
         order_qty = None  # notional-based, no qty needed
 
     else:
-        # Sell: use qty from existing position; limit price = bid
+        # Sell: use qty from existing position; limit price = mid
         if raw_side == "reduce":
             order_qty = round(current_qty * 0.5, 9)
         else:
@@ -289,19 +391,29 @@ def evaluate_signal_for_execution(
         )
         return blocked_response()
 
+    # Determine order type from config (default limit for safety)
+    order_type = getattr(cfg, "trading_order_type", "limit").lower()
+
+    price_desc = (
+        f"@ limit {limit_price:.4f}" if order_type == "limit"
+        else f"@ market (mid ~{limit_price:.4f})"
+    )
+
     # All checks passed -- log and return order spec
     _log_decision(
         session, signal, "allowed",
         (
             f"All risk checks passed -- {broker_side} {symbol} "
             f"{'notional=$' + str(round(order_notional, 2)) if broker_side == 'buy' else 'qty=' + str(order_qty)} "
-            f"@ limit {limit_price:.4f}"
+            + price_desc
         ),
         {
             "side": broker_side,
+            "order_type": order_type,
             "notional": order_notional if broker_side == "buy" else None,
             "qty": order_qty if broker_side == "sell" else None,
-            "limit_price": limit_price,
+            "limit_price": limit_price if order_type == "limit" else None,
+            "expected_price": mid_price,
         },
     )
 
@@ -314,8 +426,9 @@ def evaluate_signal_for_execution(
             "side": broker_side,
             "notional": round(order_notional, 2) if broker_side == "buy" else None,
             "qty": order_qty if broker_side == "sell" else None,
-            "limit_price": limit_price,
-            "order_type": "limit",
+            "limit_price": limit_price if order_type == "limit" else None,
+            "expected_price": mid_price,
+            "order_type": order_type,
             "time_in_force": "day",
         },
     }

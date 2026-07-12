@@ -419,6 +419,8 @@ class TradeOrder(Base):
     submitted_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     filled_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     filled_avg_price: Mapped[Optional[float]] = mapped_column(Float)
+    expected_price: Mapped[Optional[float]] = mapped_column(Float)   # mid-price at submission time
+    slippage_pct: Mapped[Optional[float]] = mapped_column(Float)     # (fill - expected) / expected * 100
 
     raw_request_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
     raw_response_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
@@ -455,6 +457,140 @@ class TradingDecisionLog(Base):
 
     def __repr__(self) -> str:
         return f"<TradingDecisionLog {self.decision} {self.ticker} signal_id={self.trade_signal_id}>"
+
+
+class SignalOutcome(Base):
+    """
+    Backward-looking, signal-only backtest result.
+
+    For every directional (buy/sell) TradeSignal, regardless of what
+    happened to it (executed, blocked, expired, ...), records the
+    forward price return at one or more horizons using market_prices.
+    This answers "was the underlying signal right?" independent of
+    whether the risk/execution layer actually acted on it -- that
+    comparison is exactly the point: it lets you see whether the
+    execution gate is filtering toward or away from the better signals.
+
+    One row per (trade_signal_id, horizon_days); recomputation is an
+    upsert keyed on that pair, so the worker is safe to rerun daily.
+    """
+    __tablename__ = "signal_outcomes"
+    __table_args__ = (
+        UniqueConstraint("trade_signal_id", "horizon_days", name="uq_signal_outcome_horizon"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trade_signal_id: Mapped[int] = mapped_column(Integer, ForeignKey("trade_signals.id"), nullable=False, index=True)
+
+    ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    signal_side: Mapped[str] = mapped_column(String(20), nullable=False)
+    # status of the parent TradeSignal at the time this outcome was computed
+    # (executed / blocked / expired / pending_fill / ...) -- denormalized so
+    # reports can group by it without a join.
+    status_at_eval: Mapped[Optional[str]] = mapped_column(String(20), index=True)
+
+    materiality_score: Mapped[Optional[float]] = mapped_column(Float)
+    confidence_score: Mapped[Optional[float]] = mapped_column(Float)
+    event_type: Mapped[Optional[str]] = mapped_column(String(50), index=True)
+
+    horizon_days: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+
+    t0_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    t0_price: Mapped[Optional[float]] = mapped_column(Float)
+    t_horizon_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    t_horizon_price: Mapped[Optional[float]] = mapped_column(Float)
+
+    # side-adjusted: positive means the signal's direction was correct
+    forward_return_pct: Mapped[Optional[float]] = mapped_column(Float, index=True)
+
+    computed_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+    signal: Mapped["TradeSignal"] = relationship("TradeSignal")
+
+    def __repr__(self) -> str:
+        return (
+            f"<SignalOutcome {self.ticker} {self.signal_side} "
+            f"h={self.horizon_days}d ret={self.forward_return_pct}>"
+        )
+
+
+class SameDaySignalOutcome(Base):
+    """
+    Same-day (intraday entry -> 3:55pm ET close-out) backtest result for one
+    directional TradeSignal. This is intentionally a separate table from
+    SignalOutcome (the multi-day 1/5/10 "trading day" backtest) -- the two
+    measure different strategy shapes and must never be conflated. See
+    workers/backtest_same_day_signals.py for how rows here are computed.
+
+    One row per trade_signal_id (a signal only ever has one same-day
+    session). Recomputation is an upsert keyed on trade_signal_id, so the
+    worker is safe to rerun.
+
+    Known limitation shared with SignalOutcome: status_at_eval is a snapshot
+    of the parent TradeSignal's status at compute time and is not refreshed
+    on rerun if the row already exists -- see the process design doc's
+    Issue 7 for why that matters when comparing executed vs blocked signals.
+    """
+    __tablename__ = "same_day_signal_outcomes"
+    __table_args__ = (
+        UniqueConstraint("trade_signal_id", name="uq_same_day_signal_outcome"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trade_signal_id: Mapped[int] = mapped_column(Integer, ForeignKey("trade_signals.id"), nullable=False, index=True)
+
+    ticker: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    signal_side: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    # ET calendar-date label for the trading session this outcome belongs to,
+    # e.g. "2026-06-23". A label, not an instant -- deliberately not a
+    # timezone-aware DateTime, to avoid implying a specific time-of-day.
+    session_date: Mapped[Optional[str]] = mapped_column(String(10), index=True)
+
+    # Which interval's market_prices rows were actually used to resolve this
+    # outcome (e.g. "5m" or "1m") -- recorded so results are never read later
+    # without knowing the granularity that produced them.
+    interval_used: Mapped[Optional[str]] = mapped_column(String(10))
+
+    entry_timestamp: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    entry_price: Mapped[Optional[float]] = mapped_column(Float)
+    exit_timestamp: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    exit_price: Mapped[Optional[float]] = mapped_column(Float)
+
+    gross_return_pct: Mapped[Optional[float]] = mapped_column(Float, index=True)
+    net_return_pct: Mapped[Optional[float]] = mapped_column(Float)
+    mfe_pct: Mapped[Optional[float]] = mapped_column(Float)
+    mae_pct: Mapped[Optional[float]] = mapped_column(Float)
+    win_loss: Mapped[Optional[str]] = mapped_column(String(10))  # win | loss | flat
+
+    event_type: Mapped[Optional[str]] = mapped_column(String(50), index=True)
+    materiality_score: Mapped[Optional[float]] = mapped_column(Float)
+    confidence_score: Mapped[Optional[float]] = mapped_column(Float)
+    research_stage: Mapped[Optional[str]] = mapped_column(String(30))
+    entry_time_of_day_bucket: Mapped[Optional[str]] = mapped_column(String(20))
+
+    # snapshot of the parent TradeSignal.status at compute time -- see
+    # docstring "Known limitation" above
+    status_at_eval: Mapped[Optional[str]] = mapped_column(String(20), index=True)
+
+    # ok | no_intraday_data | intraday_coverage_gap | expired_before_session
+    # (legacy rows may still carry after_hours_no_entry, retired 2026-07-07
+    # when weekend/holiday/after-cutoff signals began rolling to the next
+    # session inside the execution retry window)
+    outcome_status: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    # null | possible_halt_or_gap
+    flag: Mapped[Optional[str]] = mapped_column(String(30))
+
+    computed_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+    signal: Mapped["TradeSignal"] = relationship("TradeSignal")
+
+    def __repr__(self) -> str:
+        return (
+            f"<SameDaySignalOutcome {self.ticker} {self.signal_side} "
+            f"session={self.session_date} status={self.outcome_status} "
+            f"ret={self.gross_return_pct}>"
+        )
 
 
 class InstitutionalHolding(Base):

@@ -24,6 +24,7 @@ To execute, first approve signals (set status=approved) then run:
 """
 from __future__ import annotations
 
+import datetime
 import json
 import sys
 from typing import List, Optional
@@ -35,6 +36,9 @@ from equity_intel.config import settings
 from equity_intel.db.session import SessionLocal
 from equity_intel.logging_config import configure_logging, get_logger
 from equity_intel.trading.signals import generate_trade_signals_from_brief
+from equity_intel.trading.strategy_policy import get_signal_policy_block
+from equity_intel.workers.backtest_same_day_signals import compute_same_day_outcomes
+from equity_intel.workers.review_same_day_strategy import run_review_workflow
 
 logger = get_logger(__name__)
 
@@ -43,6 +47,32 @@ ADVICE_DISCLAIMER = (
     "All signals require human review before execution. "
     "Verify with primary sources before making any decisions."
 )
+
+
+def _maybe_refresh_strategy_review(session, cfg, *, dry_run: bool) -> Optional[dict]:
+    if dry_run or not getattr(cfg, "strategy_review_run_before_signal_generation_enabled", False):
+        return None
+
+    interval = getattr(cfg, "strategy_review_backtest_interval", "5m")
+    window_sessions = getattr(cfg, "strategy_review_window_sessions", 20)
+    output_dir = getattr(cfg, "strategy_review_artifact_output_dir", "strategy_review_artifacts")
+
+    backtest_summary = compute_same_day_outcomes(session, cfg, interval=interval)
+    session.commit()
+    review_result, artifact_path, markdown_path = run_review_workflow(
+        session,
+        window_sessions=window_sessions,
+        output_dir=output_dir,
+        cfg=cfg,
+    )
+    return {
+        "backtest_summary": backtest_summary,
+        "review_status": review_result.get("status"),
+        "artifact_path": str(artifact_path),
+        "markdown_path": str(markdown_path),
+        "survived": len(review_result.get("survived", [])),
+        "auto_apply": review_result.get("auto_apply"),
+    }
 
 
 def run(
@@ -64,6 +94,7 @@ def run(
 
     session = SessionLocal()
     try:
+        strategy_review_summary = _maybe_refresh_strategy_review(session, cfg, dry_run=dry_run)
         brief = get_watchlist_brief(
             session=session,
             tickers=tickers,
@@ -83,6 +114,7 @@ def run(
             catalysts = brief.get("catalysts", [])
             trad_hedge = set(cfg.trad_hedge_list)
             preview = []
+            preview_now = datetime.datetime.now(datetime.timezone.utc)
             for c in catalysts:
                 ticker = (c.get("ticker") or "").upper()
                 if ticker in trad_hedge:
@@ -93,11 +125,12 @@ def run(
                 has_primary = bool(c.get("has_primary_source"))
                 if mat < min_materiality or conf < min_confidence:
                     continue
-                if cfg.trading_require_primary_source and not has_primary:
-                    continue
                 side = _resolve_side(c.get("event_type"), c.get("event_subtype"))
                 strength = _signal_strength(mat, conf, nov, has_primary)
                 if strength < min_signal_strength:
+                    side = "monitor"
+                policy_block = get_signal_policy_block(ticker, c.get("event_type"), preview_now, cfg)
+                if policy_block and side in ("buy", "sell", "reduce"):
                     side = "monitor"
                 preview.append({
                     "ticker": ticker,
@@ -107,7 +140,7 @@ def run(
                     "event_type": c.get("event_type"),
                     "title": c.get("title"),
                 })
-            return {"dry_run": True, "signals": preview, "brief_catalysts": len(catalysts)}
+            return {"dry_run": True, "signals": preview, "brief_catalysts": len(catalysts), "strategy_review": strategy_review_summary}
 
         # Live run: persist signals
         signals = generate_trade_signals_from_brief(
@@ -116,8 +149,6 @@ def run(
             min_materiality=min_materiality,
             min_confidence=min_confidence,
             min_signal_strength=min_signal_strength,
-            require_primary_source=cfg.trading_require_primary_source,
-            allow_news_only=cfg.trading_allow_news_only_signals,
             allow_probe_stage=cfg.trading_allow_probe_stage_signals,
             cfg=cfg,
         )
@@ -130,6 +161,7 @@ def run(
 
         return {
             "dry_run": False,
+            "strategy_review": strategy_review_summary,
             "total_generated": len(signals),
             "buy_count": len(buy_signals),
             "sell_reduce_count": len(sell_signals),
@@ -249,8 +281,7 @@ def main(
             click.echo(
                 "\n  No signals generated. Check:\n"
                 "    - min_materiality / min_confidence thresholds\n"
-                "    - whether events exist (run equity-build-events, equity-cluster-events)\n"
-                "    - TRADING_REQUIRE_PRIMARY_SOURCE setting",
+                "    - whether events exist (run equity-build-events, equity-cluster-events)",
                 err=True,
             )
         click.echo(f"\n  {ADVICE_DISCLAIMER}")

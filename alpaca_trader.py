@@ -8,8 +8,8 @@ Supports paper trading (default) and live trading.
 Usage:
     python alpaca_trader.py --status          # Account info + buying power
     python alpaca_trader.py --positions       # Show open positions
-    python alpaca_trader.py --buy AAPL 1      # Buy 1 share of AAPL (paper)
-    python alpaca_trader.py --sell AAPL 1     # Sell 1 share of AAPL (paper)
+    python alpaca_trader.py --buy AAPL 100    # Buy $100 of AAPL (limit @ mid)
+    python alpaca_trader.py --sell AAPL 1     # Sell 1 share of AAPL (limit @ mid)
     python alpaca_trader.py --quote NVDA      # Get latest quote
     python alpaca_trader.py --watchlist       # Show prices for ai_tickers.json
     python alpaca_trader.py --history NVDA 5  # Last 5 days of NVDA bars
@@ -60,7 +60,7 @@ if not API_KEY or not SECRET_KEY:
 # ── Alpaca imports ────────────────────────────────────────────────────────────
 try:
     from alpaca.trading.client import TradingClient
-    from alpaca.trading.requests import MarketOrderRequest, LimitOrderRequest
+    from alpaca.trading.requests import LimitOrderRequest
     from alpaca.trading.enums import OrderSide, TimeInForce, OrderStatus
     from alpaca.data.historical import StockHistoricalDataClient
     from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
@@ -166,14 +166,39 @@ def cmd_history(symbol: str, days: int):
     return True
 
 
-def cmd_buy(symbol: str, qty: float):
-    """Place a market buy order."""
-    print(f"Placing BUY order: {symbol} x{qty} ({MODE})")
-    req = MarketOrderRequest(
+def _kill_switch_engaged() -> bool:
+    """Project rule: no order submission unless TRADING_EXECUTION_ENABLED=true."""
+    enabled = os.environ.get("TRADING_EXECUTION_ENABLED", "false").lower() in ("1", "true", "yes")
+    if not enabled:
+        print("BLOCKED: TRADING_EXECUTION_ENABLED is not true in .env -- no order submitted.")
+    return not enabled
+
+
+def _latest_mid(symbol: str) -> float:
+    """Mid price from the latest quote, for limit pricing."""
+    req = StockLatestQuoteRequest(symbol_or_symbols=symbol)
+    quotes = data_client.get_stock_latest_quote(req)
+    q = quotes[symbol]
+    bid = float(q.bid_price or 0)
+    ask = float(q.ask_price or 0)
+    mid = (bid + ask) / 2 if (bid and ask) else (ask or bid)
+    if not mid:
+        raise ValueError(f"No usable quote for {symbol}")
+    return mid
+
+
+def cmd_buy(symbol: str, notional: float):
+    """Limit DAY buy for a dollar amount (project rules: limit only; buys use notional)."""
+    if _kill_switch_engaged():
+        return False
+    limit_price = round(_latest_mid(symbol), 2)
+    print(f"Placing BUY order: {symbol} ${notional:.2f} limit@{limit_price} ({MODE})")
+    req = LimitOrderRequest(
         symbol=symbol,
-        qty=qty,
+        notional=round(notional, 2),
         side=OrderSide.BUY,
         time_in_force=TimeInForce.DAY,
+        limit_price=limit_price,
     )
     order = trading_client.submit_order(req)
     print(f"  Order ID: {order.id}")
@@ -183,13 +208,17 @@ def cmd_buy(symbol: str, qty: float):
 
 
 def cmd_sell(symbol: str, qty: float):
-    """Place a market sell order."""
-    print(f"Placing SELL order: {symbol} x{qty} ({MODE})")
-    req = MarketOrderRequest(
+    """Limit DAY sell for a share qty (project rules: limit only; sells use qty)."""
+    if _kill_switch_engaged():
+        return False
+    limit_price = round(_latest_mid(symbol), 2)
+    print(f"Placing SELL order: {symbol} x{qty} limit@{limit_price} ({MODE})")
+    req = LimitOrderRequest(
         symbol=symbol,
         qty=qty,
         side=OrderSide.SELL,
         time_in_force=TimeInForce.DAY,
+        limit_price=limit_price,
     )
     order = trading_client.submit_order(req)
     print(f"  Order ID: {order.id}")
@@ -329,8 +358,8 @@ def main():
     parser.add_argument("--orders", action="store_true", help="Recent orders")
     parser.add_argument("--quote", metavar="SYM", help="Latest quote for symbol")
     parser.add_argument("--history", nargs=2, metavar=("SYM", "DAYS"), help="Daily bars")
-    parser.add_argument("--buy", nargs=2, metavar=("SYM", "QTY"), help="Market buy")
-    parser.add_argument("--sell", nargs=2, metavar=("SYM", "QTY"), help="Market sell")
+    parser.add_argument("--buy", nargs=2, metavar=("SYM", "USD"), help="Limit buy for $USD (notional)")
+    parser.add_argument("--sell", nargs=2, metavar=("SYM", "QTY"), help="Limit sell (share qty)")
     parser.add_argument("--watchlist", action="store_true", help="AI ticker watchlist")
     parser.add_argument("--test", action="store_true", help="Full connectivity test")
     args = parser.parse_args()

@@ -689,6 +689,8 @@
       border-bottom: 1px solid var(--border);
       margin-bottom: 4px;
       flex-shrink: 0;
+      align-items: center;
+      flex-wrap: wrap;
     }
     .tab-btn {
       background: none;
@@ -706,6 +708,280 @@
       background: var(--surface2);
       border-color: var(--accent);
       color: var(--text);
+    }
+    .tab-separator {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+      margin: 0 6px;
+    }
+    .tab-section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-right: 2px;
+    }
+    .tab-btn.secondary {
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .tab-btn.secondary.active {
+      color: var(--text);
+      border-color: var(--border);
+      background: rgba(30,35,53,0.85);
+    }
+
+    /* ---- Performance panel ---- */
+    .perf-panel {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .perf-hero {
+      background:
+        radial-gradient(circle at top right, rgba(79,142,247,0.20), transparent 40%),
+        linear-gradient(135deg, rgba(20,28,45,0.98), rgba(11,17,28,0.96));
+      border: 1px solid rgba(79,142,247,0.25);
+      border-radius: 18px;
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .perf-kicker {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8fb9ff;
+      margin-bottom: 10px;
+    }
+    .perf-title {
+      font-size: 2rem;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      max-width: 720px;
+    }
+    .perf-copy {
+      margin-top: 10px;
+      max-width: 760px;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .perf-stat-grid,
+    .perf-chart-grid,
+    .perf-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .perf-stat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .perf-chart-grid,
+    .perf-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .perf-card,
+    .perf-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .perf-stat-card {
+      background: linear-gradient(180deg, rgba(30,35,53,0.98), rgba(20,24,36,0.95));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .perf-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .perf-stat-value {
+      font-size: 1.9rem;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+    .perf-stat-note {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .perf-positive { color: var(--green); }
+    .perf-negative { color: var(--red); }
+    .perf-muted { color: var(--muted); }
+    .perf-section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .perf-section-title {
+      font-size: 1rem;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .perf-section-copy {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+    .perf-badge-row,
+    .perf-kv-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .perf-badge,
+    .perf-kv {
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      border: 1px solid var(--border);
+      background: rgba(30,35,53,0.92);
+      color: var(--text-dim);
+    }
+    .perf-badge.ok {
+      color: var(--green);
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+    }
+    .perf-badge.warn {
+      color: var(--yellow);
+      border-color: rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.10);
+    }
+    .perf-badge.off {
+      color: var(--red);
+      border-color: rgba(239,68,68,0.30);
+      background: rgba(239,68,68,0.10);
+    }
+    .perf-chart {
+      margin-top: 12px;
+      height: 150px;
+      width: 100%;
+      display: block;
+      background: linear-gradient(180deg, rgba(15,17,23,0.2), rgba(15,17,23,0.65));
+      border: 1px solid rgba(79,142,247,0.10);
+      border-radius: 14px;
+      padding: 8px;
+    }
+    .perf-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .perf-chart-meta {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+    }
+    .perf-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .perf-list-item {
+      background: rgba(30,35,53,0.72);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .perf-item-left,
+    .perf-item-right {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .perf-item-title {
+      font-size: 0.92rem;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .perf-item-meta,
+    .perf-item-note {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .perf-item-right {
+      align-items: flex-end;
+      text-align: right;
+      min-width: 120px;
+    }
+    .perf-empty {
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.6;
+      background: rgba(15,17,23,0.25);
+    }
+    .perf-score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .perf-score-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(18,23,34,0.72);
+    }
+    .perf-score-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .perf-score-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .perf-score-note {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    @media (max-width: 1100px) {
+      .perf-stat-grid,
+      .perf-chart-grid,
+      .perf-grid,
+      .perf-score-grid {
+        grid-template-columns: 1fr;
+      }
+      .perf-hero {
+        flex-direction: column;
+      }
     }
 
     /* ---- My Views panel ---- */
@@ -854,6 +1130,409 @@
     .mv-diagnostic .mv-diag-icon { font-size: 2rem; margin-bottom: 12px; }
     .mv-diagnostic .mv-diag-msg  { font-size: 0.88rem; margin-bottom: 6px; color: var(--text-dim); }
     .mv-diagnostic .mv-diag-hint { font-size: 0.78rem; }
+
+    /* ---- Trading workflow panel ---- */
+    .workflow-panel {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .workflow-hero {
+      background:
+        radial-gradient(circle at top left, rgba(79,142,247,0.18), transparent 34%),
+        linear-gradient(180deg, rgba(24,28,39,0.98), rgba(15,17,23,0.98));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .workflow-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .workflow-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .workflow-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+    .mode-pills, .workflow-badges, .workflow-metrics {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .mode-pill, .workflow-badge {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-dim);
+    }
+    .mode-pill.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(79,142,247,0.12);
+    }
+    .workflow-badge.ok {
+      color: var(--green);
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+    }
+    .workflow-badge.warn {
+      color: var(--yellow);
+      border-color: rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.10);
+    }
+    .workflow-badge.off {
+      color: var(--red);
+      border-color: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.10);
+    }
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 1100px) { .workflow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 700px)  { .workflow-grid { grid-template-columns: 1fr; } }
+    .workflow-metric {
+      background: rgba(15,17,23,0.82);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .workflow-metric-val {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .workflow-metric-key {
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .workflow-rail {
+      display: grid;
+      grid-template-columns: 2fr 1.35fr;
+      gap: 12px;
+      align-items: start;
+    }
+    @media (max-width: 980px) { .workflow-rail { grid-template-columns: 1fr; } }
+    .workflow-tape {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+    @media (max-width: 980px) { .workflow-tape { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .workflow-tape { grid-template-columns: 1fr; } }
+    .workflow-tape-item {
+      background: rgba(15,17,23,0.85);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .workflow-tape-label {
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .workflow-tape-value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .workflow-tape-note {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .workflow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .workflow-step-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .workflow-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .workflow-step-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .workflow-step-copy {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      max-width: 860px;
+    }
+    .workflow-step-right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .workflow-step-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 980px) { .workflow-step-body { grid-template-columns: 1fr; } }
+    .workflow-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .workflow-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent 40%);
+      opacity: 0.8;
+    }
+    .workflow-card-accent {
+      background:
+        radial-gradient(circle at top right, rgba(79,142,247,0.18), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(34,197,94,0.12), transparent 28%),
+        linear-gradient(180deg, #242a40 0%, #21273c 100%);
+      border-color: rgba(79,142,247,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .workflow-card-accent.warm {
+      background:
+        radial-gradient(circle at top right, rgba(245,158,11,0.18), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(239,68,68,0.10), transparent 26%),
+        linear-gradient(180deg, #2c2739 0%, #262235 100%);
+      border-color: rgba(245,158,11,0.24);
+    }
+    .workflow-card-accent.success {
+      background:
+        radial-gradient(circle at top right, rgba(34,197,94,0.18), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(79,142,247,0.10), transparent 26%),
+        linear-gradient(180deg, #202d35 0%, #1d2830 100%);
+      border-color: rgba(34,197,94,0.24);
+    }
+    .workflow-card-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+    .workflow-kv-row, .workflow-inline-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .workflow-kv {
+      font-size: 0.76rem;
+      color: #dbe7ff;
+      border: 1px solid rgba(79,142,247,0.18);
+      background: rgba(11,16,28,0.48);
+      border-radius: 999px;
+      padding: 4px 9px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .workflow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .workflow-list-item {
+      border: 1px solid rgba(79,142,247,0.14);
+      background: rgba(10,14,25,0.52);
+      border-radius: 8px;
+      padding: 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .workflow-list-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .workflow-symbol {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .workflow-side {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: 999px;
+      padding: 2px 7px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .workflow-side.buy { color: var(--green); border-color: rgba(34,197,94,0.30); }
+    .workflow-side.sell, .workflow-side.avoid { color: var(--red); border-color: rgba(239,68,68,0.30); }
+    .workflow-side.monitor, .workflow-side.reduce { color: var(--yellow); border-color: rgba(245,158,11,0.30); }
+    .workflow-status {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .workflow-status.ok { color: var(--green); }
+    .workflow-status.warn { color: var(--yellow); }
+    .workflow-status.off { color: var(--red); }
+    .workflow-item-title {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+    .workflow-item-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .workflow-note {
+      font-size: 0.76rem;
+      color: #bfd0ef;
+      line-height: 1.55;
+      position: relative;
+      z-index: 1;
+    }
+    .workflow-empty {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .backtest-switcher {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .backtest-switch-btn {
+      background: rgba(15,17,23,0.55);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+    .backtest-switch-btn.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(79,142,247,0.16);
+    }
+    .workflow-scoreboard {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 900px) { .workflow-scoreboard { grid-template-columns: 1fr; } }
+    .workflow-scoreboard-main {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .workflow-scoreboard-side {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 700px) { .workflow-scoreboard-side { grid-template-columns: 1fr; } }
+    .workflow-scorebox {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .workflow-scorebox-val {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .workflow-scorebox-key {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .workflow-scorebox-note {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -927,12 +1606,16 @@
 
       <!-- Tab bar -->
       <div class="tab-bar" style="padding:12px 24px 0;background:var(--surface);border-bottom:1px solid var(--border);">
-        <button class="tab-btn active" id="tabBtnFeed"    onclick="switchTab('feed')">Catalyst Feed</button>
-        <button class="tab-btn"        id="tabBtnMyViews" onclick="switchTab('myviews')">My Views</button>
+        <button class="tab-btn active" id="tabBtnPerformance" onclick="switchTab('performance')">Performance</button>
+        <button class="tab-btn" id="tabBtnWorkflow" onclick="switchTab('workflow')">Trading Workflow</button>
+        <span class="tab-separator"></span>
+        <span class="tab-section-label">Research</span>
+        <button class="tab-btn secondary" id="tabBtnFeed"    onclick="switchTab('feed')">Catalyst Feed</button>
+        <button class="tab-btn secondary" id="tabBtnMyViews" onclick="switchTab('myviews')">My Views</button>
       </div>
 
       <!-- Catalyst feed panel (default) -->
-      <main class="content" id="content" style="display:flex;flex-direction:column;">
+      <main class="content" id="content" style="display:none;flex-direction:column;">
         <div class="empty-state" id="loadingState">
           <div class="spinner"></div>
           <div class="empty-msg">Loading catalyst brief…</div>
@@ -941,6 +1624,12 @@
 
       <!-- My Views panel -->
       <div class="content my-views-panel" id="myViewsPanel" style="display:none;"></div>
+
+      <!-- Performance panel -->
+      <div class="content perf-panel" id="performancePanel" style="display:flex;"></div>
+
+      <!-- Trading Workflow panel -->
+      <div class="content workflow-panel" id="workflowPanel" style="display:none;"></div>
 
     </div>
 
@@ -954,6 +1643,13 @@
 let briefData        = null;
 let biasData         = null;
 let intelligenceData = null;
+let workflowData     = null;
+let workflowBacktestView = 'same_day';
+var currentTab = 'performance';
+var newsBlocksData = null;
+var newsBlocksLoaded = false;
+var workflowLoaded = false;
+var performanceLoaded = false;
 
 // ================================================================ //
 //  Utilities                                                        //
@@ -1364,6 +2060,15 @@ async function loadIntelligence() {
 }
 
 async function refreshDashboard() {
+  if (currentTab === 'workflow') {
+    await refreshWorkflow();
+    return;
+  }
+  if (currentTab === 'myviews') {
+    await refreshMyViews();
+    return;
+  }
+
   // Intelligence is a fast file read — load first, then brief (DB query).
   // loadBrief() manages its own spinner and button state.
   await loadIntelligence();
@@ -1516,6 +2221,745 @@ function renderIntelligence() {
   </div>`;
 }
 
+function mapEntries(obj) {
+  return Object.entries(obj || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+}
+
+function workflowStatusClass(value) {
+  const v = String(value || '').toLowerCase();
+  if (['executed', 'filled', 'ok', 'win', 'allowed', 'approved'].includes(v)) return 'ok';
+  if (['blocked', 'failed', 'rejected', 'loss', 'off', 'error'].includes(v)) return 'off';
+  return 'warn';
+}
+
+function formatPct(val) {
+  return val == null ? 'n/a' : `${Number(val).toFixed(2)}%`;
+}
+
+function formatWinRate(val) {
+  return val == null ? 'n/a' : `${Number(val).toFixed(1)}%`;
+}
+
+function formatMoney(val) {
+  if (val == null || Number.isNaN(Number(val))) return 'n/a';
+  return Number(val).toLocaleString(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
+}
+
+function valueTone(val) {
+  if (val == null || Number.isNaN(Number(val))) return 'perf-muted';
+  if (Number(val) > 0) return 'perf-positive';
+  if (Number(val) < 0) return 'perf-negative';
+  return 'perf-muted';
+}
+
+function sparkline(points, stroke) {
+  if (!points || !points.length) {
+    return `<div class="perf-empty">No curve points yet. Backtest rows will appear here once enough outcomes resolve.</div>`;
+  }
+  const values = points.map(p => Number(p.equity || 0));
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const width = 520;
+  const height = 140;
+  const span = Math.max(max - min, 1);
+  const step = points.length === 1 ? 0 : width / (points.length - 1);
+  const poly = points.map((point, idx) => {
+    const x = idx * step;
+    const y = height - (((Number(point.equity || 0) - min) / span) * (height - 18)) - 9;
+    return `${x},${y}`;
+  }).join(' ');
+  return `
+    <div class="perf-chart">
+      <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true">
+        <polyline points="${poly}" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      </svg>
+    </div>`;
+}
+
+function formatCountMap(obj) {
+  const items = mapEntries(obj);
+  if (!items.length) return `<div class="workflow-empty">No rows yet.</div>`;
+  return `<div class="workflow-kv-row">${items.map(([k, v]) => `<span class="workflow-kv">${esc(k)}: ${esc(String(v))}</span>`).join('')}</div>`;
+}
+
+function renderCurveCard(title, points, copy, stroke) {
+  const first = points && points.length ? points[0].equity : null;
+  const last = points && points.length ? points[points.length - 1].equity : null;
+  const delta = first != null && last != null ? (((last / first) - 1) * 100) : null;
+  return `
+    <div class="perf-card">
+      <div class="perf-section-head">
+        <div>
+          <div class="perf-section-title">${esc(title)}</div>
+          <div class="perf-section-copy">${esc(copy)}</div>
+        </div>
+      </div>
+      ${sparkline(points, stroke)}
+      <div class="perf-chart-meta">
+        <span>${points && points.length ? `${esc(points[0].label)} to ${esc(points[points.length - 1].label)}` : 'No resolved window yet'}</span>
+        <span class="${valueTone(delta)}">${formatPct(delta)}</span>
+      </div>
+    </div>`;
+}
+
+function renderSignalList(items) {
+  if (!items || !items.length) return `<div class="workflow-empty">No generated signals yet.</div>`;
+  return `<div class="workflow-list">${items.slice(0, 6).map(item => `
+    <div class="workflow-list-item">
+      <div class="workflow-list-top">
+        <span class="workflow-symbol">${esc(item.ticker || '?')}</span>
+        <span class="workflow-side ${esc((item.signal_side || '').toLowerCase())}">${esc(item.signal_side || 'signal')}</span>
+        <span class="workflow-status ${workflowStatusClass(item.status)}">${esc(item.status || 'unknown')}</span>
+      </div>
+      ${item.title ? `<div class="workflow-item-title">${esc(item.title)}</div>` : ''}
+      <div class="workflow-item-meta">
+        ${item.event_type ? `<span>${esc(item.event_type)}</span>` : ''}
+        ${item.signal_strength != null ? `<span>strength ${Number(item.signal_strength).toFixed(2)}</span>` : ''}
+        ${item.generated_at ? `<span>${esc(formatDate(item.generated_at))}</span>` : ''}
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderOrderList(items) {
+  if (!items || !items.length) return `<div class="workflow-empty">No execution attempts yet.</div>`;
+  return `<div class="workflow-list">${items.slice(0, 6).map(item => `
+    <div class="workflow-list-item">
+      <div class="workflow-list-top">
+        <span class="workflow-symbol">${esc(item.ticker || '?')}</span>
+        <span class="workflow-side ${esc((item.side || '').toLowerCase())}">${esc(item.side || 'order')}</span>
+        <span class="workflow-status ${workflowStatusClass(item.status)}">${esc(item.status || 'unknown')}</span>
+      </div>
+      <div class="workflow-item-meta">
+        ${item.broker ? `<span>${esc(item.broker)}</span>` : ''}
+        ${item.notional != null ? `<span>$${Number(item.notional).toFixed(2)} notional</span>` : ''}
+        ${item.qty != null ? `<span>${Number(item.qty).toFixed(4)} shares</span>` : ''}
+        ${item.submitted_at ? `<span>${esc(formatDate(item.submitted_at))}</span>` : ''}
+      </div>
+      ${item.failure_reason ? `<div class="workflow-note">${esc(item.failure_reason)}</div>` : ''}
+    </div>`).join('')}</div>`;
+}
+
+function renderDiscoveryList(items) {
+  if (!items || !items.length) return `<div class="workflow-empty">No discovery candidates for the current week.</div>`;
+  return `<div class="workflow-list">${items.slice(0, 6).map(item => `
+    <div class="workflow-list-item">
+      <div class="workflow-list-top">
+        <span class="workflow-symbol">${esc(item.ticker || '?')}</span>
+        <span class="workflow-status ${workflowStatusClass(item.recommendation === 'probe_candidate' ? 'approved' : 'warn')}">${esc(item.recommendation || 'watch')}</span>
+      </div>
+      <div class="workflow-item-meta">
+        <span>score ${Number(item.total_score || 0).toFixed(3)}</span>
+        <span>${esc(String(item.mention_count || 0))} mentions</span>
+        <span>${esc(String(item.unique_source_count || 0))} sources</span>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function setWorkflowBacktestView(view) {
+  workflowBacktestView = view;
+  renderWorkflow();
+}
+
+function renderBacktestScoreboard(backs, mode) {
+  const swing = backs.swing || {};
+  const sameDay = backs.same_day || {};
+  const dayTradeSelected = workflowBacktestView === 'same_day';
+  const selectedCopy = dayTradeSelected
+    ? 'This is the intraday scorecard that matches forced same-day exits and feeds the strategy-review loop.'
+    : 'This is the multi-day scorecard that answers whether the signal was right 1, 5, or 10 trading days later.';
+  const selectedMetric = dayTradeSelected
+    ? [
+        { key: 'Resolved rows', val: sameDay.ok_count ?? 0, note: `${sameDay.count ?? 0} total same-day outcomes` },
+        { key: 'Average return', val: formatPct(sameDay.avg_gross_return_pct), note: 'Gross open-to-close result' },
+        { key: 'Win rate', val: formatWinRate(sameDay.win_rate_pct), note: 'Percent of resolved rows above zero' },
+        { key: 'Latest session', val: sameDay.latest_session_date || 'n/a', note: 'Most recent same-day session scored' },
+      ]
+    : [
+        { key: '1 day', val: formatPct((swing['1'] || {}).avg_return_pct), note: `${(swing['1'] || {}).count || 0} signals · ${formatWinRate((swing['1'] || {}).win_rate_pct)} win rate` },
+        { key: '5 day', val: formatPct((swing['5'] || {}).avg_return_pct), note: `${(swing['5'] || {}).count || 0} signals · ${formatWinRate((swing['5'] || {}).win_rate_pct)} win rate` },
+        { key: '10 day', val: formatPct((swing['10'] || {}).avg_return_pct), note: `${(swing['10'] || {}).count || 0} signals · ${formatWinRate((swing['10'] || {}).win_rate_pct)} win rate` },
+        { key: 'Interpretation', val: mode.day_trade_mode ? 'secondary' : 'primary', note: mode.day_trade_mode ? 'Live mode is day-trade, so swing is comparison context.' : 'Live mode is swing, so this is the main scorecard.' },
+      ];
+
+  return `
+    <div class="workflow-scoreboard">
+      <div class="workflow-scoreboard-main">
+        <div class="workflow-title-row">
+          <div>
+            <div class="workflow-title">Backtest results</div>
+            <div class="workflow-subtitle">${esc(selectedCopy)}</div>
+          </div>
+          <div class="backtest-switcher">
+            <button class="backtest-switch-btn ${dayTradeSelected ? 'active' : ''}" onclick="setWorkflowBacktestView('same_day')">Day Trade</button>
+            <button class="backtest-switch-btn ${!dayTradeSelected ? 'active' : ''}" onclick="setWorkflowBacktestView('swing')">Swing Trade</button>
+          </div>
+        </div>
+        <div class="workflow-grid">
+          ${selectedMetric.map(item => `
+            <div class="workflow-metric">
+              <div class="workflow-metric-val">${esc(String(item.val))}</div>
+              <div class="workflow-metric-key">${esc(item.key)}</div>
+              <div class="workflow-scorebox-note">${esc(item.note)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="workflow-scoreboard-side">
+        <div class="workflow-scorebox">
+          <div class="workflow-scorebox-key">Day-trade test</div>
+          <div class="workflow-scorebox-val">${formatPct(sameDay.avg_gross_return_pct)}</div>
+          <div class="workflow-scorebox-note">${esc(String(sameDay.ok_count || 0))} resolved rows · ${formatWinRate(sameDay.win_rate_pct)} win rate</div>
+        </div>
+        <div class="workflow-scorebox">
+          <div class="workflow-scorebox-key">Swing 5-day test</div>
+          <div class="workflow-scorebox-val">${formatPct((swing['5'] || {}).avg_return_pct)}</div>
+          <div class="workflow-scorebox-note">${esc(String((swing['5'] || {}).count || 0))} signals · ${formatWinRate((swing['5'] || {}).win_rate_pct)} win rate</div>
+        </div>
+        <div class="workflow-scorebox">
+          <div class="workflow-scorebox-key">Current live mode</div>
+          <div class="workflow-scorebox-val">${esc(mode.day_trade_mode ? 'day trade' : 'swing')}</div>
+          <div class="workflow-scorebox-note">${mode.day_trade_mode ? 'Same-day test matches your live holding constraint.' : 'Swing horizons matter more for your live holding style.'}</div>
+        </div>
+        <div class="workflow-scorebox">
+          <div class="workflow-scorebox-key">Default UI view</div>
+          <div class="workflow-scorebox-val">day trade</div>
+          <div class="workflow-scorebox-note">Both tests are available here, but the workflow opens on the same-day scorecard first.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderWorkflow() {
+  const panel = document.getElementById('workflowPanel');
+  const d = workflowData;
+  if (!d) return;
+
+  if (d.error) {
+    panel.innerHTML = `<div class="error-banner">Error: ${esc(d.error)}</div>`;
+    return;
+  }
+
+  const mode = d.mode || {};
+  const sig = d.signal_generation || {};
+  const exec = d.execution || {};
+  const backs = d.backtests || {};
+  const swing = backs.swing || {};
+  const sameDay = backs.same_day || {};
+  const review = d.strategy_review || {};
+  const latestReview = review.latest_artifact || {};
+  const discovery = d.discovery || {};
+
+  const swing5 = swing['5'] || {};
+  const primaryCard = mode.primary_backtest === 'same_day'
+    ? `${formatPct(sameDay.avg_gross_return_pct)} avg same-day`
+    : `${formatPct(swing5.avg_return_pct)} avg 5-day`;
+
+  panel.innerHTML = `
+    <div class="workflow-hero">
+      <div class="workflow-rail">
+        <div>
+          <div class="workflow-title-row">
+            <div>
+              <div class="workflow-title">Trading Workflow Console</div>
+              <div class="workflow-subtitle">
+                Two scorecards, one execution path: same-day is the default lens, swing remains available for multi-day signal validation.
+              </div>
+            </div>
+            <button class="collapse-btn" onclick="refreshWorkflow()">Refresh</button>
+          </div>
+          <div class="workflow-tape" style="margin-top:10px;">
+            <div class="workflow-tape-item">
+              <div class="workflow-tape-label">Mode</div>
+              <div class="workflow-tape-value">${esc(mode.day_trade_mode ? 'Day Trade' : 'Swing')}</div>
+              <div class="workflow-tape-note">${mode.day_trade_mode ? 'forced close by end of session' : 'positions can carry across sessions'}</div>
+            </div>
+            <div class="workflow-tape-item">
+              <div class="workflow-tape-label">Primary Lens</div>
+              <div class="workflow-tape-value">${esc(mode.primary_backtest === 'same_day' ? 'Same Day' : 'Swing')}</div>
+              <div class="workflow-tape-note">${esc(primaryCard)}</div>
+            </div>
+            <div class="workflow-tape-item">
+              <div class="workflow-tape-label">Signals</div>
+              <div class="workflow-tape-value">${esc(String(sig.directional_signal_count || 0))}</div>
+              <div class="workflow-tape-note">directional calls in the database</div>
+            </div>
+            <div class="workflow-tape-item">
+              <div class="workflow-tape-label">Discovery</div>
+              <div class="workflow-tape-value">${esc(String(discovery.probe_candidate_count || 0))}</div>
+              <div class="workflow-tape-note">probe candidates this week</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="workflow-badges" style="justify-content:flex-end;">
+            <span class="workflow-badge ${mode.execution_enabled ? 'ok' : 'off'}">Execution ${mode.execution_enabled ? 'enabled' : 'disabled'}</span>
+            <span class="workflow-badge ${mode.require_approval ? 'warn' : 'ok'}">Approval ${mode.require_approval ? 'required' : 'auto-pass allowed'}</span>
+            <span class="workflow-badge ${review.auto_apply_enabled ? 'warn' : 'ok'}">Policy auto-apply ${review.auto_apply_enabled ? 'on' : 'off'}</span>
+            <span class="workflow-badge ${review.run_before_signal_generation_enabled ? 'warn' : 'ok'}">Pre-signal review ${review.run_before_signal_generation_enabled ? 'on' : 'off'}</span>
+          </div>
+          <div class="workflow-grid" style="margin-top:10px;">
+            <div class="workflow-metric">
+              <div class="workflow-metric-val">${esc(String((exec.order_status_counts || {}).executed || (exec.order_status_counts || {}).filled || 0))}</div>
+              <div class="workflow-metric-key">Executed Orders</div>
+            </div>
+            <div class="workflow-metric">
+              <div class="workflow-metric-val">${formatWinRate(sameDay.win_rate_pct)}</div>
+              <div class="workflow-metric-key">Day Win Rate</div>
+            </div>
+            <div class="workflow-metric">
+              <div class="workflow-metric-val">${formatWinRate(swing5.win_rate_pct)}</div>
+              <div class="workflow-metric-key">5d Win Rate</div>
+            </div>
+            <div class="workflow-metric">
+              <div class="workflow-metric-val">${esc(mode.close_time_et || '15:55')}</div>
+              <div class="workflow-metric-key">Close Cutoff ET</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${renderBacktestScoreboard(backs, mode)}
+
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">1</span>
+            <div>
+              <div class="workflow-step-title">Signal generation</div>
+              <div class="workflow-step-copy">Signals are directional calls only. They are not day trade or swing by themselves yet; they just capture side, confidence, and timestamp from the catalyst brief.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge warn">${esc(String((sig.status_counts || {}).generated || 0))} generated</span>
+            <span class="workflow-badge ok">${esc(String((sig.status_counts || {}).approved || 0))} approved</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Recent signals</div>
+            ${renderSignalList(sig.recent_signals || [])}
+          </div>
+          <div class="workflow-card">
+            <div class="workflow-card-title">Signal mix</div>
+            ${formatCountMap(sig.side_counts)}
+            <div class="workflow-note">This stage only emits the call. The eventual holding style comes from <code>TRADING_DAY_TRADE_MODE</code>, not from the signal row itself.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">2</span>
+            <div>
+              <div class="workflow-step-title">Holding-style mode</div>
+              <div class="workflow-step-copy">The same signal-generation logic feeds both styles. If day-trade mode is on, positions are force-closed before the configured close window. If it is off, positions can persist for multi-day evaluation.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge ${mode.day_trade_mode ? 'warn' : 'ok'}">${mode.day_trade_mode ? 'Same-day close path active' : 'Swing hold path active'}</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Mode settings</div>
+            <div class="workflow-kv-row">
+              <span class="workflow-kv">broker: ${esc(mode.broker_provider || 'unknown')}</span>
+              <span class="workflow-kv">close time ET: ${esc(mode.close_time_et || '15:55')}</span>
+              <span class="workflow-kv">window: ${esc(String(mode.close_window_minutes || 0))} min</span>
+            </div>
+            <div class="workflow-note">When <code>TRADING_DAY_TRADE_MODE</code> is on, the same-day backtest below is the reality-matching scorecard. When it is off, the 1/5/10 trading-day backtest matters more.</div>
+          </div>
+          <div class="workflow-card workflow-card-accent success">
+            <div class="workflow-card-title">Why this matters</div>
+            <div class="workflow-note">Your project treats hold length as an execution policy choice, not a signal-generation choice. That is why one signal can be judged against two different backtests without changing how it was generated.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">3</span>
+            <div>
+              <div class="workflow-step-title">Execution and risk gates</div>
+              <div class="workflow-step-copy">Approved signals move into broker execution only if risk checks allow them. This view separates raw signal counts from actual order attempts so you can see where the pipeline is filtering.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge ${mode.execution_enabled ? 'ok' : 'off'}">kill switch ${mode.execution_enabled ? 'open' : 'closed'}</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Recent order attempts</div>
+            ${renderOrderList(exec.recent_orders || [])}
+          </div>
+          <div class="workflow-card workflow-card-accent">
+            <div class="workflow-card-title">Execution outcomes</div>
+            ${formatCountMap(exec.order_status_counts)}
+            <div class="workflow-card-title" style="margin-top:2px;">Decision log</div>
+            ${formatCountMap(exec.decision_counts)}
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">4</span>
+            <div>
+              <div class="workflow-step-title">Backtests split by holding style</div>
+              <div class="workflow-step-copy">These are intentionally different scorecards. The multi-day backtest answers whether the signal worked over 1, 5, or 10 trading days. The same-day backtest answers whether the signal worked if you had to be flat by the close.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge ${mode.primary_backtest === 'same_day' ? 'warn' : 'ok'}">Primary: ${esc(mode.primary_backtest === 'same_day' ? 'same-day' : 'swing')}</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Swing backtest (1/5/10 trading days)</div>
+            <div class="workflow-list">
+              ${['1', '5', '10'].map(h => {
+                const row = swing[h] || {};
+                return `<div class="workflow-list-item">
+                  <div class="workflow-list-top">
+                    <span class="workflow-symbol">${esc(h)}d horizon</span>
+                    <span class="workflow-status ${workflowStatusClass((row.avg_return_pct || 0) > 0 ? 'ok' : 'warn')}">${formatPct(row.avg_return_pct)}</span>
+                  </div>
+                  <div class="workflow-item-meta">
+                    <span>${esc(String(row.count || 0))} scored signals</span>
+                    <span>win rate ${row.win_rate_pct != null ? `${Number(row.win_rate_pct).toFixed(1)}%` : 'n/a'}</span>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="workflow-card">
+            <div class="workflow-card-title">Same-day backtest</div>
+            <div class="workflow-kv-row">
+              <span class="workflow-kv">${esc(String(sameDay.ok_count || 0))} resolved rows</span>
+              <span class="workflow-kv">avg ${formatPct(sameDay.avg_gross_return_pct)}</span>
+              <span class="workflow-kv">win rate ${sameDay.win_rate_pct != null ? `${Number(sameDay.win_rate_pct).toFixed(1)}%` : 'n/a'}</span>
+            </div>
+            <div class="workflow-card-title" style="margin-top:2px;">Outcome status</div>
+            ${formatCountMap(sameDay.outcome_status_counts)}
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">5</span>
+            <div>
+              <div class="workflow-step-title">Same-day strategy review loop</div>
+              <div class="workflow-step-copy">The review system looks at same-day outcomes, proposes policy adjustments, and can optionally auto-apply those proposals back into the policy file. This loop is the feedback mechanism for day-trade mode.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge ${latestReview.available ? 'ok' : 'warn'}">${latestReview.available ? 'artifact found' : 'no artifact yet'}</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Review state</div>
+            <div class="workflow-kv-row">
+              <span class="workflow-kv">auto-apply ${review.auto_apply_enabled ? 'on' : 'off'}</span>
+              <span class="workflow-kv">policy file ${review.policy_file_exists ? 'present' : 'missing'}</span>
+              ${latestReview.window_sessions != null ? `<span class="workflow-kv">${esc(String(latestReview.window_sessions))} sessions</span>` : ''}
+            </div>
+            <div class="workflow-note">${latestReview.available ? `Latest status: ${esc(latestReview.status || 'unknown')}. Survived proposals: ${esc(String(latestReview.survived_count || 0))}.` : esc((latestReview && latestReview.message) || 'No review artifacts saved yet.')}</div>
+          </div>
+          <div class="workflow-card workflow-card-accent warm">
+            <div class="workflow-card-title">Latest artifact</div>
+            ${latestReview.available ? `
+              <div class="workflow-note">${esc(latestReview.path || '')}</div>
+              <div class="workflow-kv-row">
+                <span class="workflow-kv">${esc(String(latestReview.survived_count || 0))} survived</span>
+                <span class="workflow-kv">${esc(String(latestReview.rejected_count || 0))} rejected</span>
+              </div>
+            ` : `<div class="workflow-empty">Run the same-day review workflow to create a stored artifact.</div>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="workflow-step-head">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="workflow-step-num">6</span>
+            <div>
+              <div class="workflow-step-title">Discovery radar to watchlist</div>
+              <div class="workflow-step-copy">Discovery is upstream of trading. It does not execute anything directly; it only surfaces new symbols, and qualifying names enter the watchlist before they are evaluated by step 1 like any other ticker.</div>
+            </div>
+          </div>
+          <div class="workflow-step-right">
+            <span class="workflow-badge ok">week ${esc(discovery.week_key || 'n/a')}</span>
+          </div>
+        </div>
+        <div class="workflow-step-body">
+          <div class="workflow-card">
+            <div class="workflow-card-title">Top discovery candidates</div>
+            ${renderDiscoveryList(discovery.top_candidates || [])}
+          </div>
+          <div class="workflow-card workflow-card-accent success">
+            <div class="workflow-card-title">Promotion summary</div>
+            <div class="workflow-kv-row">
+              <span class="workflow-kv">${esc(String(discovery.count || 0))} rows this week</span>
+              <span class="workflow-kv">${esc(String(discovery.probe_candidate_count || 0))} probe candidates</span>
+            </div>
+            <div class="workflow-note">Once promoted, these names enter the same catalyst brief and signal-generation pipeline as the rest of the watchlist.</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderPerformance() {
+  const panel = document.getElementById('performancePanel');
+  const d = workflowData;
+  if (!d) return;
+  if (d.error) {
+    panel.innerHTML = `<div class="error-banner">Error: ${esc(d.error)}</div>`;
+    return;
+  }
+
+  const perf = d.performance || {};
+  const broker = perf.broker || {};
+  const live = perf.live || {};
+  const curves = perf.curves || {};
+  const mode = d.mode || {};
+  const backs = d.backtests || {};
+  const sameDay = backs.same_day || {};
+  const swing5 = (backs.swing || {})['5'] || {};
+  const sig = d.signal_generation || {};
+
+  const holdings = broker.positions || [];
+  const openOrders = broker.open_orders || [];
+  const closed = live.closed_results_preview || [];
+  const brokerAvailable = !!broker.available;
+  const brokerMessage = broker.message || '';
+
+  const holdingsHtml = holdings.length
+    ? `<div class="perf-list">${holdings.slice(0, 8).map(pos => `
+        <div class="perf-list-item">
+          <div class="perf-item-left">
+            <div class="perf-item-title">${esc(pos.symbol || '?')}</div>
+            <div class="perf-item-meta">${esc(String(pos.qty || 0))} sh at ${formatMoney(pos.avg_entry_price)}</div>
+            <div class="perf-item-note">Market value ${formatMoney(pos.market_value)} · current ${formatMoney(pos.current_price)}</div>
+          </div>
+          <div class="perf-item-right">
+            <div class="perf-item-title ${valueTone(pos.unrealized_pl)}">${formatMoney(pos.unrealized_pl)}</div>
+            <div class="perf-item-meta">${pos.unrealized_plpc != null ? formatPct(Number(pos.unrealized_plpc) * 100) : 'n/a'}</div>
+          </div>
+        </div>`).join('')}</div>`
+    : `<div class="perf-empty">${brokerAvailable ? 'No open holdings are currently reported by the broker.' : `Holdings are unavailable until the active broker connection succeeds. ${esc(brokerMessage)}`}</div>`;
+
+  const openOrdersHtml = openOrders.length
+    ? `<div class="perf-list">${openOrders.slice(0, 6).map(order => `
+        <div class="perf-list-item">
+          <div class="perf-item-left">
+            <div class="perf-item-title">${esc(order.symbol || '?')} ${esc((order.side || '').toUpperCase())}</div>
+            <div class="perf-item-meta">${esc(order.order_type || 'order')} · qty ${esc(order.qty || 'n/a')}</div>
+          </div>
+          <div class="perf-item-right">
+            <div class="perf-item-title">${esc(order.status || 'open')}</div>
+            <div class="perf-item-meta">${esc(order.submitted_at || '')}</div>
+          </div>
+        </div>`).join('')}</div>`
+    : `<div class="perf-empty">${brokerAvailable ? 'No open broker orders right now.' : 'Open broker orders are not available from the current broker session.'}</div>`;
+
+  const closedHtml = closed.length
+    ? `<div class="perf-list">${closed.map(item => `
+        <div class="perf-list-item">
+          <div class="perf-item-left">
+            <div class="perf-item-title">${esc(item.ticker || '?')} ${esc((item.side || '').toUpperCase())}</div>
+            <div class="perf-item-meta">${formatMoney(item.filled_avg_price)} fill · ${item.qty != null ? `${esc(String(item.qty))} sh` : formatMoney(item.notional)}</div>
+            <div class="perf-item-note">${esc(item.filled_at || '')}</div>
+          </div>
+          <div class="perf-item-right">
+            <div class="perf-item-title ${valueTone(item.estimated_same_day_return_pct)}">${formatPct(item.estimated_same_day_return_pct)}</div>
+            <div class="perf-item-meta">same-day estimate</div>
+            <div class="perf-item-note ${valueTone(item.estimated_swing_5d_return_pct)}">${formatPct(item.estimated_swing_5d_return_pct)} on 5d lens</div>
+          </div>
+        </div>`).join('')}</div>`
+    : `<div class="perf-empty">No filled orders are linked into the dashboard yet.</div>`;
+
+  const signalsHtml = (sig.recent_signals || []).length
+    ? `<div class="perf-list">${(sig.recent_signals || []).slice(0, 6).map(item => `
+        <div class="perf-list-item">
+          <div class="perf-item-left">
+            <div class="perf-item-title">${esc(item.ticker || '?')} ${esc((item.signal_side || '').toUpperCase())}</div>
+            <div class="perf-item-meta">${esc(item.event_type || 'signal')} · strength ${item.signal_strength != null ? Number(item.signal_strength).toFixed(2) : 'n/a'}</div>
+            <div class="perf-item-note">${esc(item.title || 'No title recorded.')}</div>
+          </div>
+          <div class="perf-item-right">
+            <div class="perf-item-title">${esc(item.status || 'unknown')}</div>
+            <div class="perf-item-meta">${esc(item.generated_at || '')}</div>
+          </div>
+        </div>`).join('')}</div>`
+    : `<div class="perf-empty">No trade signals are available yet.</div>`;
+
+  panel.innerHTML = `
+    <div class="perf-hero">
+      <div>
+        <div class="perf-kicker">Performance Ledger</div>
+        <div class="perf-title">Live execution state and backtest evidence in one place.</div>
+        <div class="perf-copy">
+          This view keeps the experiment log honest: broker state when available, execution history from the trading tables, and the same-day plus swing scorecards side by side.
+        </div>
+      </div>
+      <button class="collapse-btn" onclick="refreshPerformance()">Refresh</button>
+    </div>
+
+    <div class="perf-stat-grid">
+      <div class="perf-stat-card">
+        <div class="perf-stat-label">Broker Equity</div>
+        <div class="perf-stat-value">${formatMoney(live.account_equity)}</div>
+        <div class="perf-stat-note">${brokerAvailable ? `Cash ${formatMoney(live.cash)} · buying power ${formatMoney(live.buying_power)}` : `Broker feed unavailable: ${esc(brokerMessage || 'not connected')}`}</div>
+      </div>
+      <div class="perf-stat-card">
+        <div class="perf-stat-label">Executed Orders</div>
+        <div class="perf-stat-value">${esc(String(live.filled_order_count || 0))}</div>
+        <div class="perf-stat-note">${esc(mode.broker_provider || 'broker')} · ${mode.execution_enabled ? 'execution enabled' : 'execution disabled'} · ${mode.require_approval ? 'approval required' : 'auto approval allowed'}</div>
+      </div>
+      <div class="perf-stat-card">
+        <div class="perf-stat-label">Same-Day Backtest</div>
+        <div class="perf-stat-value ${valueTone(sameDay.avg_gross_return_pct)}">${formatPct(sameDay.avg_gross_return_pct)}</div>
+        <div class="perf-stat-note">${formatWinRate(sameDay.win_rate_pct)} win rate across ${esc(String(sameDay.ok_count || 0))} resolved rows</div>
+      </div>
+      <div class="perf-stat-card">
+        <div class="perf-stat-label">5d Swing Backtest</div>
+        <div class="perf-stat-value ${valueTone(swing5.avg_return_pct)}">${formatPct(swing5.avg_return_pct)}</div>
+        <div class="perf-stat-note">${formatWinRate(swing5.win_rate_pct)} win rate across ${esc(String(swing5.count || 0))} scored signals</div>
+      </div>
+    </div>
+
+    <div class="perf-chart-grid">
+      ${renderCurveCard('Same-day equity path', curves.same_day || [], 'Compounded from same-day net return rows. This is the day-trade lens.', '#22c55e')}
+      ${renderCurveCard('5d swing equity path', curves.swing_5d || [], 'Compounded from 5-day forward returns. This is the carry lens.', '#4f8ef7')}
+    </div>
+
+    <div class="perf-grid">
+      <section class="perf-section">
+        <div class="perf-section-head">
+          <div>
+            <div class="perf-section-title">Live trading status</div>
+            <div class="perf-section-copy">Read-only broker snapshot plus the persisted execution path from your trading tables.</div>
+          </div>
+        </div>
+        <div class="perf-badge-row">
+          <span class="perf-badge ${brokerAvailable ? 'ok' : 'off'}">broker ${brokerAvailable ? 'connected' : 'unavailable'}</span>
+          <span class="perf-badge ${mode.execution_enabled ? 'ok' : 'off'}">execution ${mode.execution_enabled ? 'enabled' : 'disabled'}</span>
+          <span class="perf-badge ${mode.require_approval ? 'warn' : 'ok'}">approval ${mode.require_approval ? 'required' : 'auto-pass allowed'}</span>
+          <span class="perf-badge ${brokerAvailable && holdings.length ? 'ok' : 'warn'}">${esc(String(live.open_position_count || 0))} open positions</span>
+          <span class="perf-badge ${openOrders.length ? 'warn' : 'ok'}">${esc(String(live.open_order_count || 0))} open broker orders</span>
+        </div>
+        <div class="perf-kv-row" style="margin-top:12px;">
+          <span class="perf-kv">positions mv ${formatMoney(live.position_market_value)}</span>
+          <span class="perf-kv">unrealized ${formatMoney(live.unrealized_pl)}</span>
+          <span class="perf-kv">same-day linked avg ${formatPct(live.estimated_same_day_avg_return_pct)}</span>
+          <span class="perf-kv">5d linked avg ${formatPct(live.estimated_swing_5d_avg_return_pct)}</span>
+        </div>
+        <div style="margin-top:14px;">${openOrdersHtml}</div>
+      </section>
+
+      <section class="perf-section">
+        <div class="perf-section-head">
+          <div>
+            <div class="perf-section-title">Current holdings</div>
+            <div class="perf-section-copy">This is broker-reported state when the active provider is reachable.</div>
+          </div>
+        </div>
+        ${holdingsHtml}
+      </section>
+
+      <section class="perf-section">
+        <div class="perf-section-head">
+          <div>
+            <div class="perf-section-title">Closed results bridge</div>
+            <div class="perf-section-copy">Filled orders from the live execution tables, annotated with their backtest-estimated same-day and 5-day outcomes.</div>
+          </div>
+        </div>
+        ${closedHtml}
+      </section>
+
+      <section class="perf-section">
+        <div class="perf-section-head">
+          <div>
+            <div class="perf-section-title">Backtest scorecards</div>
+            <div class="perf-section-copy">Both lenses stay visible so the hold policy and the signal quality are not conflated.</div>
+          </div>
+        </div>
+        <div class="perf-score-grid">
+          <div class="perf-score-card">
+            <div class="perf-score-label">Same-day</div>
+            <div class="perf-score-value ${valueTone(sameDay.avg_gross_return_pct)}">${formatPct(sameDay.avg_gross_return_pct)}</div>
+            <div class="perf-score-note">Win rate ${formatWinRate(sameDay.win_rate_pct)} · ${esc(String(sameDay.ok_count || 0))} resolved rows · latest session ${esc(sameDay.latest_session_date || 'n/a')}</div>
+          </div>
+          <div class="perf-score-card">
+            <div class="perf-score-label">Swing 5d</div>
+            <div class="perf-score-value ${valueTone(swing5.avg_return_pct)}">${formatPct(swing5.avg_return_pct)}</div>
+            <div class="perf-score-note">Win rate ${formatWinRate(swing5.win_rate_pct)} · ${esc(String(swing5.count || 0))} scored signals · latest ${esc(swing5.latest_computed_at || 'n/a')}</div>
+          </div>
+        </div>
+        <div class="perf-kv-row" style="margin-top:12px;">
+          <span class="perf-kv">primary lens ${esc(mode.primary_backtest === 'same_day' ? 'same-day' : 'swing')}</span>
+          <span class="perf-kv">holding style ${esc(mode.holding_style_label || 'n/a')}</span>
+          <span class="perf-kv">${esc(String(sig.directional_signal_count || 0))} directional signals</span>
+        </div>
+      </section>
+
+      <section class="perf-section">
+        <div class="perf-section-head">
+          <div>
+            <div class="perf-section-title">What the engine is seeing</div>
+            <div class="perf-section-copy">Recent signal generation context from the same workflow snapshot the execution loop uses.</div>
+          </div>
+        </div>
+        ${signalsHtml}
+      </section>
+    </div>`;
+}
+
+async function loadWorkflow() {
+  const panel = document.getElementById('workflowPanel');
+  const perfPanel = document.getElementById('performancePanel');
+  panel.innerHTML = `<div class="empty-state"><div><span class="spinner"></span> Loading workflow state...</div></div>`;
+  perfPanel.innerHTML = `<div class="empty-state"><div><span class="spinner"></span> Loading performance...</div></div>`;
+  try {
+    const r = await fetch('/api/trading/workflow');
+    workflowData = await r.json();
+    document.getElementById('lastUpdated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+    renderPerformance();
+    renderWorkflow();
+  } catch (e) {
+    panel.innerHTML = `<div class="error-banner">Failed to load workflow: ${esc(e.message)}</div>`;
+    perfPanel.innerHTML = `<div class="error-banner">Failed to load performance: ${esc(e.message)}</div>`;
+  }
+}
+
+async function refreshWorkflow() {
+  workflowLoaded = false;
+  await loadWorkflow();
+  workflowLoaded = true;
+  performanceLoaded = true;
+}
+
+async function refreshPerformance() {
+  performanceLoaded = false;
+  await loadWorkflow();
+  performanceLoaded = true;
+  workflowLoaded = true;
+}
+
 async function loadBrief() {
   const btn = document.getElementById('refreshBtn');
   const content = document.getElementById('content');
@@ -1563,34 +3007,42 @@ async function loadBrief() {
     }
   } catch(e) {}
 
-  // Load bias layer (async, don't block brief)
+  // Load shared background data
   loadBiasLayer();
 
-  // Load intelligence synthesis (runs in parallel with brief)
-  await loadIntelligence();
-
-  // Load initial brief
-  await loadBrief();
+  // Open on the performance view by default
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.style.display = 'none';
+  currentTab = 'performance';
+  await loadWorkflow();
+  workflowLoaded = true;
+  performanceLoaded = true;
 })();
 
 // ================================================================ //
 //  Tab switching                                                  //
 // ================================================================ //
 
-let currentTab      = 'feed';
-let newsBlocksData  = null;
-let newsBlocksLoaded = false;
+currentTab = currentTab || 'performance';
+newsBlocksData = newsBlocksData || null;
+newsBlocksLoaded = newsBlocksLoaded || false;
+workflowLoaded = workflowLoaded || false;
+performanceLoaded = performanceLoaded || false;
 
 function switchTab(tab) {
   currentTab = tab;
 
   // Toggle buttons
-  document.getElementById('tabBtnFeed').classList.toggle('active',    tab === 'feed');
+  document.getElementById('tabBtnPerformance').classList.toggle('active', tab === 'performance');
+  document.getElementById('tabBtnFeed').classList.toggle('active', tab === 'feed');
   document.getElementById('tabBtnMyViews').classList.toggle('active', tab === 'myviews');
+  document.getElementById('tabBtnWorkflow').classList.toggle('active', tab === 'workflow');
 
   // Toggle panels
-  document.getElementById('content').style.display      = tab === 'feed'    ? 'flex'  : 'none';
-  document.getElementById('myViewsPanel').style.display = tab === 'myviews' ? 'flex'  : 'none';
+  document.getElementById('content').style.display = tab === 'feed' ? 'flex' : 'none';
+  document.getElementById('myViewsPanel').style.display = tab === 'myviews' ? 'flex' : 'none';
+  document.getElementById('performancePanel').style.display = tab === 'performance' ? 'flex' : 'none';
+  document.getElementById('workflowPanel').style.display = tab === 'workflow' ? 'flex' : 'none';
 
   // Toggle sidebar (filters are only relevant for the catalyst feed)
   const sidebar = document.querySelector('.sidebar');
@@ -1598,6 +3050,19 @@ function switchTab(tab) {
 
   if (tab === 'myviews' && !newsBlocksLoaded) {
     loadNewsBlocks();
+  }
+  if (tab === 'feed' && !briefData) {
+    loadIntelligence().then(loadBrief);
+  }
+  if (tab === 'performance' && !performanceLoaded) {
+    loadWorkflow();
+    performanceLoaded = true;
+    workflowLoaded = true;
+  }
+  if (tab === 'workflow' && !workflowLoaded) {
+    loadWorkflow();
+    workflowLoaded = true;
+    performanceLoaded = true;
   }
 }
 
