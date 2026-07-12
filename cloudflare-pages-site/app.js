@@ -1,5 +1,6 @@
 (function () {
   const API_STORAGE_KEY = "equity_api_base_url";
+  const SNAPSHOT_PATH = "./workflow.json";
   const chartColors = {
     sameDay: "#22c55e",
     swing: "#3b82f6",
@@ -156,7 +157,7 @@
     ].join("");
   }
 
-  function renderWorkflow(data, apiBase) {
+  function renderWorkflow(data, sourceLabel, sourceKind) {
     const perf = data.performance || {};
     const live = perf.live || {};
     const broker = perf.broker || {};
@@ -170,8 +171,10 @@
     const openOrders = broker.open_orders || [];
     const closed = live.closed_results_preview || [];
 
-    elements.apiBaseLabel.textContent = apiBase || window.location.origin;
-    elements.lastRefreshLabel.textContent = new Date().toLocaleString();
+    elements.apiBaseLabel.textContent = sourceLabel || "Bundled snapshot";
+    elements.lastRefreshLabel.textContent = data.generated_at
+      ? new Date(data.generated_at).toLocaleString()
+      : new Date().toLocaleString();
     elements.modeLabel.textContent = mode.holding_style_label || "Unknown";
 
     elements.brokerEquity.textContent = formatMoney(live.account_equity);
@@ -190,8 +193,13 @@
     elements.swingAvg.className = "stat-value " + toneClass(swing5.avg_return_pct);
     elements.swingNote.textContent = `${formatPct(swing5.win_rate_pct, 1)} win rate · ${swing5.count || 0} scored rows`;
 
-    if (broker.available) {
-      setBanner("good", `Connected successfully. This Pages frontend is reading live workflow data from <code>${esc(apiBase)}</code>.`);
+    if (sourceKind === "snapshot") {
+      setBanner(
+        "warn",
+        `Showing bundled workflow snapshot${data.generated_at ? ` from <code>${esc(data.generated_at)}</code>` : ""}. Use API Settings to connect a live backend anytime.`
+      );
+    } else if (broker.available) {
+      setBanner("good", `Connected successfully. This Pages frontend is reading live workflow data from <code>${esc(sourceLabel)}</code>.`);
     } else {
       setBanner("warn", `Workflow loaded, but broker access is unavailable. Backend message: <code>${esc(broker.message || "unavailable")}</code>.`);
     }
@@ -285,27 +293,58 @@
     );
   }
 
+  async function fetchWorkflowFromApi(apiBase) {
+    const response = await fetch(apiBase + "/api/trading/workflow", {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.json();
+  }
+
+  async function fetchBundledSnapshot() {
+    const response = await fetch(SNAPSHOT_PATH, {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.json();
+  }
+
   async function loadWorkflow() {
     const apiBase = getConfiguredApiBase();
-    if (!apiBase) {
-      elements.apiBaseLabel.textContent = "Not configured";
-      setBanner("info", "Set an API base URL first. Example: <code>https://your-api.example.com</code>");
-      return;
-    }
     elements.refreshBtn.disabled = true;
-    setBanner("info", "Loading workflow data...");
+    setBanner("info", apiBase ? "Loading live workflow data..." : "Loading bundled workflow snapshot...");
     try {
-      const response = await fetch(apiBase + "/api/trading/workflow", {
-        method: "GET",
-        headers: { "Accept": "application/json" }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      if (apiBase) {
+        const data = await fetchWorkflowFromApi(apiBase);
+        renderWorkflow(data, apiBase, "api");
+      } else {
+        const data = await fetchBundledSnapshot();
+        renderWorkflow(data, "Bundled snapshot", "snapshot");
       }
-      const data = await response.json();
-      renderWorkflow(data, apiBase);
     } catch (error) {
-      setBanner("error", `Could not load <code>${esc(apiBase + "/api/trading/workflow")}</code>. ${esc(error.message)}`);
+      if (apiBase) {
+        try {
+          const data = await fetchBundledSnapshot();
+          renderWorkflow(data, "Bundled snapshot", "snapshot");
+          setBanner(
+            "warn",
+            `Could not load <code>${esc(apiBase + "/api/trading/workflow")}</code>. Showing bundled snapshot instead. ${esc(error.message)}`
+          );
+        } catch (snapshotError) {
+          setBanner(
+            "error",
+            `Could not load the live API or bundled snapshot. Live error: ${esc(error.message)}. Snapshot error: ${esc(snapshotError.message)}`
+          );
+        }
+      } else {
+        setBanner("error", `Could not load bundled snapshot <code>${esc(SNAPSHOT_PATH)}</code>. ${esc(error.message)}`);
+      }
     } finally {
       elements.refreshBtn.disabled = false;
     }
@@ -330,8 +369,7 @@
   function clearSettings() {
     window.localStorage.removeItem(API_STORAGE_KEY);
     elements.apiBaseInput.value = "";
-    elements.apiBaseLabel.textContent = "Not configured";
-    setBanner("info", "API base URL cleared.");
+    loadWorkflow();
   }
 
   elements.settingsBtn.addEventListener("click", openSettings);
