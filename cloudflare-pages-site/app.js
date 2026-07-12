@@ -143,7 +143,7 @@
         badge: "Long entry example",
         summaryTitle: "Long Entry Outcomes",
         cardTitle: "LONG ENTRY",
-        detail: "Measures what happened after the buy signal through the 3:55 PM ET close."
+        detail: "Shows how the stock moved after the buy signal through the 3:55 PM ET close."
       };
     }
     if (side === "sell") {
@@ -152,7 +152,7 @@
         badge: "Long exit example",
         summaryTitle: "Long Exit Outcomes",
         cardTitle: "LONG EXIT",
-        detail: "Not a short. Measures what downside was avoided by selling before the 3:55 PM ET close."
+        detail: "Not a short. Shows whether the stock fell or rose after the exit signal by the 3:55 PM ET close."
       };
     }
     return {
@@ -162,6 +162,39 @@
       cardTitle: String(side || "SIGNAL").toUpperCase(),
       detail: ""
     };
+  }
+
+  function formatSignedPct(value, digits = 2) {
+    if (value == null || Number.isNaN(Number(value))) return "n/a";
+    const numeric = Number(value);
+    const prefix = numeric > 0 ? "+" : "";
+    return prefix + numeric.toFixed(digits) + "%";
+  }
+
+  function describeExampleOutcome(item) {
+    const side = String(item.signal_side || "").toLowerCase();
+    const entry = Number(item.entry_price);
+    const exit = Number(item.exit_price);
+    if (!Number.isFinite(entry) || !Number.isFinite(exit) || !entry) {
+      return item.labels.detail;
+    }
+    const movePct = ((exit / entry) - 1) * 100;
+    if (side === "sell") {
+      if (movePct < 0) {
+        return `After the exit signal, price fell ${formatPct(Math.abs(movePct))} into the close, so exiting early helped.`;
+      }
+      if (movePct > 0) {
+        return `After the exit signal, price rose ${formatPct(movePct)} into the close, so exiting early hurt.`;
+      }
+      return "After the exit signal, price finished flat into the close.";
+    }
+    if (movePct < 0) {
+      return `After the buy signal, price fell ${formatPct(Math.abs(movePct))} into the close, so the entry lost money.`;
+    }
+    if (movePct > 0) {
+      return `After the buy signal, price rose ${formatPct(movePct)} into the close, so the entry made money.`;
+    }
+    return "After the buy signal, price finished flat into the close.";
   }
 
   function renderReport(targetSummary, targetExamples, report) {
@@ -226,7 +259,7 @@
       <article class="trade-card">
         <div class="trade-card-head">
           <div class="trade-card-title">${esc(item.ticker || "?")} ${esc(item.labels.cardTitle)}</div>
-          <div class="trade-card-return ${toneClass(item.net_return_pct)}">${esc(formatPct(item.net_return_pct))}</div>
+          <div class="trade-card-return ${toneClass(item.net_return_pct)}">${esc(formatSignedPct(item.net_return_pct))}</div>
         </div>
         <div class="trade-card-meta">
           <div><span class="trade-card-badge">${esc(item.labels.badge)}</span></div>
@@ -234,7 +267,7 @@
           <div>Entry: ${esc(formatDateTimeET(item.entry_timestamp))} at ${esc(formatMoney(item.entry_price))}</div>
           <div>Exit: ${esc(formatDateTimeET(item.exit_timestamp))} at ${esc(formatMoney(item.exit_price))}</div>
           <div>Outcome: ${esc(item.win_loss || "n/a")}${item.flag ? ` · ${esc(item.flag)}` : ""}</div>
-          <div>${esc(item.labels.detail)}</div>
+          <div>${esc(describeExampleOutcome(item))}</div>
         </div>
       </article>
     `).join("");
