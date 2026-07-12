@@ -58,6 +58,13 @@
     return Number(value).toFixed(digits) + "%";
   }
 
+  function formatPositionPct(value, digits = 2) {
+    if (value == null || Number.isNaN(Number(value))) return "n/a";
+    const numeric = Number(value);
+    const normalized = Math.abs(numeric) <= 1 ? numeric * 100 : numeric;
+    return formatPct(normalized, digits);
+  }
+
   function toneClass(value) {
     if (value == null || Number.isNaN(Number(value))) return "neutral";
     if (Number(value) > 0) return "positive";
@@ -351,7 +358,7 @@
         `${item.qty || 0} sh at ${formatMoney(item.avg_entry_price)}`,
         `Market value ${formatMoney(item.market_value)} · current ${formatMoney(item.current_price)}`,
         formatMoney(item.unrealized_pl),
-        item.unrealized_plpc != null ? formatPct(Number(item.unrealized_plpc) * 100) : "n/a",
+        formatPositionPct(item.unrealized_plpc),
         "",
         toneClass(item.unrealized_pl)
       )).join(""),
