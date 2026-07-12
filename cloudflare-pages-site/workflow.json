@@ -1,0 +1,750 @@
+{
+  "generated_at": "2026-07-12T10:03:21.886294+00:00",
+  "mode": {
+    "day_trade_mode": false,
+    "holding_style_label": "swing",
+    "primary_backtest": "swing",
+    "execution_enabled": false,
+    "require_approval": false,
+    "broker_provider": "etrade",
+    "close_time_et": "15:55",
+    "close_window_minutes": 20
+  },
+  "signal_generation": {
+    "directional_signal_count": 68,
+    "status_counts": {
+      "blocked": 181,
+      "executed": 19,
+      "expired": 145,
+      "generated": 42
+    },
+    "side_counts": {
+      "monitor": 319,
+      "buy": 57,
+      "sell": 11
+    },
+    "recent_signals": [
+      {
+        "id": 356,
+        "ticker": "ANET",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7699999999999999,
+        "materiality_score": 0.72,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 357,
+        "ticker": "UUUU",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.75,
+        "materiality_score": 0.68,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 358,
+        "ticker": "AMD",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7350000000000001,
+        "materiality_score": 0.67,
+        "confidence_score": 1.0,
+        "event_type": "other",
+        "title": "Will AMD Be a $1 Trillion Company Before 2026 Is Over?",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 359,
+        "ticker": "AMD",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7683300000000001,
+        "materiality_score": 0.67,
+        "confidence_score": 1.0,
+        "event_type": "other",
+        "title": "Sandisk and Micron Dominated the First Half of 2026. Which Is the Best Buy Now?",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 360,
+        "ticker": "RIOT",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.74,
+        "materiality_score": 0.66,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 361,
+        "ticker": "CORZ",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.719,
+        "materiality_score": 0.64,
+        "confidence_score": 0.73,
+        "event_type": "insider_transaction",
+        "title": "Insider Shares-for-Sale Notice",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 362,
+        "ticker": "INTC",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.70148,
+        "materiality_score": 0.63,
+        "confidence_score": 0.82,
+        "event_type": "other",
+        "title": "Could Apple\u2019s China Play Be the Answer to Its Memory Pressure Problem?",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 363,
+        "ticker": "MU",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.72,
+        "materiality_score": 0.62,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 364,
+        "ticker": "FSLR",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.665,
+        "materiality_score": 0.61,
+        "confidence_score": 1.0,
+        "event_type": "other",
+        "title": "Bronstein, Gewirtz & Grossman LLC Urges First Solar, Inc. Investors to Act: Class Action Filed Alleging Investor Harm",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 365,
+        "ticker": "PLTR",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7255900000000001,
+        "materiality_score": 0.61,
+        "confidence_score": 1.0,
+        "event_type": "other",
+        "title": "Better Artificial Intelligence (AI) Stock: Palantir vs. Microsoft",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 366,
+        "ticker": "USAR",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.6649999999999999,
+        "materiality_score": 0.6,
+        "confidence_score": 0.55,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      },
+      {
+        "id": 367,
+        "ticker": "MDB",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7,
+        "materiality_score": 0.58,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      }
+    ]
+  },
+  "execution": {
+    "order_status_counts": {
+      "expired": 11,
+      "filled": 19
+    },
+    "decision_counts": {
+      "allowed": 30,
+      "blocked": 492,
+      "executed": 34,
+      "skipped": 832,
+      "submitted": 15
+    },
+    "recent_orders": [
+      {
+        "id": 30,
+        "ticker": "IRM",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 194.87,
+        "submitted_at": "2026-06-30T21:53:48.279918",
+        "filled_at": "2026-07-01T13:59:35.535901",
+        "filled_avg_price": 124.988,
+        "failure_reason": null
+      },
+      {
+        "id": 29,
+        "ticker": "ORCL",
+        "side": "sell",
+        "status": "expired",
+        "broker": "alpaca",
+        "qty": 32.402809364,
+        "notional": null,
+        "submitted_at": "2026-06-30T11:01:37.485242",
+        "filled_at": null,
+        "filled_avg_price": null,
+        "failure_reason": null
+      },
+      {
+        "id": 28,
+        "ticker": "IRM",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 4844.23,
+        "submitted_at": "2026-06-28T13:23:57.396824",
+        "filled_at": "2026-06-29T14:25:27.303978",
+        "filled_avg_price": 130.727032,
+        "failure_reason": null
+      },
+      {
+        "id": 27,
+        "ticker": "ON",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 52.36,
+        "submitted_at": "2026-06-28T13:23:57.228626",
+        "filled_at": "2026-06-29T13:30:00.547321",
+        "filled_avg_price": 90.462,
+        "failure_reason": null
+      },
+      {
+        "id": 26,
+        "ticker": "MU",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 71.61,
+        "submitted_at": "2026-06-28T13:23:56.965700",
+        "filled_at": "2026-06-29T13:30:00.510639",
+        "filled_avg_price": 1129.42,
+        "failure_reason": null
+      },
+      {
+        "id": 25,
+        "ticker": "ORCL",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 4844.23,
+        "submitted_at": "2026-06-27T14:34:32.789605",
+        "filled_at": "2026-06-29T13:56:14.426317",
+        "filled_avg_price": 149.5,
+        "failure_reason": null
+      },
+      {
+        "id": 24,
+        "ticker": "ON",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 1239.55,
+        "submitted_at": "2026-06-26T19:48:14.907320",
+        "filled_at": "2026-06-26T19:48:13.663316",
+        "filled_avg_price": 91.69,
+        "failure_reason": null
+      },
+      {
+        "id": 23,
+        "ticker": "ORCL",
+        "side": "sell",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": 28.550278115,
+        "notional": null,
+        "submitted_at": "2026-06-26T19:48:14.517843",
+        "filled_at": "2026-06-26T19:48:45.528060",
+        "filled_avg_price": 149.524046,
+        "failure_reason": null
+      },
+      {
+        "id": 22,
+        "ticker": "MU",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 4847.08,
+        "submitted_at": "2026-06-26T19:48:14.258494",
+        "filled_at": "2026-06-26T19:48:13.609715",
+        "filled_avg_price": 1149.994745,
+        "failure_reason": null
+      },
+      {
+        "id": 21,
+        "ticker": "ORCL",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 372.32,
+        "submitted_at": "2026-06-23T14:03:55.815964",
+        "filled_at": "2026-06-23T14:03:55.405537",
+        "filled_avg_price": 173.94,
+        "failure_reason": null
+      },
+      {
+        "id": 20,
+        "ticker": "SMCI",
+        "side": "buy",
+        "status": "expired",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 4972.82,
+        "submitted_at": "2026-06-19T23:12:19.263381",
+        "filled_at": null,
+        "filled_avg_price": null,
+        "failure_reason": null
+      },
+      {
+        "id": 19,
+        "ticker": "ORCL",
+        "side": "buy",
+        "status": "filled",
+        "broker": "alpaca",
+        "qty": null,
+        "notional": 4991.1,
+        "submitted_at": "2026-06-15T21:58:24.362469",
+        "filled_at": "2026-06-16T13:34:55.721454",
+        "filled_avg_price": 188.986089,
+        "failure_reason": null
+      }
+    ]
+  },
+  "backtests": {
+    "swing": {
+      "1": {
+        "count": 67,
+        "avg_return_pct": -0.81,
+        "win_rate_pct": 50.7,
+        "latest_computed_at": "2026-07-09T10:23:37.124086"
+      },
+      "5": {
+        "count": 65,
+        "avg_return_pct": 12.24,
+        "win_rate_pct": 35.4,
+        "latest_computed_at": "2026-07-11T10:25:57.527560"
+      },
+      "10": {
+        "count": 50,
+        "avg_return_pct": -3.18,
+        "win_rate_pct": 34.0,
+        "latest_computed_at": "2026-07-11T10:25:57.527560"
+      }
+    },
+    "same_day": {
+      "count": 68,
+      "ok_count": 65,
+      "avg_gross_return_pct": 0.883,
+      "win_rate_pct": 67.7,
+      "latest_session_date": "2026-07-10",
+      "latest_computed_at": "2026-07-10T21:53:26.275957",
+      "outcome_status_counts": {
+        "ok": 65,
+        "no_intraday_data": 2,
+        "intraday_coverage_gap": 1
+      }
+    }
+  },
+  "performance": {
+    "broker": {
+      "provider": "etrade",
+      "available": false,
+      "message": "401 Client Error: Unauthorized for url: https://api.etrade.com/v1/accounts/list.json",
+      "account": null,
+      "positions": [],
+      "open_orders": []
+    },
+    "live": {
+      "account_equity": null,
+      "cash": null,
+      "buying_power": null,
+      "position_market_value": null,
+      "unrealized_pl": null,
+      "open_position_count": 0,
+      "open_order_count": 0,
+      "filled_order_count": 19,
+      "estimated_same_day_avg_return_pct": -0.025,
+      "estimated_swing_5d_avg_return_pct": -7.045,
+      "closed_results_preview": [
+        {
+          "id": 30,
+          "ticker": "IRM",
+          "side": "buy",
+          "filled_at": "2026-07-01T13:59:35.535901",
+          "filled_avg_price": 124.988,
+          "qty": null,
+          "notional": 194.87,
+          "estimated_same_day_return_pct": -2.961,
+          "estimated_swing_5d_return_pct": -7.862
+        },
+        {
+          "id": 28,
+          "ticker": "IRM",
+          "side": "buy",
+          "filled_at": "2026-06-29T14:25:27.303978",
+          "filled_avg_price": 130.727032,
+          "qty": null,
+          "notional": 4844.23,
+          "estimated_same_day_return_pct": -2.048,
+          "estimated_swing_5d_return_pct": -12.126
+        },
+        {
+          "id": 25,
+          "ticker": "ORCL",
+          "side": "buy",
+          "filled_at": "2026-06-29T13:56:14.426317",
+          "filled_avg_price": 149.5,
+          "qty": null,
+          "notional": 4844.23,
+          "estimated_same_day_return_pct": -0.772,
+          "estimated_swing_5d_return_pct": -5.935
+        },
+        {
+          "id": 27,
+          "ticker": "ON",
+          "side": "buy",
+          "filled_at": "2026-06-29T13:30:00.547321",
+          "filled_avg_price": 90.462,
+          "qty": null,
+          "notional": 52.36,
+          "estimated_same_day_return_pct": -1.672,
+          "estimated_swing_5d_return_pct": 4.943
+        },
+        {
+          "id": 26,
+          "ticker": "MU",
+          "side": "buy",
+          "filled_at": "2026-06-29T13:30:00.510639",
+          "filled_avg_price": 1129.42,
+          "qty": null,
+          "notional": 71.61,
+          "estimated_same_day_return_pct": 2.408,
+          "estimated_swing_5d_return_pct": -13.123
+        },
+        {
+          "id": 23,
+          "ticker": "ORCL",
+          "side": "sell",
+          "filled_at": "2026-06-26T19:48:45.528060",
+          "filled_avg_price": 149.524046,
+          "qty": 28.550278115,
+          "notional": null,
+          "estimated_same_day_return_pct": 0.622,
+          "estimated_swing_5d_return_pct": 5.935
+        },
+        {
+          "id": 24,
+          "ticker": "ON",
+          "side": "buy",
+          "filled_at": "2026-06-26T19:48:13.663316",
+          "filled_avg_price": 91.69,
+          "qty": null,
+          "notional": 1239.55,
+          "estimated_same_day_return_pct": -0.541,
+          "estimated_swing_5d_return_pct": -0.447
+        },
+        {
+          "id": 22,
+          "ticker": "MU",
+          "side": "buy",
+          "filled_at": "2026-06-26T19:48:13.609715",
+          "filled_avg_price": 1149.994745,
+          "qty": null,
+          "notional": 4847.08,
+          "estimated_same_day_return_pct": -0.917,
+          "estimated_swing_5d_return_pct": -14.741
+        }
+      ]
+    },
+    "curves": {
+      "same_day": [
+        {
+          "label": "2026-05-29",
+          "equity": 12008.43
+        },
+        {
+          "label": "2026-06-01",
+          "equity": 10362.28
+        },
+        {
+          "label": "2026-06-02",
+          "equity": 14491.9
+        },
+        {
+          "label": "2026-06-03",
+          "equity": 15028.46
+        },
+        {
+          "label": "2026-06-04",
+          "equity": 16982.26
+        },
+        {
+          "label": "2026-06-11",
+          "equity": 16969.62
+        },
+        {
+          "label": "2026-06-12",
+          "equity": 17475.37
+        },
+        {
+          "label": "2026-06-16",
+          "equity": 17682.99
+        },
+        {
+          "label": "2026-06-18",
+          "equity": 17732.24
+        },
+        {
+          "label": "2026-06-20",
+          "equity": 18320.67
+        },
+        {
+          "label": "2026-06-21",
+          "equity": 18118.56
+        },
+        {
+          "label": "2026-06-23",
+          "equity": 18331.58
+        },
+        {
+          "label": "2026-06-24",
+          "equity": 19409.06
+        },
+        {
+          "label": "2026-06-25",
+          "equity": 19230.96
+        },
+        {
+          "label": "2026-06-26",
+          "equity": 19054.65
+        },
+        {
+          "label": "2026-06-27",
+          "equity": 19082.09
+        },
+        {
+          "label": "2026-06-30",
+          "equity": 19097.35
+        },
+        {
+          "label": "2026-07-01",
+          "equity": 19518.62
+        },
+        {
+          "label": "2026-07-02",
+          "equity": 19613.44
+        },
+        {
+          "label": "2026-07-03",
+          "equity": 19984.09
+        },
+        {
+          "label": "2026-07-07",
+          "equity": 20630.45
+        },
+        {
+          "label": "2026-07-08",
+          "equity": 20616.01
+        },
+        {
+          "label": "2026-07-09",
+          "equity": 20561.76
+        },
+        {
+          "label": "2026-07-10",
+          "equity": 20970.6
+        }
+      ],
+      "swing_5d": [
+        {
+          "label": "2026-05-29",
+          "equity": 8769.2
+        },
+        {
+          "label": "2026-06-04",
+          "equity": 5858.56
+        },
+        {
+          "label": "2026-06-11",
+          "equity": 6990.5
+        },
+        {
+          "label": "2026-06-16",
+          "equity": 5140.61
+        },
+        {
+          "label": "2026-06-18",
+          "equity": 5493.41
+        },
+        {
+          "label": "2026-06-20",
+          "equity": 5977.47
+        },
+        {
+          "label": "2026-06-21",
+          "equity": 5614.6
+        },
+        {
+          "label": "2026-06-23",
+          "equity": 5947.7
+        },
+        {
+          "label": "2026-06-24",
+          "equity": 5304.01
+        },
+        {
+          "label": "2026-06-25",
+          "equity": 4903.37
+        },
+        {
+          "label": "2026-06-26",
+          "equity": 4180.62
+        },
+        {
+          "label": "2026-06-27",
+          "equity": 4959.84
+        },
+        {
+          "label": "2026-06-30",
+          "equity": 5344.25
+        },
+        {
+          "label": "2026-07-01",
+          "equity": 5354.94
+        },
+        {
+          "label": "2026-07-02",
+          "equity": 4635.42
+        },
+        {
+          "label": "2026-07-03",
+          "equity": 4453.92
+        },
+        {
+          "label": "2026-07-07",
+          "equity": 5091.17
+        },
+        {
+          "label": "2026-07-08",
+          "equity": 4319.45
+        },
+        {
+          "label": "2026-07-09",
+          "equity": 4400.65
+        },
+        {
+          "label": "2026-07-10",
+          "equity": 4390.64
+        },
+        {
+          "label": "2026-07-11",
+          "equity": 4635.88
+        }
+      ]
+    }
+  },
+  "strategy_review": {
+    "auto_apply_enabled": false,
+    "run_before_signal_generation_enabled": false,
+    "policy_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Stocks\\.cache\\strategy_review\\auto_applied_policy.json",
+    "policy_file_exists": true,
+    "latest_artifact": {
+      "path": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Stocks\\.cache\\strategy_review\\strategy_review_20260703_081257.json",
+      "generated_at": "2026-07-03T08:12:57.801299"
+    }
+  },
+  "discovery": {
+    "week_key": "2026-W28",
+    "count": 8,
+    "probe_candidate_count": 1,
+    "top_candidates": [
+      {
+        "ticker": "QBTS",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.3886,
+        "mention_count": 71,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "CORZ",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.278,
+        "mention_count": 52,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "AMD",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.2554,
+        "mention_count": 36,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "TSM",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.2522,
+        "mention_count": 40,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "CRWV",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.2244,
+        "mention_count": 38,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "MU",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.2131,
+        "mention_count": 31,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "NVDA",
+        "recommendation": "probe_candidate",
+        "total_score": 0.2034,
+        "mention_count": 27,
+        "unique_source_count": 1
+      },
+      {
+        "ticker": "CCJ",
+        "recommendation": "watchlist_candidate",
+        "total_score": 0.1675,
+        "mention_count": 31,
+        "unique_source_count": 1
+      }
+    ]
+  }
+}
