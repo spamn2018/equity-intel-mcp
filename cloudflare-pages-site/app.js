@@ -498,11 +498,7 @@
     }
 
     renderReport(elements.reportSummary, elements.reportExamples, {
-      ...sameDayReport,
-      modeLabel: mode.holding_style_label || "swing",
-      modeCopy: mode.day_trade_mode
-        ? "Backend is configured for day-trade execution, so same-day is the primary operating lens."
-        : "Backend is configured for swing execution, so the page shows swing as the current operating mode while still keeping same-day results visible."
+      ...sameDayReport
     });
 
     setList(
@@ -511,8 +507,8 @@
         `${item.ticker || "?"} ${(item.signal_side || "").toUpperCase()}`,
         `${item.event_type || "signal"} · strength ${item.signal_strength != null ? Number(item.signal_strength).toFixed(2) : "n/a"}`,
         item.title || "No title recorded.",
-        item.status || "unknown",
-        item.generated_at || "",
+        item.generated_at ? formatDateTimeET(item.generated_at) : (item.status || "unknown"),
+        "",
         "",
         "neutral"
       )).join(""),
