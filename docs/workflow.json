@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-07-12T10:03:21.886294+00:00",
+  "mode": {
+    "day_trade_mode": false,
+    "holding_style_label": "swing",
+    "primary_backtest": "swing",
+    "execution_enabled": false,
+    "require_approval": false,
+    "broker_provider": "etrade",
+    "close_time_et": "15:55",
+    "close_window_minutes": 20
+  },
+  "signal_generation": {
+    "directional_signal_count": 68,
+    "status_counts": {
+      "blocked": 181,
+      "executed": 19,
+      "expired": 145,
+      "generated": 42
+    },
+    "side_counts": {
+      "monitor": 319,
+      "buy": 57,
+      "sell": 11
+    },
+    "recent_signals": [
+      {
+        "id": 356,
+        "ticker": "ANET",
+        "signal_side": "monitor",
+        "status": "generated",
+        "signal_strength": 0.7699999999999999,
+        "materiality_score": 0.72,
+        "confidence_score": 1.0,
+        "event_type": "insider_transaction",
+        "title": "Insider Transaction",
+        "generated_at": "2026-07-11T10:25:55.802432"
+      }
+    ]
+  },
+  "execution": {
+    "order_status_counts": {
+      "expired": 11,
+      "filled": 19
+    },
+    "decision_counts": {
+      "allowed": 30,
+      "blocked": 492,
+      "executed": 34,
+      "skipped": 832,
+      "submitted": 15
+    },
+    "recent_orders": []
+  },
+  "backtests": {
+    "swing": {
+      "1": {
+        "count": 67,
+        "avg_return_pct": -0.81,
+        "win_rate_pct": 50.7,
+        "latest_computed_at": "2026-07-09T10:23:37.124086"
+      },
+      "5": {
+        "count": 65,
+        "avg_return_pct": 12.24,
+        "win_rate_pct": 35.4,
+        "latest_computed_at": "2026-07-11T10:25:57.527560"
+      },
+      "10": {
+        "count": 50,
+        "avg_return_pct": -3.18,
+        "win_rate_pct": 34.0,
+        "latest_computed_at": "2026-07-11T10:25:57.527560"
+      }
+    },
+    "same_day": {
+      "count": 68,
+      "ok_count": 65,
+      "avg_gross_return_pct": 0.883,
+      "win_rate_pct": 67.7,
+      "latest_session_date": "2026-07-10",
+      "latest_computed_at": "2026-07-10T21:53:26.275957",
+      "outcome_status_counts": {
+        "ok": 65,
+        "no_intraday_data": 2,
+        "intraday_coverage_gap": 1
+      }
+    }
+  },
+  "performance": {
+    "broker": {
+      "provider": "etrade",
+      "available": false,
+      "message": "401 Client Error: Unauthorized for url: https://api.etrade.com/v1/accounts/list.json",
+      "account": null,
+      "positions": [],
+      "open_orders": []
+    },
+    "live": {
+      "account_equity": null,
+      "cash": null,
+      "buying_power": null,
+      "position_market_value": null,
+      "unrealized_pl": null,
+      "open_position_count": 0,
+      "open_order_count": 0,
+      "filled_order_count": 19,
+      "estimated_same_day_avg_return_pct": -0.025,
+      "estimated_swing_5d_avg_return_pct": -7.045,
+      "closed_results_preview": []
+    },
+    "curves": {
+      "same_day": [
+        {
+          "label": "2026-05-29",
+          "equity": 12008.43
+        },
+        {
+          "label": "2026-06-01",
+          "equity": 10362.28
+        },
+        {
+          "label": "2026-07-10",
+          "equity": 20970.6
+        }
+      ],
+      "swing_5d": [
+        {
+          "label": "2026-05-29",
+          "equity": 8769.2
+        },
+        {
+          "label": "2026-07-11",
+          "equity": 4635.88
+        }
+      ]
+    }
+  },
+  "strategy_review": {
+    "auto_apply_enabled": false,
+    "run_before_signal_generation_enabled": false,
+    "policy_file": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Stocks\\.cache\\strategy_review\\auto_applied_policy.json",
+    "policy_file_exists": true,
+    "latest_artifact": {
+      "path": "C:\\Users\\noleg\\Desktop\\Claude\\Projects\\Stocks\\.cache\\strategy_review\\strategy_review_20260703_081257.json",
+      "generated_at": "2026-07-03T08:12:57.801299"
+    }
+  },
+  "discovery": {
+    "week_key": "2026-W28",
+    "count": 8,
+    "probe_candidate_count": 1,
+    "top_candidates": []
+  }
+}
