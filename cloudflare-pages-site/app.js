@@ -136,10 +136,40 @@
     }).format(date) + " ET";
   }
 
+  function describeSignalSide(side) {
+    if (side === "buy") {
+      return {
+        title: "Enter Long",
+        badge: "Long entry example",
+        summaryTitle: "Long Entry Outcomes",
+        cardTitle: "LONG ENTRY",
+        detail: "Measures what happened after the buy signal through the 3:55 PM ET close."
+      };
+    }
+    if (side === "sell") {
+      return {
+        title: "Exit Long",
+        badge: "Long exit example",
+        summaryTitle: "Long Exit Outcomes",
+        cardTitle: "LONG EXIT",
+        detail: "Not a short. Measures what downside was avoided by selling before the 3:55 PM ET close."
+      };
+    }
+    return {
+      title: "Signal",
+      badge: "Signal example",
+      summaryTitle: "Signal Outcomes",
+      cardTitle: String(side || "SIGNAL").toUpperCase(),
+      detail: ""
+    };
+  }
+
   function renderReport(targetSummary, targetExamples, report) {
     const buy = (report.sides || {}).buy || {};
     const sell = (report.sides || {}).sell || {};
     const benchmark = report.benchmark || {};
+    const buyLabels = describeSignalSide("buy");
+    const sellLabels = describeSignalSide("sell");
     const summaryCards = [
       {
         title: "Configured Strategy",
@@ -148,16 +178,16 @@
         copy: report.modeCopy || "This comes from the backend config, not a page toggle."
       },
       {
-        title: "Buy Outcomes",
+        title: buyLabels.summaryTitle,
         stat: formatPct(buy.avg_net_return_pct),
         tone: toneClass(buy.avg_net_return_pct),
-        copy: `${buy.count || 0} rows · ${formatPct(buy.win_rate_pct, 1)} win rate · median ${formatPct(buy.median_net_return_pct)}`
+        copy: `${buy.count || 0} rows · ${formatPct(buy.win_rate_pct, 1)} win rate · median ${formatPct(buy.median_net_return_pct)} · ${buyLabels.detail}`
       },
       {
-        title: "Sell Outcomes",
+        title: sellLabels.summaryTitle,
         stat: formatPct(sell.avg_net_return_pct),
         tone: toneClass(sell.avg_net_return_pct),
-        copy: `${sell.count || 0} rows · ${formatPct(sell.win_rate_pct, 1)} win rate · median ${formatPct(sell.median_net_return_pct)}`
+        copy: `${sell.count || 0} rows · ${formatPct(sell.win_rate_pct, 1)} win rate · median ${formatPct(sell.median_net_return_pct)} · ${sellLabels.detail}`
       },
       {
         title: "Benchmark Read",
@@ -181,8 +211,8 @@
     `).join("");
 
     const examples = [
-      ...(buy.example_rows || []).slice(0, 3).map((item) => ({ ...item, group: "Buy" })),
-      ...(sell.example_rows || []).slice(0, 3).map((item) => ({ ...item, group: "Sell" }))
+      ...(buy.example_rows || []).slice(0, 3).map((item) => ({ ...item, labels: buyLabels })),
+      ...(sell.example_rows || []).slice(0, 3).map((item) => ({ ...item, labels: sellLabels }))
     ];
 
     if (!examples.length) {
@@ -195,15 +225,16 @@
     targetExamples.innerHTML = examples.map((item) => `
       <article class="trade-card">
         <div class="trade-card-head">
-          <div class="trade-card-title">${esc(item.ticker || "?")} ${esc((item.signal_side || "").toUpperCase())}</div>
+          <div class="trade-card-title">${esc(item.ticker || "?")} ${esc(item.labels.cardTitle)}</div>
           <div class="trade-card-return ${toneClass(item.net_return_pct)}">${esc(formatPct(item.net_return_pct))}</div>
         </div>
         <div class="trade-card-meta">
-          <div><span class="trade-card-badge">${esc(item.group)} example</span></div>
+          <div><span class="trade-card-badge">${esc(item.labels.badge)}</span></div>
           <div>Session: ${esc(item.session_date || "n/a")}</div>
           <div>Entry: ${esc(formatDateTimeET(item.entry_timestamp))} at ${esc(formatMoney(item.entry_price))}</div>
           <div>Exit: ${esc(formatDateTimeET(item.exit_timestamp))} at ${esc(formatMoney(item.exit_price))}</div>
           <div>Outcome: ${esc(item.win_loss || "n/a")}${item.flag ? ` · ${esc(item.flag)}` : ""}</div>
+          <div>${esc(item.labels.detail)}</div>
         </div>
       </article>
     `).join("");
