@@ -1,1 +1,1 @@
-window.EQUITY_API_BASE_URL = "https://shape-incorporate-privileges-measures.trycloudflare.com";
+window.EQUITY_API_BASE_URL = "https://reduced-wash-jay-shoulder.trycloudflare.com";

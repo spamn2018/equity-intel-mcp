@@ -24,6 +24,7 @@ import json
 import os
 import threading
 import time
+import statistics
 from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List
@@ -407,6 +408,153 @@ def _safe_iso(value: Any) -> Any:
     return value.isoformat() if value is not None else None
 
 
+def _safe_date_label(value: Any) -> str | None:
+    """Return a YYYY-MM-DD label for date-like values when possible."""
+    if value in (None, ""):
+        return None
+    if hasattr(value, "isoformat"):
+        return value.isoformat()[:10]
+    return str(value)[:10]
+
+
+def _fetch_spy_benchmark(session_dates: List[Any], cfg=None) -> Dict[str, Any] | None:
+    """Fetch SPY daily closes over the signal date range from Polygon."""
+    cfg = cfg or settings
+    api_key = getattr(cfg, "polygon_api_key", None)
+    if not api_key:
+        return None
+
+    labels = [label for label in (_safe_date_label(value) for value in session_dates) if label]
+    if not labels:
+        return None
+
+    min_date = min(labels)
+    max_date = max(labels)
+    url = (
+        "https://api.polygon.io/v2/aggs/ticker/SPY/range/1/day/"
+        f"{min_date}/{max_date}"
+    )
+    try:
+        import requests
+
+        resp = requests.get(
+            url,
+            params={"adjusted": "true", "sort": "asc", "apiKey": api_key},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        results = data.get("results", [])
+        if len(results) < 2:
+            return None
+
+        import datetime as _dt
+
+        first_close = results[0]["c"]
+        last_close = results[-1]["c"]
+        first_dt = _dt.datetime.fromtimestamp(results[0]["t"] / 1000).strftime("%Y-%m-%d")
+        last_dt = _dt.datetime.fromtimestamp(results[-1]["t"] / 1000).strftime("%Y-%m-%d")
+        pct = (last_close - first_close) / first_close * 100
+        return {
+            "available": True,
+            "start_date": first_dt,
+            "end_date": last_dt,
+            "start_price": round(first_close, 4),
+            "end_price": round(last_close, 4),
+            "return_pct": round(pct, 3),
+            "trading_days": len(results),
+        }
+    except Exception as exc:
+        logger.warning("dashboard_spy_benchmark_error", error=str(exc))
+        return None
+
+
+def _build_same_day_report(rows: List[Any], cfg=None) -> Dict[str, Any]:
+    """Build the same benchmark view used by the CLI same-day report."""
+    by_status: Dict[str, List[Any]] = {}
+    for row in rows:
+        by_status.setdefault(row.outcome_status, []).append(row)
+
+    report: Dict[str, Any] = {
+        "total_count": len(rows),
+        "status_counts": {status: len(group) for status, group in sorted(by_status.items())},
+        "ok_count": len(by_status.get("ok", [])),
+        "sides": {},
+        "benchmark": {
+            "available": False,
+            "message": "S&P 500 benchmark unavailable - no POLYGON_API_KEY or network error",
+        },
+        "log_lines": [],
+    }
+    report["log_lines"].append(f"Same-day backtest report - n={len(rows)} total")
+    for status, group in sorted(by_status.items()):
+        report["log_lines"].append(f"{status}: n={len(group)}")
+
+    ok_rows = by_status.get("ok", [])
+    side_labels = (
+        ("buy", "long P&L"),
+        ("sell", "exit avoidance - closes longs, not short P&L"),
+    )
+    for side, label in side_labels:
+        side_rows = [row for row in ok_rows if row.signal_side == side]
+        returns = [row.net_return_pct for row in side_rows if row.net_return_pct is not None]
+        win_count = sum(1 for value in returns if value > 0)
+        side_report = {
+            "label": label,
+            "count": len(returns),
+            "avg_net_return_pct": round(statistics.mean(returns), 3) if returns else None,
+            "median_net_return_pct": round(statistics.median(returns), 3) if returns else None,
+            "win_rate_pct": round((win_count / len(returns)) * 100.0, 1) if returns else None,
+            "example_rows": [],
+        }
+        for row in side_rows[:5]:
+            side_report["example_rows"].append({
+                "trade_signal_id": row.trade_signal_id,
+                "ticker": row.ticker,
+                "signal_side": row.signal_side,
+                "session_date": _safe_date_label(row.session_date),
+                "entry_timestamp": _safe_iso(row.entry_timestamp),
+                "entry_price": row.entry_price,
+                "exit_timestamp": _safe_iso(row.exit_timestamp),
+                "exit_price": row.exit_price,
+                "net_return_pct": row.net_return_pct,
+                "win_loss": row.win_loss,
+                "flag": row.flag,
+                "log_line": (
+                    f"signal={row.trade_signal_id} {row.ticker} {row.signal_side} "
+                    f"session={_safe_date_label(row.session_date)} entry={_safe_iso(row.entry_timestamp)}@{row.entry_price} "
+                    f"exit={_safe_iso(row.exit_timestamp)}@{row.exit_price} net_ret={row.net_return_pct:+.3f}% "
+                    f"{row.win_loss} flag={row.flag}"
+                ),
+            })
+        report["sides"][side] = side_report
+        if returns:
+            report["log_lines"].append(
+                f"{side} avg net {side_report['avg_net_return_pct']:+.3f}% | median {side_report['median_net_return_pct']:+.3f}% | win rate {side_report['win_rate_pct']:.1f}% | n={len(returns)}"
+            )
+            report["log_lines"].append(f"{side} examples:")
+            report["log_lines"].extend(item["log_line"] for item in side_report["example_rows"])
+
+    benchmark = _fetch_spy_benchmark([row.session_date for row in ok_rows if row.session_date is not None], cfg)
+    if benchmark:
+        buy_side = report["sides"].get("buy") or {}
+        avg_buy = buy_side.get("avg_net_return_pct")
+        alpha = round(avg_buy - benchmark["return_pct"], 3) if avg_buy is not None else None
+        benchmark["signal_avg_buy_net_return_pct"] = avg_buy
+        benchmark["alpha_per_trade_pct"] = alpha
+        report["benchmark"] = benchmark
+        report["log_lines"].append(
+            f"SPY proxy: {benchmark['start_date']} -> {benchmark['end_date']} ({benchmark['trading_days']} trading days)"
+        )
+        report["log_lines"].append(
+            f"SPY buy-and-hold {benchmark['return_pct']:+.3f}% from ${benchmark['start_price']:.2f} to ${benchmark['end_price']:.2f}"
+        )
+        if avg_buy is not None:
+            report["log_lines"].append(f"Signal avg (buy) {avg_buy:+.3f}%")
+            report["log_lines"].append(f"Alpha per trade {alpha:+.3f}%")
+
+    return report
+
 def _resolve_project_path(raw_path: str) -> Path:
     """Resolve a project-relative path against likely project roots."""
     path = Path(raw_path)
@@ -624,6 +772,7 @@ def _build_trading_workflow_snapshot(cfg=None) -> Dict[str, Any]:
             "latest_session_date": max((row.session_date for row in same_day_rows if row.session_date), default=None),
             "latest_computed_at": _safe_iso(max((row.computed_at for row in same_day_rows), default=None)),
             "outcome_status_counts": same_day_status_counts,
+            "report": _build_same_day_report(same_day_rows, cfg),
         }
 
         now = _dt.datetime.now(_dt.timezone.utc)

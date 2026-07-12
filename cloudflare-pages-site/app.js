@@ -21,6 +21,9 @@
     swingNote: document.getElementById("swingNote"),
     sameDayChart: document.getElementById("sameDayChart"),
     swingChart: document.getElementById("swingChart"),
+    benchmarkStats: document.getElementById("benchmarkStats"),
+    benchmarkMeta: document.getElementById("benchmarkMeta"),
+    reportLog: document.getElementById("reportLog"),
     liveBadges: document.getElementById("liveBadges"),
     liveMeta: document.getElementById("liveMeta"),
     openOrders: document.getElementById("openOrders"),
@@ -107,6 +110,16 @@
       .join("");
   }
 
+  function setLog(target, lines, emptyText) {
+    if (!lines || !lines.length) {
+      target.className = "log-box empty-state";
+      target.textContent = emptyText;
+      return;
+    }
+    target.className = "log-box";
+    target.textContent = lines.join("\n");
+  }
+
   function renderChart(target, points, color) {
     if (!points || !points.length) {
       target.className = "chart-wrap empty-state";
@@ -164,6 +177,10 @@
     const curves = perf.curves || {};
     const backtests = data.backtests || {};
     const sameDay = backtests.same_day || {};
+    const sameDayReport = sameDay.report || {};
+    const sameDaySides = sameDayReport.sides || {};
+    const sameDayBuy = sameDaySides.buy || {};
+    const benchmark = sameDayReport.benchmark || {};
     const swing5 = (backtests.swing || {})["5"] || {};
     const mode = data.mode || {};
     const signals = (data.signal_generation || {}).recent_signals || [];
@@ -185,9 +202,16 @@
     elements.filledOrders.textContent = String(live.filled_order_count || 0);
     elements.filledOrdersNote.textContent = `${mode.broker_provider || "broker"} · ${mode.execution_enabled ? "execution enabled" : "execution disabled"}`;
 
-    elements.sameDayAvg.textContent = formatPct(sameDay.avg_gross_return_pct);
-    elements.sameDayAvg.className = "stat-value " + toneClass(sameDay.avg_gross_return_pct);
-    elements.sameDayNote.textContent = `${formatPct(sameDay.win_rate_pct, 1)} win rate · ${sameDay.ok_count || 0} resolved rows`;
+    const sameDayHeadline = benchmark.signal_avg_buy_net_return_pct != null
+      ? benchmark.signal_avg_buy_net_return_pct
+      : sameDay.avg_gross_return_pct;
+    const sameDayHeadlineNote = benchmark.signal_avg_buy_net_return_pct != null
+      ? `${formatPct(benchmark.alpha_per_trade_pct)} alpha vs SPY · ${sameDayBuy.count || 0} buy rows`
+      : `${formatPct(sameDay.win_rate_pct, 1)} win rate · ${sameDay.ok_count || 0} resolved rows`;
+
+    elements.sameDayAvg.textContent = formatPct(sameDayHeadline);
+    elements.sameDayAvg.className = "stat-value " + toneClass(sameDayHeadline);
+    elements.sameDayNote.textContent = sameDayHeadlineNote;
 
     elements.swingAvg.textContent = formatPct(swing5.avg_return_pct);
     elements.swingAvg.className = "stat-value " + toneClass(swing5.avg_return_pct);
@@ -264,9 +288,11 @@
       "No filled orders are linked into the dashboard yet."
     );
 
-    elements.scoreSameDay.textContent = formatPct(sameDay.avg_gross_return_pct);
-    elements.scoreSameDay.className = "score-value " + toneClass(sameDay.avg_gross_return_pct);
-    elements.scoreSameDayNote.textContent = `${formatPct(sameDay.win_rate_pct, 1)} win rate · latest session ${sameDay.latest_session_date || "n/a"}`;
+    elements.scoreSameDay.textContent = formatPct(sameDayHeadline);
+    elements.scoreSameDay.className = "score-value " + toneClass(sameDayHeadline);
+    elements.scoreSameDayNote.textContent = benchmark.signal_avg_buy_net_return_pct != null
+      ? `buy net avg · alpha ${formatPct(benchmark.alpha_per_trade_pct)} · latest session ${sameDay.latest_session_date || "n/a"}`
+      : `${formatPct(sameDay.win_rate_pct, 1)} win rate · latest session ${sameDay.latest_session_date || "n/a"}`;
 
     elements.scoreSwing.textContent = formatPct(swing5.avg_return_pct);
     elements.scoreSwing.className = "score-value " + toneClass(swing5.avg_return_pct);
@@ -275,8 +301,58 @@
     setMetaRow(elements.backtestMeta, [
       `primary lens ${mode.primary_backtest === "same_day" ? "same-day" : "swing"}`,
       `holding style ${mode.holding_style_label || "n/a"}`,
-      `${(data.signal_generation || {}).directional_signal_count || 0} directional signals`
+      `${(data.signal_generation || {}).directional_signal_count || 0} directional signals`,
+      `gross avg ${formatPct(sameDay.avg_gross_return_pct)}`
     ]);
+
+    if (benchmark.available) {
+      elements.benchmarkStats.className = "benchmark-grid";
+      elements.benchmarkStats.innerHTML = [
+        {
+          label: "SPY Buy/Hold",
+          numericValue: benchmark.return_pct,
+          value: formatPct(benchmark.return_pct),
+          note: `${formatMoney(benchmark.start_price)} to ${formatMoney(benchmark.end_price)}`
+        },
+        {
+          label: "Signal Avg (Buy)",
+          numericValue: benchmark.signal_avg_buy_net_return_pct,
+          value: formatPct(benchmark.signal_avg_buy_net_return_pct),
+          note: `${sameDayBuy.count || 0} buy rows · median ${formatPct(sameDayBuy.median_net_return_pct)}`
+        },
+        {
+          label: "Alpha / Trade",
+          numericValue: benchmark.alpha_per_trade_pct,
+          value: formatPct(benchmark.alpha_per_trade_pct),
+          note: `${formatPct(sameDayBuy.win_rate_pct, 1)} win rate`
+        }
+      ].map((item) => `
+        <div class="benchmark-card">
+          <div class="benchmark-label">${esc(item.label)}</div>
+          <div class="benchmark-value ${toneClass(item.numericValue)}">${esc(item.value)}</div>
+          <div class="benchmark-note">${esc(item.note)}</div>
+        </div>
+      `).join("");
+      setMetaRow(elements.benchmarkMeta, [
+        `period ${benchmark.start_date || "n/a"} to ${benchmark.end_date || "n/a"}`,
+        `${benchmark.trading_days || 0} trading days`,
+        `${sameDayReport.total_count || 0} total rows`,
+        `${sameDayReport.ok_count || 0} ok rows`
+      ]);
+    } else {
+      elements.benchmarkStats.className = "benchmark-grid empty-state";
+      elements.benchmarkStats.textContent = benchmark.message || "No benchmark data yet.";
+      setMetaRow(elements.benchmarkMeta, [
+        `${sameDayReport.total_count || 0} total rows`,
+        `${sameDayReport.ok_count || 0} ok rows`
+      ]);
+    }
+
+    setLog(
+      elements.reportLog,
+      sameDayReport.log_lines || [],
+      "No same-day report log yet."
+    );
 
     setList(
       elements.signals,
