@@ -1,0 +1,343 @@
+(function () {
+  const API_STORAGE_KEY = "equity_api_base_url";
+  const chartColors = {
+    sameDay: "#22c55e",
+    swing: "#3b82f6",
+  };
+
+  const elements = {
+    apiBaseLabel: document.getElementById("apiBaseLabel"),
+    lastRefreshLabel: document.getElementById("lastRefreshLabel"),
+    modeLabel: document.getElementById("modeLabel"),
+    statusBanner: document.getElementById("statusBanner"),
+    brokerEquity: document.getElementById("brokerEquity"),
+    brokerEquityNote: document.getElementById("brokerEquityNote"),
+    filledOrders: document.getElementById("filledOrders"),
+    filledOrdersNote: document.getElementById("filledOrdersNote"),
+    sameDayAvg: document.getElementById("sameDayAvg"),
+    sameDayNote: document.getElementById("sameDayNote"),
+    swingAvg: document.getElementById("swingAvg"),
+    swingNote: document.getElementById("swingNote"),
+    sameDayChart: document.getElementById("sameDayChart"),
+    swingChart: document.getElementById("swingChart"),
+    liveBadges: document.getElementById("liveBadges"),
+    liveMeta: document.getElementById("liveMeta"),
+    openOrders: document.getElementById("openOrders"),
+    holdings: document.getElementById("holdings"),
+    closedResults: document.getElementById("closedResults"),
+    scoreSameDay: document.getElementById("scoreSameDay"),
+    scoreSameDayNote: document.getElementById("scoreSameDayNote"),
+    scoreSwing: document.getElementById("scoreSwing"),
+    scoreSwingNote: document.getElementById("scoreSwingNote"),
+    backtestMeta: document.getElementById("backtestMeta"),
+    signals: document.getElementById("signals"),
+    settingsBtn: document.getElementById("settingsBtn"),
+    refreshBtn: document.getElementById("refreshBtn"),
+    settingsDialog: document.getElementById("settingsDialog"),
+    apiBaseInput: document.getElementById("apiBaseInput"),
+    saveApiBtn: document.getElementById("saveApiBtn"),
+    clearApiBtn: document.getElementById("clearApiBtn"),
+  };
+
+  function formatMoney(value) {
+    if (value == null || Number.isNaN(Number(value))) return "n/a";
+    return Number(value).toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    });
+  }
+
+  function formatPct(value, digits = 2) {
+    if (value == null || Number.isNaN(Number(value))) return "n/a";
+    return Number(value).toFixed(digits) + "%";
+  }
+
+  function toneClass(value) {
+    if (value == null || Number.isNaN(Number(value))) return "neutral";
+    if (Number(value) > 0) return "positive";
+    if (Number(value) < 0) return "negative";
+    return "neutral";
+  }
+
+  function esc(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function getConfiguredApiBase() {
+    const params = new URLSearchParams(window.location.search);
+    const queryValue = params.get("api");
+    if (queryValue) return queryValue.replace(/\/+$/, "");
+    if (window.EQUITY_API_BASE_URL) return String(window.EQUITY_API_BASE_URL).replace(/\/+$/, "");
+    const saved = window.localStorage.getItem(API_STORAGE_KEY);
+    if (saved) return saved.replace(/\/+$/, "");
+    return "";
+  }
+
+  function setBanner(kind, message) {
+    elements.statusBanner.className = "status-banner " + kind;
+    elements.statusBanner.innerHTML = message;
+  }
+
+  function setList(target, html, emptyText) {
+    if (!html) {
+      target.className = "list-wrap empty-state";
+      target.textContent = emptyText;
+      return;
+    }
+    target.className = "list-wrap";
+    target.innerHTML = html;
+  }
+
+  function setMetaRow(target, items) {
+    target.innerHTML = items
+      .filter(Boolean)
+      .map((item) => `<span>${esc(item)}</span>`)
+      .join("");
+  }
+
+  function renderBadges(target, items) {
+    target.innerHTML = items
+      .map((item) => `<span class="badge ${item.kind}">${esc(item.label)}</span>`)
+      .join("");
+  }
+
+  function renderChart(target, points, color) {
+    if (!points || !points.length) {
+      target.className = "chart-wrap empty-state";
+      target.textContent = "No curve points yet.";
+      return;
+    }
+    const values = points.map((point) => Number(point.equity || 0));
+    const min = Math.min.apply(null, values);
+    const max = Math.max.apply(null, values);
+    const width = 720;
+    const height = 164;
+    const span = Math.max(max - min, 1);
+    const step = points.length === 1 ? 0 : width / (points.length - 1);
+    const polyline = points.map((point, index) => {
+      const x = step * index;
+      const y = height - (((Number(point.equity || 0) - min) / span) * (height - 24)) - 12;
+      return `${x},${y}`;
+    }).join(" ");
+    const startLabel = points[0].label;
+    const endLabel = points[points.length - 1].label;
+    const first = values[0];
+    const last = values[values.length - 1];
+    const delta = first ? ((last / first) - 1) * 100 : null;
+
+    target.className = "chart-wrap";
+    target.innerHTML = [
+      `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true">`,
+      `<polyline points="${polyline}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>`,
+      `</svg>`,
+      `<div class="meta-row"><span>${esc(startLabel)} to ${esc(endLabel)}</span><span class="${toneClass(delta)}">${formatPct(delta)}</span></div>`
+    ].join("");
+  }
+
+  function renderListItem(leftTitle, leftMeta, leftNote, rightTitle, rightMeta, rightNote, rightClass) {
+    return [
+      `<div class="list-item">`,
+      `<div class="list-item-left">`,
+      `<div class="list-title">${esc(leftTitle)}</div>`,
+      leftMeta ? `<div class="list-meta">${esc(leftMeta)}</div>` : "",
+      leftNote ? `<div class="list-meta">${esc(leftNote)}</div>` : "",
+      `</div>`,
+      `<div class="list-item-right">`,
+      `<div class="list-title ${rightClass || ""}">${esc(rightTitle)}</div>`,
+      rightMeta ? `<div class="list-meta">${esc(rightMeta)}</div>` : "",
+      rightNote ? `<div class="list-meta">${esc(rightNote)}</div>` : "",
+      `</div>`,
+      `</div>`
+    ].join("");
+  }
+
+  function renderWorkflow(data, apiBase) {
+    const perf = data.performance || {};
+    const live = perf.live || {};
+    const broker = perf.broker || {};
+    const curves = perf.curves || {};
+    const backtests = data.backtests || {};
+    const sameDay = backtests.same_day || {};
+    const swing5 = (backtests.swing || {})["5"] || {};
+    const mode = data.mode || {};
+    const signals = (data.signal_generation || {}).recent_signals || [];
+    const holdings = broker.positions || [];
+    const openOrders = broker.open_orders || [];
+    const closed = live.closed_results_preview || [];
+
+    elements.apiBaseLabel.textContent = apiBase || window.location.origin;
+    elements.lastRefreshLabel.textContent = new Date().toLocaleString();
+    elements.modeLabel.textContent = mode.holding_style_label || "Unknown";
+
+    elements.brokerEquity.textContent = formatMoney(live.account_equity);
+    elements.brokerEquityNote.textContent = broker.available
+      ? `Cash ${formatMoney(live.cash)} · buying power ${formatMoney(live.buying_power)}`
+      : (broker.message || "Broker feed unavailable.");
+
+    elements.filledOrders.textContent = String(live.filled_order_count || 0);
+    elements.filledOrdersNote.textContent = `${mode.broker_provider || "broker"} · ${mode.execution_enabled ? "execution enabled" : "execution disabled"}`;
+
+    elements.sameDayAvg.textContent = formatPct(sameDay.avg_gross_return_pct);
+    elements.sameDayAvg.className = "stat-value " + toneClass(sameDay.avg_gross_return_pct);
+    elements.sameDayNote.textContent = `${formatPct(sameDay.win_rate_pct, 1)} win rate · ${sameDay.ok_count || 0} resolved rows`;
+
+    elements.swingAvg.textContent = formatPct(swing5.avg_return_pct);
+    elements.swingAvg.className = "stat-value " + toneClass(swing5.avg_return_pct);
+    elements.swingNote.textContent = `${formatPct(swing5.win_rate_pct, 1)} win rate · ${swing5.count || 0} scored rows`;
+
+    if (broker.available) {
+      setBanner("good", `Connected successfully. This Pages frontend is reading live workflow data from <code>${esc(apiBase)}</code>.`);
+    } else {
+      setBanner("warn", `Workflow loaded, but broker access is unavailable. Backend message: <code>${esc(broker.message || "unavailable")}</code>.`);
+    }
+
+    renderChart(elements.sameDayChart, curves.same_day || [], chartColors.sameDay);
+    renderChart(elements.swingChart, curves.swing_5d || [], chartColors.swing);
+
+    renderBadges(elements.liveBadges, [
+      { kind: broker.available ? "good" : "error", label: `broker ${broker.available ? "connected" : "unavailable"}` },
+      { kind: mode.execution_enabled ? "good" : "error", label: `execution ${mode.execution_enabled ? "enabled" : "disabled"}` },
+      { kind: mode.require_approval ? "warn" : "good", label: `approval ${mode.require_approval ? "required" : "auto"}` },
+      { kind: holdings.length ? "good" : "warn", label: `${holdings.length} open positions` },
+      { kind: openOrders.length ? "warn" : "good", label: `${openOrders.length} open broker orders` }
+    ]);
+
+    setMetaRow(elements.liveMeta, [
+      `positions mv ${formatMoney(live.position_market_value)}`,
+      `unrealized ${formatMoney(live.unrealized_pl)}`,
+      `same-day linked avg ${formatPct(live.estimated_same_day_avg_return_pct)}`,
+      `5d linked avg ${formatPct(live.estimated_swing_5d_avg_return_pct)}`
+    ]);
+
+    setList(
+      elements.openOrders,
+      openOrders.map((item) => renderListItem(
+        `${item.symbol || "?"} ${(item.side || "").toUpperCase()}`,
+        `${item.order_type || "order"} · qty ${item.qty || "n/a"}`,
+        "",
+        item.status || "open",
+        item.submitted_at || "",
+        "",
+        "neutral"
+      )).join(""),
+      broker.available ? "No open broker orders." : "Open broker orders are unavailable from the current broker session."
+    );
+
+    setList(
+      elements.holdings,
+      holdings.map((item) => renderListItem(
+        item.symbol || "?",
+        `${item.qty || 0} sh at ${formatMoney(item.avg_entry_price)}`,
+        `Market value ${formatMoney(item.market_value)} · current ${formatMoney(item.current_price)}`,
+        formatMoney(item.unrealized_pl),
+        item.unrealized_plpc != null ? formatPct(Number(item.unrealized_plpc) * 100) : "n/a",
+        "",
+        toneClass(item.unrealized_pl)
+      )).join(""),
+      broker.available ? "No open holdings are currently reported by the broker." : "Holdings are unavailable until the API can reach the broker."
+    );
+
+    setList(
+      elements.closedResults,
+      closed.map((item) => renderListItem(
+        `${item.ticker || "?"} ${(item.side || "").toUpperCase()}`,
+        `${formatMoney(item.filled_avg_price)} fill · ${item.qty != null ? `${item.qty} sh` : formatMoney(item.notional)}`,
+        item.filled_at || "",
+        formatPct(item.estimated_same_day_return_pct),
+        "same-day estimate",
+        `${formatPct(item.estimated_swing_5d_return_pct)} on 5d lens`,
+        toneClass(item.estimated_same_day_return_pct)
+      )).join(""),
+      "No filled orders are linked into the dashboard yet."
+    );
+
+    elements.scoreSameDay.textContent = formatPct(sameDay.avg_gross_return_pct);
+    elements.scoreSameDay.className = "score-value " + toneClass(sameDay.avg_gross_return_pct);
+    elements.scoreSameDayNote.textContent = `${formatPct(sameDay.win_rate_pct, 1)} win rate · latest session ${sameDay.latest_session_date || "n/a"}`;
+
+    elements.scoreSwing.textContent = formatPct(swing5.avg_return_pct);
+    elements.scoreSwing.className = "score-value " + toneClass(swing5.avg_return_pct);
+    elements.scoreSwingNote.textContent = `${formatPct(swing5.win_rate_pct, 1)} win rate · latest ${swing5.latest_computed_at || "n/a"}`;
+
+    setMetaRow(elements.backtestMeta, [
+      `primary lens ${mode.primary_backtest === "same_day" ? "same-day" : "swing"}`,
+      `holding style ${mode.holding_style_label || "n/a"}`,
+      `${(data.signal_generation || {}).directional_signal_count || 0} directional signals`
+    ]);
+
+    setList(
+      elements.signals,
+      signals.map((item) => renderListItem(
+        `${item.ticker || "?"} ${(item.signal_side || "").toUpperCase()}`,
+        `${item.event_type || "signal"} · strength ${item.signal_strength != null ? Number(item.signal_strength).toFixed(2) : "n/a"}`,
+        item.title || "No title recorded.",
+        item.status || "unknown",
+        item.generated_at || "",
+        "",
+        "neutral"
+      )).join(""),
+      "No recent signals are available."
+    );
+  }
+
+  async function loadWorkflow() {
+    const apiBase = getConfiguredApiBase();
+    if (!apiBase) {
+      elements.apiBaseLabel.textContent = "Not configured";
+      setBanner("info", "Set an API base URL first. Example: <code>https://your-api.example.com</code>");
+      return;
+    }
+    elements.refreshBtn.disabled = true;
+    setBanner("info", "Loading workflow data...");
+    try {
+      const response = await fetch(apiBase + "/api/trading/workflow", {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      renderWorkflow(data, apiBase);
+    } catch (error) {
+      setBanner("error", `Could not load <code>${esc(apiBase + "/api/trading/workflow")}</code>. ${esc(error.message)}`);
+    } finally {
+      elements.refreshBtn.disabled = false;
+    }
+  }
+
+  function openSettings() {
+    elements.apiBaseInput.value = getConfiguredApiBase();
+    elements.settingsDialog.showModal();
+  }
+
+  function saveSettings() {
+    const value = elements.apiBaseInput.value.trim().replace(/\/+$/, "");
+    if (value) {
+      window.localStorage.setItem(API_STORAGE_KEY, value);
+    } else {
+      window.localStorage.removeItem(API_STORAGE_KEY);
+    }
+    elements.settingsDialog.close();
+    loadWorkflow();
+  }
+
+  function clearSettings() {
+    window.localStorage.removeItem(API_STORAGE_KEY);
+    elements.apiBaseInput.value = "";
+    elements.apiBaseLabel.textContent = "Not configured";
+    setBanner("info", "API base URL cleared.");
+  }
+
+  elements.settingsBtn.addEventListener("click", openSettings);
+  elements.refreshBtn.addEventListener("click", loadWorkflow);
+  elements.saveApiBtn.addEventListener("click", saveSettings);
+  elements.clearApiBtn.addEventListener("click", clearSettings);
+
+  loadWorkflow();
+})();

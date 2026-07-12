@@ -1,0 +1,1 @@
+window.EQUITY_API_BASE_URL = "https://your-api.example.com";

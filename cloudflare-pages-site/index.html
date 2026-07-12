@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equity Intelligence Performance</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Equity Intelligence</div>
+        <h1>Performance</h1>
+        <p class="subtitle">A static Cloudflare Pages frontend for your live trading and backtest workflow.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="settingsBtn" class="ghost-btn" type="button">API Settings</button>
+        <button id="refreshBtn" class="primary-btn" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <section class="connection-strip">
+      <div class="connection-pill">
+        <span class="pill-label">API</span>
+        <span id="apiBaseLabel">Not configured</span>
+      </div>
+      <div class="connection-pill">
+        <span class="pill-label">Last refresh</span>
+        <span id="lastRefreshLabel">Never</span>
+      </div>
+      <div class="connection-pill">
+        <span class="pill-label">Mode</span>
+        <span id="modeLabel">Unknown</span>
+      </div>
+    </section>
+
+    <main class="content">
+      <section id="statusBanner" class="status-banner info">
+        Configure a public API base URL that exposes <code>/api/trading/workflow</code>.
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-label">Broker Equity</div>
+          <div id="brokerEquity" class="stat-value">n/a</div>
+          <div id="brokerEquityNote" class="stat-note">Waiting for API data.</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-label">Filled Orders</div>
+          <div id="filledOrders" class="stat-value">0</div>
+          <div id="filledOrdersNote" class="stat-note">Live execution history.</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-label">Same-Day Backtest</div>
+          <div id="sameDayAvg" class="stat-value">n/a</div>
+          <div id="sameDayNote" class="stat-note">Resolved day-trade outcomes.</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-label">5d Swing Backtest</div>
+          <div id="swingAvg" class="stat-value">n/a</div>
+          <div id="swingNote" class="stat-note">Forward 5-day outcomes.</div>
+        </article>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Same-day equity path</h2>
+              <p>Compounded from stored same-day net returns.</p>
+            </div>
+          </div>
+          <div id="sameDayChart" class="chart-wrap empty-state">No data yet.</div>
+        </article>
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>5d swing equity path</h2>
+              <p>Compounded from stored 5-day forward returns.</p>
+            </div>
+          </div>
+          <div id="swingChart" class="chart-wrap empty-state">No data yet.</div>
+        </article>
+      </section>
+
+      <section class="panel-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Live trading status</h2>
+              <p>Broker reachability, execution mode, and position summary.</p>
+            </div>
+          </div>
+          <div id="liveBadges" class="badge-row"></div>
+          <div id="liveMeta" class="meta-row"></div>
+          <div id="openOrders" class="list-wrap empty-state">No broker data yet.</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Current holdings</h2>
+              <p>Open positions from the connected broker.</p>
+            </div>
+          </div>
+          <div id="holdings" class="list-wrap empty-state">No holdings yet.</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Closed results bridge</h2>
+              <p>Filled orders annotated with linked same-day and 5d estimates.</p>
+            </div>
+          </div>
+          <div id="closedResults" class="list-wrap empty-state">No filled orders yet.</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Backtest scorecards</h2>
+              <p>Both holding-style lenses remain visible.</p>
+            </div>
+          </div>
+          <div class="score-grid">
+            <div class="score-card">
+              <div class="score-label">Same-day</div>
+              <div id="scoreSameDay" class="score-value">n/a</div>
+              <div id="scoreSameDayNote" class="score-note">No rows yet.</div>
+            </div>
+            <div class="score-card">
+              <div class="score-label">Swing 5d</div>
+              <div id="scoreSwing" class="score-value">n/a</div>
+              <div id="scoreSwingNote" class="score-note">No rows yet.</div>
+            </div>
+          </div>
+          <div id="backtestMeta" class="meta-row"></div>
+        </article>
+
+        <article class="panel panel-wide">
+          <div class="panel-head">
+            <div>
+              <h2>Recent signals</h2>
+              <p>Signal generation context from the workflow snapshot.</p>
+            </div>
+          </div>
+          <div id="signals" class="list-wrap empty-state">No signal data yet.</div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="settingsDialog" class="settings-dialog">
+    <form method="dialog" class="settings-form">
+      <h2>API Settings</h2>
+      <p class="dialog-copy">Enter the public base URL for the backend that serves <code>/api/trading/workflow</code>.</p>
+      <label for="apiBaseInput">API base URL</label>
+      <input id="apiBaseInput" type="url" placeholder="https://your-api.example.com">
+      <div class="dialog-actions">
+        <button id="clearApiBtn" class="ghost-btn" type="button">Clear</button>
+        <button class="ghost-btn" value="cancel" type="submit">Close</button>
+        <button id="saveApiBtn" class="primary-btn" type="button">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
